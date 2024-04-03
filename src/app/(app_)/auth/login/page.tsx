@@ -30,8 +30,7 @@ export default function SignIn() {
   const router = useRouter();
   const loginHandler = async (prov: string) => {
     try {
-      await signIn(prov);
-      router.push("/");
+      await signIn(prov, { callbackUrl: "/dashboard" });
     } catch (error) {
       console.log(error);
     }

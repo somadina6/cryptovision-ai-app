@@ -9,6 +9,7 @@ export default function AuthPage() {
   return (
     <div>
       <p>Status:{status}</p>
+      <p>{session?.user?.name}</p>
       <button onClick={() => signOut()}>Sign Out</button>
     </div>
   );
