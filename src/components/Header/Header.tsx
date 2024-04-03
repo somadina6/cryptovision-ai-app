@@ -6,10 +6,12 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { ThemeContext } from "@/context/themeContext";
 import { FaMoon } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
-import { signIn } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 
 const Header = () => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
+
+  const { status } = useSession();
   return (
     <section className="flex items-center justify-between py-4 md:px-10 px-4">
       <div
@@ -28,10 +30,12 @@ const Header = () => {
       </div>
 
       <GiHamburgerMenu className="md:hidden cursor-pointer text-primary text-lg" />
-      <div className="hidden md:flex gap-2 items-center">
-        <ButtonPrimary href="/auth/login" text="Login" />
-        <ButtonPrimary2 href="/auth/signup" text="Get Started for Free" />
-      </div>
+      {status === "unauthenticated" && (
+        <div className="hidden md:flex gap-2 items-center">
+          <ButtonPrimary href="/auth/login" text="Login" />
+          <ButtonPrimary2 href="/auth/signup" text="Get Started for Free" />
+        </div>
+      )}
     </section>
   );
 };

@@ -31,7 +31,7 @@ export default function SignIn() {
   const loginHandler = async (prov: string) => {
     try {
       await signIn(prov);
-      // router.push("/");
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
