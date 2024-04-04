@@ -1,5 +1,7 @@
 import Header1 from "@/components/Header/Header1";
 import "../(web)/globals.css";
+import { NextAuthProvider } from "@/components/AuthProvider/AuthProvider";
+import ThemeProvider from "@/components/ThemeProvider/ThemeProvider";
 
 export const metadata = {
   title: "Login To CryptoVision AI",
@@ -14,8 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50">
-        <Header1 />
-        {children}
+        <NextAuthProvider>
+          <ThemeProvider>
+            <Header1 />
+            {children}
+          </ThemeProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
