@@ -5,6 +5,10 @@ import axios from "axios";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import useSWR from "swr";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { ColorRing } from "react-loader-spinner";
 
 type UserCredentials = {
   email: string;
@@ -26,12 +30,17 @@ export default function SignIn() {
     email: "",
     password: "",
   };
+
+  const router = useRouter();
+
   const [userData, setuserData] = useState(initCredentials);
+  const [signInLoading, setSignInLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { data: session, status } = useSession();
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    toast("DD");
+    setSignInLoading(true);
     event.preventDefault();
     const result = await signIn("sanity-login", {
       email: userData.email,
@@ -39,32 +48,34 @@ export default function SignIn() {
       redirect: false,
       callbackUrl: "/dashboard",
     });
+    setSignInLoading(false);
 
     if (result?.error) {
-      toast("result.error", { position: "bottom-center" });
-      console.log(result.error);
+      // toast.error(result.error, { position: "top-right" });
+      setErrorMessage(result.error);
     }
   };
 
-  const fetchProviders = async () => {
-    const providers = await getProviders();
-    return providers;
-  };
-
-  const { data: providers, isLoading } = useSWR("/pr", fetchProviders);
+  if (status === "authenticated") router.push("/dashboard");
 
   return (
     <div className="h-screen">
-      <div className="w-4/5 md:w-1/3 mx-auto mt-10 px-6 py-5 bg-white dark:bg-black flex flex-col shadow-sm items-center dark:border dark:border-white rounded-xl">
+      <div className="w-4/5 md:w-1/3 mx-auto mt-10 px-16 py-16 bg-white dark:bg-black flex flex-col shadow-sm items-center dark:border dark:border-white rounded-xl">
         <form
           method="post"
-          className="flex flex-col items-center"
+          className="flex flex-col items-center w-full"
           onSubmit={handleLogin}
         >
           <p className="text-xl text-black mb-4 dark:text-white">Welcome</p>
           <p className="text-xs mb-4">
             Log in to CryptoVision AI to continue to your dashboard.
           </p>
+
+          {errorMessage && (
+            <p className="text-xs mb-2 text-red-500 text-center">
+              {errorMessage}!
+            </p>
+          )}
 
           <input
             name="email"
@@ -88,35 +99,54 @@ export default function SignIn() {
             }
           />
 
-          <ButtonPrimary2 text="Sign In" />
+          <Link href="/" className="w-full">
+            <p className="text-blue-700 font-bold text-xs w-full text-left mb-3">
+              Forgot password?
+            </p>
+          </Link>
+
+          <button className="w-full bg-primary text-white py-2 rounded-md hover:opacity-95 mb-3 flex items-center justify-center h-[40px]">
+            {!signInLoading ? (
+              "Log In"
+            ) : (
+              <ColorRing
+                visible={true}
+                height="30"
+                width="30"
+                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+              />
+            )}
+          </button>
         </form>
+
+        <p className="w-full text-left text-xs mb-3">
+          Don't have an account?{" "}
+          <button
+            className="text-blue-700 font-bold"
+            onClick={() => router.push("/auht/signup")}
+          >
+            Sign up
+          </button>
+        </p>
+
+        <div className="flex justify-between items-center w-full mb-3">
+          <hr className="w-5/12" />
+          OR
+          <hr className="w-5/12" />
+        </div>
 
         <div
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          className="mt-3"
+          className="mt-3 font font-bold flex gap-2 border rounded-md py-3 w-full px-4 cursor-pointer"
         >
-          <ButtonPrimary2 text={`Sign in with Google`} />
+          <Image
+            src="/logos/google.svg"
+            width={20}
+            height={20}
+            alt="google logo"
+          />
+          <p className="text-sm">Continue with Google</p>
         </div>
-
-        {providers &&
-          Object.values(providers).map((provider) => (
-            <div key={provider.name}>
-              <div
-                onClick={() =>
-                  signIn(provider.id, {
-                    email: userData.email,
-                    password: userData.password,
-                    callbackUrl: "/dashboard",
-                  })
-                }
-                className="mt-3"
-              >
-                {/* <input name="csrfToken" type="hidden" value={csrfToken} /> */}
-
-                <ButtonPrimary2 text={`Sign in with ${provider.name}`} />
-              </div>
-            </div>
-          ))}
       </div>
     </div>
   );

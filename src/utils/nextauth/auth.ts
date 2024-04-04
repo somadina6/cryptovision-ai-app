@@ -1,7 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { SanityAdapter, SanityCredentials } from "next-auth-sanity";
-import { sanityClient } from "../sanity/client";
+import sanityClient from "../sanity/client";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,6 +15,7 @@ export const authOptions: NextAuthOptions = {
   adapter: SanityAdapter(sanityClient),
   session: {
     strategy: "jwt",
+    maxAge: 10 * 60,
   },
   pages: {
     error: "/auth/error",
