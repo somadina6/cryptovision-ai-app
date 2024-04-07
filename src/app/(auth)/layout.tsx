@@ -3,21 +3,23 @@ import "../(web)/globals.css";
 import { NextAuthProvider } from "@/components/AuthProvider/AuthProvider";
 import ThemeProvider from "@/components/ThemeProvider/ThemeProvider";
 import Toast from "@/components/Toast/Toast";
+import { getServerSession } from "next-auth";
 
 export const metadata = {
-  title: "Login To CryptoVision AI",
-  description: "Login To CryptoVision AI",
+  title: "CryptoVision AI",
+  description: "View Your Potential Balance",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession();
   return (
     <html lang="en">
       <body className="bg-gray-50">
-        <NextAuthProvider>
+        <NextAuthProvider session={session}>
           <ThemeProvider>
             <Toast />
             <Header1 />

@@ -7,29 +7,18 @@ import { ThemeContext } from "@/context/themeContext";
 import { FaMoon } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import { useSession, signIn } from "next-auth/react";
+import Logo from "./Logo";
 
 const Header = () => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
 
   const { status } = useSession();
   return (
-    <section className="flex items-center justify-between py-4 md:px-10 px-4">
-      <div
-        id="logo"
-        className="flex font-bold sm:text-sm md:text-lg items-center "
-      >
-        <p className={`dark:text-white`}>CryptoVision</p>
-        <p className="ml-1 text-primary">AI</p>
-
-        <div
-          onClick={() => setDarkTheme(!darkTheme)}
-          className="ml-2 cursor-pointer"
-        >
-          {darkTheme ? <FaMoon /> : <MdSunny />}
-        </div>
-      </div>
+    <section className="h-16 flex px-4 md:px-8 py-4 items-center justify-between shadow-sm sticky top-0 z-50 bg-white dark:bg-slate-950">
+      <Logo />
 
       <GiHamburgerMenu className="md:hidden cursor-pointer text-primary text-lg" />
+
       {status === "unauthenticated" && (
         <div className="hidden md:flex gap-2 items-center">
           <ButtonPrimary href="/auth/login" text="Login" />

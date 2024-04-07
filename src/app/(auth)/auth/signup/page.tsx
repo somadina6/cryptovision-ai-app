@@ -1,62 +1,70 @@
 "use client";
-import ButtonPrimary2 from "@/components/Buttons/ButtonPrimary2";
-import toast from "react-hot-toast";
-import axios from "axios";
-import { getProviders, signIn, useSession } from "next-auth/react";
-import { FormEvent, useState } from "react";
-import useSWR from "swr";
+import { signUp } from "next-auth-sanity/client";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
+import React, { FormEvent, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
+import Image from "next/image";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 type UserCredentials = {
+  firstname: string;
+  lastname: string;
   email: string;
   password: string;
 };
 
-type SignInRes = {
-  error: string;
-  ok: boolean;
-  status: number;
-  url: string | null;
-};
+const inputStyle =
+  "p-3 border rounded-sm text-sm mb-3 w-full hover:border-black";
 
-export default function SignIn() {
-  const inputStyle =
-    "p-3 border rounded-sm text-sm mb-3 w-full hover:border-black";
-
+const SignUp = () => {
   const initCredentials: UserCredentials = {
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
   };
 
   const router = useRouter();
 
-  const [userData, setuserData] = useState(initCredentials);
+  const [userData, setuserData] = useState<UserCredentials>(initCredentials);
   const [signInLoading, setSignInLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const { data: session, status } = useSession();
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     setSignInLoading(true);
     event.preventDefault();
-    const result = await signIn("sanity-login", {
-      email: userData.email,
-      password: userData.password,
-      redirect: false,
-      callbackUrl: "/dashboard",
-    });
-    setSignInLoading(false);
 
-    if (result?.error) {
-      // toast.error(result.error, { position: "top-right" });
-      setErrorMessage(result.error);
+    try {
+      // const user = await signUp({
+      //   email: userData.email,
+      //   password: userData.password,
+      //   name: `${userData.firstname} ${userData.lastname}`,
+      // });
+
+      const response = await axios.post("/api/user/register", {
+        email: userData.email,
+        password: userData.password,
+        name: `${userData.firstname} ${userData.lastname}`,
+      });
+
+      if (response.status == 200) {
+        toast.success(response.data.message);
+        router.push(`/auth/login?email=${userData.email}`);
+      }
+
+      setSignInLoading(false);
+    } catch (error: any) {
+      toast.error("Something went wrong");
+      console.log(Object.keys(error));
+      if (error.response) setErrorMessage(error.response.data.message);
+      setSignInLoading(false);
+    } finally {
+      setSignInLoading(false);
+      setuserData(userData);
     }
   };
-
-  if (status === "authenticated") router.push("/dashboard");
 
   return (
     <div className="h-screen">
@@ -68,14 +76,38 @@ export default function SignIn() {
         >
           <p className="text-xl text-black mb-4 dark:text-white">Welcome</p>
           <p className="text-xs mb-4">
-            Log in to CryptoVision AI to continue to your dashboard.
+            Sign up to CryptoVision AI to continue to your dashboard.
           </p>
 
-          {errorMessage && (
+          {/* {errorMessage && (
             <p className="text-xs mb-2 text-red-500 text-center">
               {errorMessage}!
             </p>
-          )}
+          )} */}
+
+          <input
+            name="firstname"
+            type="text"
+            value={userData.firstname}
+            className={inputStyle}
+            placeholder="First Name"
+            onChange={(e) =>
+              setuserData({ ...userData, firstname: e.target.value })
+            }
+            required
+          />
+
+          <input
+            name="lastname"
+            type="text"
+            value={userData.lastname}
+            className={inputStyle}
+            placeholder="Last Name"
+            onChange={(e) =>
+              setuserData({ ...userData, lastname: e.target.value })
+            }
+            required
+          />
 
           <input
             name="email"
@@ -86,6 +118,7 @@ export default function SignIn() {
             onChange={(e) =>
               setuserData({ ...userData, email: e.target.value })
             }
+            required
           />
 
           <input
@@ -99,15 +132,9 @@ export default function SignIn() {
             }
           />
 
-          <Link href="/" className="w-full">
-            <p className="text-blue-700 font-bold text-xs w-full text-left mb-3">
-              Forgot password?
-            </p>
-          </Link>
-
           <button className="w-full bg-primary text-white py-2 rounded-md hover:opacity-95 mb-3 flex items-center justify-center h-[40px]">
             {!signInLoading ? (
-              "Log In"
+              "Sign Up"
             ) : (
               <ColorRing
                 visible={true}
@@ -120,12 +147,12 @@ export default function SignIn() {
         </form>
 
         <p className="w-full text-left text-xs mb-3">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <button
             className="text-blue-700 font-bold"
-            onClick={() => router.push("/auht/signup")}
+            onClick={() => router.push("/auth/login")}
           >
-            Sign up
+            Sign in
           </button>
         </p>
 
@@ -137,7 +164,7 @@ export default function SignIn() {
 
         <div
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          className="mt-3 font font-bold flex gap-2 border rounded-md py-3 w-full px-4 cursor-pointer"
+          className="mt-3 font font-bold flex gap-2 border rounded-md py-3 w-full px-4 cursor-pointer hover:border-primary"
         >
           <Image
             src="/logos/google.svg"
@@ -150,4 +177,6 @@ export default function SignIn() {
       </div>
     </div>
   );
-}
+};
+
+export default SignUp;

@@ -1,0 +1,8 @@
+#sidebar {
+  width: 200px;
+  height: calc(100vh - 64px);
+  .navlink {
+    display: flex;
+    gap: 4px;
+  }
+}
