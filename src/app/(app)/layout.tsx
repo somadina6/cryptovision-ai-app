@@ -8,6 +8,7 @@ import Toast from "@/components/Toast/Toast";
 import SideBar from "@/components/SideBar/SideBar";
 import { Poppins } from "next/font/google";
 import { getServerSession } from "next-auth";
+import UserProvider from "@/components/UserProvider/UserProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,14 +32,21 @@ export default async function RootLayout({
     <html lang="en">
       <body className={poppins.className}>
         <NextAuthProvider session={session}>
-          <ThemeProvider>
-            <Toast />
-            <Header />
-            <div className="w-screen">
-              <SideBar />
-              {children}
-            </div>
-          </ThemeProvider>
+          <UserProvider>
+            <ThemeProvider>
+              <Toast />
+              <Header />
+              <div className="w-screen flex">
+                <SideBar />
+                <div
+                  id="mainbar"
+                  className="rounded-md px-10 py-2 ml-3  w-full"
+                >
+                  {children}
+                </div>
+              </div>
+            </ThemeProvider>
+          </UserProvider>
         </NextAuthProvider>
       </body>
     </html>

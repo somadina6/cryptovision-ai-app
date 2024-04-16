@@ -3,14 +3,22 @@ import { useState } from "react";
 import "./styles.scss";
 import { usePathname, useRouter } from "next/navigation";
 
-const navLinks = [
+type navType = {
+  name: string;
+  href: string;
+};
+const navLinks: navType[] = [
   {
     name: "Dashboard",
-    href: "/dashboard",
+    href: "/app/dashboard",
   },
   {
     name: "Tokens",
-    href: "/dashboard/tokens",
+    href: "/app/tokens",
+  },
+  {
+    name: "Explore",
+    href: "/app/explore",
   },
 ];
 

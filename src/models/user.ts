@@ -2,15 +2,19 @@ import mongoose from "mongoose";
 
 const { Schema, model, models } = mongoose;
 
-export interface IUser extends mongoose.Document {
+export interface IUser {
   email: string;
   password: string;
   name: string;
   _id?: string;
   image?: string;
+  lastSignIn?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  emailVerified?: boolean | null;
 }
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema(
   {
     email: {
       type: String,
@@ -28,9 +32,13 @@ const userSchema = new Schema<IUser>(
     image: {
       type: String,
     },
+    lastSignIn: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
 const userModel = models.User || model("User", userSchema);
+// const userModel = model("User", userSchema);
 export default userModel;

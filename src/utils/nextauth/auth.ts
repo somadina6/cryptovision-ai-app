@@ -1,12 +1,10 @@
-import { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { SanityAdapter, SanityCredentials } from "next-auth-sanity";
-import sanityClient from "../sanity/client";
 import connect from "../mongodb/db";
-import userModel from "@/models/user";
+import userModel, { IUser } from "@/models/user";
 import bcrypt from "bcryptjs";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "../mongodb/client";
 
 export const authOptions: NextAuthOptions = {
@@ -16,6 +14,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     // SanityCredentials(sanityClient),
+
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -25,7 +24,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         await connect();
-        console.log("About to Sign In");
+        // console.log(credentials);
 
         if (!credentials) {
           console.log("No Credentials!");
@@ -52,7 +51,7 @@ export const authOptions: NextAuthOptions = {
               };
             }
           } else {
-            console.log(credentials);
+            // console.log(credentials);
             return null;
           }
           return null;
@@ -66,6 +65,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   // adapter: SanityAdapter(sanityClient),
   // adapter: MongoDBAdapter(clientPromise),
+  adapter: MongoDBAdapter(clientPromise),
   session: {
     strategy: "jwt",
     maxAge: 10 * 60,
@@ -75,47 +75,22 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      // console.log(user, account);
-      if (account?.provider == "credentials") return true;
-      if (account?.provider == "google") {
-        await connect();
-        console.log("db connected");
-        try {
-          const existingUser = await userModel.findOne({ email: user.email });
-
-          if (!existingUser) {
-            console.log("Adding Google OAuth User to DB");
-
-            const newUser = new userModel({
-              email: user.email,
-              name: user.name,
-              image: user.image,
-            });
-
-            await newUser.save();
-            return true;
-          }
-          return true;
-        } catch (err) {
-          console.log(err);
-          console.log("Error Using Google Oauth");
-          return false;
-        }
-      }
-      return false;
+      const signInDate = new Date();
+      await connect();
+      const updatedUser = await userModel.findOneAndUpdate(
+        { email: user.email as string },
+        { lastSignIn: signInDate }
+      );
+      return true;
     },
     async session({ session, token, user }) {
-      // console.log(session, token, user);
-      const userEmail = token.email;
-      const userIdObject = await userModel.findOne({ email: userEmail });
-      // console.log(userIdObject);
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: userIdObject._id,
-        },
-      };
+      if (token) {
+        session.user.id = token.sub as string;
+      }
+      // const userObject = await userModel.findOne<IUser>({
+      //   email: token.email as string,
+      // });
+      return session;
     },
   },
 };

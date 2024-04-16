@@ -21,11 +21,26 @@ const Logo = () => {
       </p>
       <p className="ml-1 text-primary">AI</p>
 
-      <div
-        onClick={() => setDarkTheme(!darkTheme)}
-        className="ml-2 cursor-pointer"
-      >
-        {darkTheme ? <FaMoon /> : <MdSunny />}
+      <div className="ml-2 cursor-pointer">
+        {darkTheme ? (
+          <div
+            onClick={() => {
+              setDarkTheme(false);
+              localStorage.removeItem("crypto-theme");
+            }}
+          >
+            <FaMoon />
+          </div>
+        ) : (
+          <div
+            onClick={() => {
+              setDarkTheme(true);
+              localStorage.setItem("crypto-theme", "true");
+            }}
+          >
+            <MdSunny />
+          </div>
+        )}
       </div>
     </div>
   );

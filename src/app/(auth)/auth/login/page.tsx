@@ -44,7 +44,7 @@ export default function SignIn() {
       const result = await signIn("credentials", {
         ...userData,
         redirect: false,
-        callbackUrl: "/dashboard",
+        callbackUrl: "/app/dashboard",
       });
 
       setSignInLoading(false);
@@ -55,7 +55,7 @@ export default function SignIn() {
       }
       if (result?.ok) {
         toast.success("Sign In Successfully");
-        router.replace("/dashboard");
+        router.push("/app/dashboard");
       }
     } catch (error: any) {
       setSignInLoading(false);
@@ -144,7 +144,7 @@ export default function SignIn() {
         </div>
 
         <div
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => signIn("google", { callbackUrl: "/app/dashboard" })}
           className="mt-3 font font-bold flex gap-2 border rounded-md py-3 w-full px-4 cursor-pointer hover:border-primary"
         >
           <Image

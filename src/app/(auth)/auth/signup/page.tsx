@@ -56,8 +56,12 @@ const SignUp = () => {
 
       setSignInLoading(false);
     } catch (error: any) {
-      toast.error("Something went wrong");
-      console.log(Object.keys(error));
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+
       if (error.response) setErrorMessage(error.response.data.message);
       setSignInLoading(false);
     } finally {
