@@ -39,6 +39,7 @@ const Table = () => {
   const { userId } = useContext(UserContext);
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const inputStyles =
     "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
@@ -154,9 +155,16 @@ const Table = () => {
   };
 
   const updatePricesAndSaveToDB = async () => {
+    if (isUpdating) {
+      return; // Exit early if an update is already in progress
+    }
+    setIsUpdating(true); // Set update status to true
     const toastId = toast.loading("Fetching Prices");
     if (!coinDetails) {
-      return null;
+      setIsUpdating(false);
+      toast.remove(toastId);
+
+      return;
     }
 
     try {
@@ -166,9 +174,13 @@ const Table = () => {
         realTimePrices
       );
 
-      const { data } = await axios.put("/api/token", {
-        data: { userId, updatedUserTokens },
-      });
+      const { data } = await axios.put(
+        "/api/token",
+        {
+          data: { userId, updatedUserTokens },
+        },
+        { timeout: 3000 }
+      );
 
       if (data.success) {
         mutate("getUserTokens");
@@ -181,6 +193,8 @@ const Table = () => {
       console.log("Error updating prices:", error);
       toast.error("An error occurred while updating prices", { id: toastId });
       return null;
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -190,22 +204,17 @@ const Table = () => {
     isLoading,
   } = useSWR("getUserTokens", fetchUserTokens, { revalidateOnFocus: true });
 
-  let { data } = useSWR("updatePricesAndSaveToDB", updatePricesAndSaveToDB, {
-    revalidateOnFocus: true,
-    refreshInterval: 0,
-    focusThrottleInterval: 0,
+  useSWR("updatePricesAndSaveToDB", updatePricesAndSaveToDB, {
+    revalidateOnFocus: false,
+    refreshInterval: 3 * 60000,
+    // focusThrottleInterval: 30000,
     errorRetryInterval: 0,
     revalidateIfStale: false,
   });
 
   useEffect(() => {
-    toast("initial");
-    const interval = setInterval(() => {
-      updatePricesAndSaveToDB();
-    }, 45000);
     // Fetch initial user tokens
     if (userId) {
-      toast("user");
       const fetchData = async () => {
         try {
           const tokens = await fetchUserTokens();
@@ -218,10 +227,7 @@ const Table = () => {
       };
       fetchData();
     }
-    return () => {
-      clearInterval(interval);
-      toast("unmounted");
-    };
+    return () => {};
   }, [userId]);
 
   return (
@@ -229,9 +235,10 @@ const Table = () => {
       <table className="w-full text-sm text-left text-gray-500 ">
         <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200">
           <tr>
-            <th className="px-6 py-3">Coin</th>
+            <th className="px-6 py-3 w-5/12">Coin</th>
             <th className="px-6 py-3">Symbol</th>
             <th className="px-6 py-3">Price</th>
+            <th className="px-6 py-3">24HR</th>
             <th className="px-6 py-3">Amount</th>
             <th className="px-6 py-3">Total</th>
 
@@ -244,16 +251,17 @@ const Table = () => {
               <MutatingDots height="100" width="100" />
             </div>
           )}
+
           {coinDetails &&
             !isLoading &&
             !fetchingError &&
             coinDetails.map((coin, index) => (
               <tr
                 key={coin._id}
-                className="border-b hover:bg-gray-50 dark:hover:bg-black"
+                className="border-b hover:bg-gray-50 dark:hover:text-primary  dark:hover:bg-gray-950 h-10 overflow-clip"
               >
-                <th className="px-6 py-4 flex gap-2">
-                  {coin.name}
+                <th className="px-6 py-4 flex gap-2 items-center">
+                  <p className="">{coin.name}</p>
                   <span>
                     {coin.image && (
                       <Image
@@ -267,6 +275,20 @@ const Table = () => {
                 </th>
                 <td className="px-6 py-4">{coin.symbol}</td>
                 <td className="px-6 py-4">${coin.price}</td>
+                {coin.price_change_percentage_24h ? (
+                  <td
+                    className={`px-6 py-4 ${
+                      coin.price_change_percentage_24h < 0
+                        ? "text-red-600"
+                        : "text-green-500"
+                    }`}
+                  >
+                    {coin.price_change_percentage_24h?.toFixed(2)}%
+                  </td>
+                ) : (
+                  <td></td>
+                )}
+
                 <td className="px-6 py-4">{coin.amount}</td>
                 <td className="px-6 py-4">
                   {formatPrice(coin.amount * coin.price)}
@@ -284,7 +306,9 @@ const Table = () => {
                 </td>
               </tr>
             ))}
-          <tr>
+
+          {/* SEARCH ROW BEGIN*/}
+          <tr className="">
             <th className="px-6 py-3 font-sans flex gap-2 items-center">
               <input
                 className={inputStyles}
@@ -321,6 +345,9 @@ const Table = () => {
             <td className="px-6 py-4">{tokenToAddDetails.symbol}</td>
             <td className="px-6 py-4">${tokenToAddDetails.price}</td>
             <td className="px-6 py-4">
+              {tokenToAddDetails.price_change_percentage_24h?.toFixed(2)}%
+            </td>
+            <td className="px-6 py-4">
               <input
                 className={`${inputStyles} no-spinners`}
                 type="number"
@@ -352,6 +379,7 @@ const Table = () => {
               </button>
             </td>
           </tr>
+          {/* END OF TABLE  */}
         </tbody>
       </table>
       <div className="w-full ">

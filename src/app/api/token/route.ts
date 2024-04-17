@@ -65,6 +65,6 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Error updating user tokens:", error);
-    return NextResponse.json({ message: "Unable to Update" }, { status: 400 });
+    return NextResponse.json({ success: false }, { status: 400 });
   }
 }

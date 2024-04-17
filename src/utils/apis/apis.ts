@@ -21,6 +21,7 @@ export type TokenData = {
   amount: number;
   price: number;
   image?: string;
+  price_change_percentage_24h?: number;
 };
 export async function addToken(userTokenData: TokenData) {
   try {

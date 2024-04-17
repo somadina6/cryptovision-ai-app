@@ -31,6 +31,9 @@ const tokenSchema = new Schema({
     type: String,
     required: true,
   },
+  price_change_percentage_24h: {
+    type: Number,
+  },
 });
 
 const TokenModel = models.Token || model("Token", tokenSchema);

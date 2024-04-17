@@ -10,7 +10,9 @@ export async function GET(
   try {
     await connect();
     const { userId } = params;
-    // console.log(userId);
+    if (!userId) {
+      return NextResponse.json({ message: "User Is Invalid" }, { status: 500 });
+    }
     const userTokens = await TokenModel.find<TokenData>({ userId });
     // console.log(userTokens);
     return NextResponse.json(userTokens, { status: 200 });

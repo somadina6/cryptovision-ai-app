@@ -25,7 +25,7 @@ const Page = () => {
         </section>
 
         <section className="grid grid-cols-12 gap-4">
-          <div className="col-span-9">
+          <div className="col-span-9 ">
             <Table />
           </div>
 

@@ -29,12 +29,12 @@ const SideBar = () => {
   return (
     <div
       id="sidebar"
-      className=" border-r-2 flex flex-col gap-2 pl-6 py-6 sticky top-0 left-0"
+      className=" border-r-2 flex flex-col gap-2 px-6 py-6 sticky top-0 left-0"
     >
       {navLinks.map((navlink) => {
         return (
           <div
-            className={`navlink cursor-pointer px-2 py-1.5 rounded-l-md text-opacity-80 hover:bg-[#d6d0d0] hover:dark:bg-primary  ${
+            className={`navlink cursor-pointer px-2 py-1.5 rounded-md text-opacity-80 hover:bg-[#d6d0d0] hover:dark:bg-primary  ${
               pathname == navlink.href ? "bg-[#d6d0d0] dark:bg-primary" : ""
             }`}
             onClick={() => router.push(navlink.href)}

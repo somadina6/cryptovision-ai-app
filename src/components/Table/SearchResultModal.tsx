@@ -175,6 +175,8 @@ const SearchResultModal: FC<Props> = ({
                         symbol: tokenDetailFromAPI.symbol,
                         image: tokenDetailFromAPI.image,
                         coinId: tokenDetailFromAPI.id,
+                        price_change_percentage_24h:
+                          tokenDetailFromAPI.price_change_percentage_24h,
                       });
                       setShowModal(false);
                       setCurrentPage(1);
