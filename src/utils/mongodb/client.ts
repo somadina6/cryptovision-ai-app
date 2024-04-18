@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-const uri = process.env.MONGO_URI!;
+const uri = process.env.MONGO_URI;
 const options = {};
 
 let client: MongoClient | undefined;
