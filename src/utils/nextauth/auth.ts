@@ -84,13 +84,22 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token, user }) {
-      if (token) {
+      if (token.sub) {
         session.user.id = token.sub as string;
+        return session;
+      } else {
+        const userObject = await userModel.findOne<IUser>({
+          email: token.email as string,
+        });
+        console.log("userObject\n", userObject);
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: userObject ? userObject._id : "",
+          },
+        };
       }
-      // const userObject = await userModel.findOne<IUser>({
-      //   email: token.email as string,
-      // });
-      return session;
     },
   },
 };
