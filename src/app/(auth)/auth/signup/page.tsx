@@ -16,7 +16,7 @@ type UserCredentials = {
 };
 
 const inputStyle =
-  "p-3 border rounded-sm text-sm mb-3 w-full hover:border-black";
+  "p-3 border rounded-sm text-sm mb-3 w-full hover:border-black dark:text-black";
 
 const SignUp = () => {
   const initCredentials: UserCredentials = {

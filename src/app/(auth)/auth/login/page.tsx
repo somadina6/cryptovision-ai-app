@@ -14,7 +14,7 @@ type UserCredentials = {
 
 export default function SignIn() {
   const inputStyle =
-    "p-3 border rounded-sm text-sm mb-3 w-full hover:border-black";
+    "p-3 border rounded-sm text-sm mb-3 w-full hover:border-black dark:text-black";
 
   const initCredentials: UserCredentials = {
     email: "",
