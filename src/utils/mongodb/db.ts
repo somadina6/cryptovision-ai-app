@@ -1,12 +1,11 @@
-import mongoose from "mongoose";
+import { MongoOptions } from "mongodb";
+import mongoose, { MongooseOptions } from "mongoose";
+
 const options = {
-  appName: "CrytpoVison AI",
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  ssl: true,
-  sslValidate: true,
-  // sslCA: <path-to-ca-cert>,
+  tls: true,
+  tlsAllowInvalidCertificates: true,
 };
+
 const connect = async () => {
   if (mongoose.connections[0].readyState) return;
 

@@ -13,12 +13,10 @@ declare global {
 }
 
 const uri = process.env.MONGO_URI;
+
 const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  ssl: true,
-  sslValidate: true,
-  // sslCA: <path-to-ca-cert>,
+  tls: true,
+  tlsAllowInvalidCertificates: true,
 };
 
 let client: MongoClient | undefined;
