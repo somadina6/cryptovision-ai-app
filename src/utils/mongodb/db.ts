@@ -2,8 +2,9 @@ import { MongoOptions } from "mongodb";
 import mongoose, { MongooseOptions } from "mongoose";
 
 const options = {
-  tls: true,
+  tls: false,
   tlsAllowInvalidCertificates: true,
+  tlsInsecure: true,
 };
 
 const connect = async () => {

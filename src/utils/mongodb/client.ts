@@ -15,8 +15,9 @@ declare global {
 const uri = process.env.MONGO_URI;
 
 const options = {
-  tls: true,
+  tls: false,
   tlsAllowInvalidCertificates: true,
+  tlsInsecure: true,
 };
 
 let client: MongoClient | undefined;
