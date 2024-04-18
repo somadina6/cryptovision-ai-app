@@ -35,7 +35,7 @@ export default function SignIn() {
     if (emailFromSignUp) {
       setuserData({ ...userData, email: emailFromSignUp });
     }
-  }, [session, router]);
+  }, [queryParams, status]);
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     setSignInLoading(true);
@@ -128,7 +128,7 @@ export default function SignIn() {
         </form>
 
         <p className="w-full text-left text-xs mb-3">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <button
             className="text-blue-700 font-bold"
             onClick={() => router.push("/auth/signup")}

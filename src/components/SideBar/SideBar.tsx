@@ -34,6 +34,7 @@ const SideBar = () => {
       {navLinks.map((navlink) => {
         return (
           <div
+            key={navlink.name}
             className={`navlink cursor-pointer px-2 py-1.5 rounded-md text-opacity-80 hover:bg-[#d6d0d0] hover:dark:bg-primary  ${
               pathname == navlink.href ? "bg-[#d6d0d0] dark:bg-primary" : ""
             }`}

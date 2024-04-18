@@ -13,7 +13,7 @@ const Page = () => {
       const errorMessages = searchParams.get("error");
       setErrorMessage(errorMessages);
     }
-  }, []);
+  }, [searchParams]);
   return (
     <div>
       <h3>{errorMessage}</h3>
