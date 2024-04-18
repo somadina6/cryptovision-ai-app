@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (session) {
+  if (status == "authenticated") {
     const { id, email, name } = session.user;
     const firstName = name ? name.split(" ")[0] : "User";
 
