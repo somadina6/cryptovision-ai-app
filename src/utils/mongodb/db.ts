@@ -1,9 +1,8 @@
 import { MongoOptions } from "mongodb";
 import mongoose, { MongooseOptions } from "mongoose";
 
-const options = {
+export const options = {
   tls: false,
-  tlsAllowInvalidCertificates: true,
   tlsInsecure: true,
 };
 

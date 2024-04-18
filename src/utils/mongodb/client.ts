@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+import { options } from "./db";
 
 if (!process.env.MONGO_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGO_URI"');
@@ -13,12 +14,6 @@ declare global {
 }
 
 const uri = process.env.MONGO_URI;
-
-const options = {
-  tls: false,
-  tlsAllowInvalidCertificates: true,
-  tlsInsecure: true,
-};
 
 let client: MongoClient | undefined;
 let clientPromise: Promise<MongoClient>;
