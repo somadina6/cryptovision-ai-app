@@ -2,8 +2,7 @@ import { MongoOptions } from "mongodb";
 import mongoose, { MongooseOptions } from "mongoose";
 
 export const options = {
-  tls: false,
-  tlsInsecure: true,
+  connectTimeoutMS: 30000,
 };
 
 const connect = async () => {
