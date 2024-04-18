@@ -10,6 +10,7 @@ import useSWR from "swr";
 const Page = () => {
   const { data: session } = useSession();
   if (session) {
+    console.log(session);
     return (
       <div className="w-full ">
         <h2 className="text-3xl font-bold text-left text-primary mb-3">
