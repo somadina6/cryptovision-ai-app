@@ -30,7 +30,7 @@ export default function SignIn() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "authenticated") router.push("/dashboard");
+    if (status === "authenticated") router.push("app/dashboard");
     const emailFromSignUp = queryParams?.get("email");
     if (emailFromSignUp) {
       setuserData({ ...userData, email: emailFromSignUp });
