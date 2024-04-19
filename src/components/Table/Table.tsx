@@ -261,7 +261,7 @@ const Table = () => {
   }, [userId]);
 
   return (
-    <div className="w-full ">
+    <div className="md:w-full ">
       <table className="w-full text-sm text-left text-gray-500 ">
         <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200">
           <tr>

@@ -25,12 +25,12 @@ const Page = () => {
           </div>
         </section>
 
-        <section className="grid grid-cols-12 gap-4">
-          <div className="col-span-9 ">
+        <section className="sm:flex sm:flex-col-reverse md:grid grid-cols-12 gap-4">
+          <div className="md:col-span-9 block">
             <Table />
           </div>
 
-          <div className="col-span-3 ">
+          <div className="md:col-span-3 ">
             <Balance />
           </div>
         </section>
