@@ -36,10 +36,9 @@ export type CoingeckoResult = {
   market_cap_rank: number;
 };
 
-const Table = () => {
+const Table: FC<{ userId: string }> = ({ userId }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  // const { userId } = useContext(UserContext);
-  const { data: session } = useSession();
+  // const { userId } = useContext(UserContext)
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -47,7 +46,6 @@ const Table = () => {
   const inputStyles =
     "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
 
-  const userId = session ? session.user.id : "";
   const initTokenDetail: TokenData = {
     userId,
     coinId: "",
@@ -101,6 +99,7 @@ const Table = () => {
 
   const addUserTokens = async () => {
     const loadingId = toast.loading("Adding Token");
+    if (!userId) return;
     try {
       const newTokenAdded = await addToken({
         ...tokenToAddDetails,
@@ -116,6 +115,7 @@ const Table = () => {
   };
 
   const fetchUserTokens = async () => {
+    if (!userId) return;
     try {
       const tokens = await getTokens(userId);
 

@@ -10,6 +10,7 @@ import useSWR from "swr";
 const Page = () => {
   const { data: session, status } = useSession();
   if (status == "authenticated") {
+    const userId = session.user.id;
     console.log(session);
     return (
       <div className="w-full ">
@@ -27,7 +28,7 @@ const Page = () => {
 
         <section className="sm:flex sm:flex-col-reverse md:grid grid-cols-12 gap-4">
           <div className="md:col-span-9 block">
-            <Table />
+            <Table userId={userId} />
           </div>
 
           <div className="md:col-span-3 ">
