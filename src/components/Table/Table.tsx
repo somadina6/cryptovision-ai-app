@@ -134,24 +134,51 @@ const Table = () => {
           },
         }
       );
-      console.log(response.data);
+
       return response.data;
     }
   };
 
-  const updateTokenPrices = async (
+  const fetchPriceChange24h = async (tokens: TokenData[] | undefined) => {
+    try {
+      if (!tokens) return null;
+
+      const coinIds = tokens.map((token) => token.coinId).join(",");
+      const response = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price`,
+        {
+          params: {
+            vs_currencies: "usd",
+            ids: coinIds,
+            include_24hr_change: "true",
+          },
+        }
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching 24h price change:", error);
+      return null;
+    }
+  };
+
+  const updateTokens = async (
     tokens: TokenData[] | undefined,
-    realTimePrices: any
+    prices: any,
+    priceChange24h: any
   ) => {
-    return tokens
-      ? tokens.map((token) => {
-          const realTimePrice = realTimePrices[token.coinId]?.usd || 0;
-          return {
-            ...token,
-            price: realTimePrice,
-          };
-        })
-      : null;
+    if (!tokens) return undefined;
+
+    return tokens.map((token) => {
+      const realTimePrice = prices[token.coinId]?.usd || 0;
+      const priceChange = priceChange24h[token.coinId]?.usd_24h_change || 0;
+
+      return {
+        ...token,
+        price: realTimePrice,
+        price_change_percentage_24h: priceChange,
+      };
+    });
   };
 
   const updatePricesAndSaveToDB = async () => {
@@ -169,9 +196,12 @@ const Table = () => {
 
     try {
       const realTimePrices = await fetchRealTimePrices(coinDetails);
-      const updatedUserTokens = await updateTokenPrices(
+      const realTime24h = await fetchPriceChange24h(coinDetails);
+
+      const updatedUserTokens = await updateTokens(
         coinDetails,
-        realTimePrices
+        realTimePrices,
+        realTime24h
       );
 
       const { data } = await axios.put(

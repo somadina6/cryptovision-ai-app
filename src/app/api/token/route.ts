@@ -44,6 +44,7 @@ export async function PUT(req: Request) {
   const body = await req.json();
   await connect();
   const { userId, updatedUserTokens } = body.data;
+
   try {
     // Loop through updatedTokens and update each token in the database
     for (const token of updatedUserTokens) {
@@ -56,6 +57,8 @@ export async function PUT(req: Request) {
       if (existingToken) {
         // Update the token price
         existingToken.price = token.price;
+        existingToken.price_change_percentage_24h =
+          token.price_change_percentage_24h;
 
         // Save the updated token
         await existingToken.save();
