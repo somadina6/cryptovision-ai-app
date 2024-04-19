@@ -47,8 +47,7 @@ const Table = () => {
   const inputStyles =
     "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
 
-  if (!session) return;
-  const userId = session.user.id;
+  const userId = session ? session.user.id : "";
   const initTokenDetail: TokenData = {
     userId,
     coinId: "",
