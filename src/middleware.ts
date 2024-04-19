@@ -15,8 +15,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token }) => {
         console.log(token);
-       return token? true:false
-      
+        return true;
       },
     },
   }
