@@ -9,6 +9,7 @@ import SideBar from "@/components/SideBar/SideBar";
 import { Poppins } from "next/font/google";
 import { getServerSession } from "next-auth";
 import UserProvider from "@/components/UserProvider/UserProvider";
+import SessionExpiredModal from "@/components/SessionExpiredModal/SessionExpiredModal";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,27 +29,31 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession();
-  return (
-    <html lang="en">
-      <body className={poppins.className}>
-        <NextAuthProvider session={session}>
-          <UserProvider>
-            <ThemeProvider>
-              <Toast />
-              <Header />
-              <div className="w-screen flex">
-                <SideBar />
-                <div
-                  id="mainbar"
-                  className="rounded-md px-10 py-2 ml-3  w-full"
-                >
-                  {children}
+  if (session) {
+    return (
+      <html lang="en">
+        <body className={poppins.className}>
+          <NextAuthProvider session={session}>
+            <UserProvider>
+              <ThemeProvider>
+                <Toast />
+                <Header />
+                <div className="w-screen flex">
+                  <SideBar />
+                  <div
+                    id="mainbar"
+                    className="rounded-md px-10 py-2 ml-3  w-full"
+                  >
+                    {children}
+                  </div>
                 </div>
-              </div>
-            </ThemeProvider>
-          </UserProvider>
-        </NextAuthProvider>
-      </body>
-    </html>
-  );
+              </ThemeProvider>
+            </UserProvider>
+          </NextAuthProvider>
+        </body>
+      </html>
+    );
+  } else {
+    return <SessionExpiredModal />;
+  }
 }

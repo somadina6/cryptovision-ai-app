@@ -8,8 +8,8 @@ import { useEffect } from "react";
 import useSWR from "swr";
 
 const Page = () => {
-  const { data: session } = useSession();
-  if (session) {
+  const { data: session, status } = useSession();
+  if (status == "authenticated") {
     console.log(session);
     return (
       <div className="w-full ">

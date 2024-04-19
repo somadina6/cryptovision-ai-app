@@ -17,6 +17,8 @@ import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
 import Backdrop from "../Backdrop/Backdrop";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import SessionExpiredModal from "../SessionExpiredModal/SessionExpiredModal";
 
 type Props = {
   coinDetails: TokenData[] | undefined;
@@ -36,7 +38,8 @@ export type CoingeckoResult = {
 
 const Table = () => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  const { userId } = useContext(UserContext);
+  // const { userId } = useContext(UserContext);
+  const { data: session } = useSession();
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -44,6 +47,8 @@ const Table = () => {
   const inputStyles =
     "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
 
+  if (!session) return;
+  const userId = session.user.id;
   const initTokenDetail: TokenData = {
     userId,
     coinId: "",
