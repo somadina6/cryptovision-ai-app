@@ -262,7 +262,7 @@ const Table = () => {
       fetchData();
     }
     return () => {};
-  }, [userId]);
+  });
 
   return (
     <div className="md:w-full ">

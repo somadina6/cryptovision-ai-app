@@ -1,18 +1,27 @@
 import TokenModel from "@/models/token";
 import { TokenData } from "@/utils/apis/apis";
 import connect from "@/utils/mongodb/db";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: { userId: string | undefined } }
 ) {
+  const { userId } = params;
+  console.log("User ID is:", userId);
+
+  if (
+    !userId ||
+    userId === undefined ||
+    userId === null ||
+    !mongoose.Types.ObjectId.isValid(userId)
+  ) {
+    return NextResponse.json({ message: "User Is Invalid" }, { status: 500 });
+  }
+
   try {
     await connect();
-    const { userId } = params;
-    if (!userId) {
-      return NextResponse.json({ message: "User Is Invalid" }, { status: 500 });
-    }
     const userTokens = await TokenModel.find<TokenData>({ userId });
     // console.log(userTokens);
     return NextResponse.json(userTokens, { status: 200 });
