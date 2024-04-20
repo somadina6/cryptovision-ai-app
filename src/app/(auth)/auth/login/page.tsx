@@ -35,7 +35,7 @@ export default function SignIn() {
     if (emailFromSignUp) {
       setuserData({ ...userData, email: emailFromSignUp });
     }
-  }, [userData, router]);
+  }, [userData, router, queryParams, status]);
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     setSignInLoading(true);

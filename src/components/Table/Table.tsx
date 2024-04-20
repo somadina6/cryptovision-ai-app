@@ -17,8 +17,6 @@ import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
 import Backdrop from "../Backdrop/Backdrop";
 import axios from "axios";
-import { useSession } from "next-auth/react";
-import SessionExpiredModal from "../SessionExpiredModal/SessionExpiredModal";
 
 type Props = {
   coinDetails: TokenData[] | undefined;
