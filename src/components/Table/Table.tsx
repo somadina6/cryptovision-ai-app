@@ -272,7 +272,7 @@ const Table: FC<{ id: string }> = ({ id }) => {
     }
     mutate("getUserTokens");
     return () => {};
-  });
+  }, [id]);
 
   if (!coinDetails) return <MutatingDots height="100" width="100" />;
 
