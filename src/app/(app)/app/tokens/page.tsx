@@ -11,6 +11,11 @@ import useSWR from "swr";
 const Page = () => {
   const { data: session, status } = useSession();
   const userId = session?.user.id;
+
+  if (status == "loading") {
+    return <MutatingDots height="100" width="100" />;
+  }
+
   if (status == "authenticated" && userId !== undefined) {
     console.log("USER ID:", userId);
     return (
@@ -38,8 +43,6 @@ const Page = () => {
         </section>
       </div>
     );
-  } else if (status == "loading") {
-    return <MutatingDots height="100" width="100" />;
   }
 };
 
