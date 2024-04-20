@@ -19,7 +19,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="">
-        <NextAuthProvider session={session}>
+        <NextAuthProvider>
           <ThemeProvider>
             <Toast />
             <Header1 />
