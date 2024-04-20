@@ -54,6 +54,7 @@ const Page = () => {
   }
 
   // Handle other states or unauthenticated status
+  console.log(session);
   return (
     <div>
       <p>You are not authenticated</p>

@@ -23,37 +23,32 @@ export const metadata: Metadata = {
   description: "See your potential balance ",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
-  if (session) {
-    return (
-      <html lang="en">
-        <body className={poppins.className}>
-          <NextAuthProvider session={session}>
-            <UserProvider>
-              <ThemeProvider>
-                <Toast />
-                <Header />
-                <div className="w-screen flex">
-                  <SideBar />
-                  <div
-                    id="mainbar"
-                    className="rounded-md px-10 py-2 ml-3  w-full"
-                  >
-                    {children}
-                  </div>
+  return (
+    <html lang="en">
+      <body className={poppins.className}>
+        <NextAuthProvider>
+          <UserProvider>
+            <ThemeProvider>
+              <Toast />
+              <Header />
+              <div className="w-screen flex">
+                <SideBar />
+                <div
+                  id="mainbar"
+                  className="rounded-md px-10 py-2 ml-3  w-full"
+                >
+                  {children}
                 </div>
-              </ThemeProvider>
-            </UserProvider>
-          </NextAuthProvider>
-        </body>
-      </html>
-    );
-  } else {
-    return <SessionExpiredModal />;
-  }
+              </div>
+            </ThemeProvider>
+          </UserProvider>
+        </NextAuthProvider>
+      </body>
+    </html>
+  );
 }
