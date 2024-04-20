@@ -17,31 +17,20 @@ import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
 import Backdrop from "../Backdrop/Backdrop";
 import axios from "axios";
+import { truncate } from "fs";
+import { CoingeckoResult } from "@/types/types";
 
 type Props = {
   coinDetails: TokenData[] | undefined;
 };
 
-export type CoingeckoResult = {
-  id: string;
-  symbol: string;
-  name: string;
-  current_price: number;
-  image: string;
-  ath?: number;
-  low_24h?: number;
-  price_change_percentage_24h?: number;
-  market_cap_rank: number;
-};
-
 const Table: FC<{ id: string }> = ({ id }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  // const { userId } = useContext(UserContext)
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [userId, setUserId] = useState<string>();
-  const [toastId, setToastId] = useState("");
+  const [isUserTokensLoading, setUserTokensLoading] = useState(true);
 
   const inputStyles =
     "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
@@ -122,11 +111,12 @@ const Table: FC<{ id: string }> = ({ id }) => {
 
     try {
       const tokens = await getTokens(userId);
-
+      console.log("fetched success!");
+      setUserTokensLoading(false);
       return tokens;
     } catch (error) {
       console.error("Error fetching user tokens:", error);
-      throw error; // Re-throw the error to handle it in useEffect
+      throw error;
     }
   };
 
@@ -240,27 +230,38 @@ const Table: FC<{ id: string }> = ({ id }) => {
     data: coinDetails,
     error: fetchingError,
     isLoading,
-  } = useSWR("getUserTokens", fetchUserTokens);
+  } = useSWR("getUserTokens", fetchUserTokens, { revalidateIfStale: true });
 
   useSWR("updatePricesAndSaveToDB", updatePricesAndSaveToDB, {
     revalidateOnFocus: false,
     refreshInterval: 3 * 60000,
-    // focusThrottleInterval: 30000,
     errorRetryInterval: 0,
     revalidateIfStale: false,
   });
 
   useEffect(() => {
-    console.log("USER ID received:", id);
+    console.log("USER ID received initial:", id);
 
     if (id) {
       setUserId(id);
-      mutate("getUserTokens");
+      console.log("USER ID received:", id);
     }
     return () => {};
   }, [id]);
 
-  if (!coinDetails) return <MutatingDots height="100" width="100" />;
+  useEffect(() => {
+    if (userId) {
+      console.log("user id changed!");
+      fetchUserTokens();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    console.log("isUserTokensLoading:", isUserTokensLoading);
+    mutate("getUserTokens");
+  }, [isUserTokensLoading]);
+
+  if (isLoading) return <MutatingDots height="100" width="100" />;
 
   return (
     <div className="md:w-full ">
@@ -278,14 +279,7 @@ const Table: FC<{ id: string }> = ({ id }) => {
           </tr>
         </thead>
         <tbody className="text-sm text-black dark:text-white uppercase">
-          {(!coinDetails || isLoading) && (
-            <div className="text-primary">
-              <MutatingDots height="100" width="100" />
-            </div>
-          )}
-
           {coinDetails &&
-            !isLoading &&
             coinDetails.map((coin, index) => (
               <tr
                 key={coin._id}

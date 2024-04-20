@@ -25,7 +25,7 @@ const Page = () => {
   }
 
   if (status === "authenticated" && userId) {
-    console.log("USER ID:", userId);
+    // console.log("USER ID:", userId);
     return (
       <div className="w-full ">
         <h2 className="text-3xl font-bold text-left text-primary mb-3">
