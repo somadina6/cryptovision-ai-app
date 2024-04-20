@@ -115,7 +115,7 @@ const Table: FC<{ id: string }> = ({ id }) => {
   };
 
   const fetchUserTokens = async () => {
-    console.log(userId);
+    console.log("User Id used to fetch:", userId);
     console.log("about to fetch..");
     if (!userId) return undefined;
     console.log("fetching..");
@@ -255,20 +255,8 @@ const Table: FC<{ id: string }> = ({ id }) => {
 
     if (id) {
       setUserId(id);
-      // const fetchData = async () => {
-      //   try {
-      //     const tokens = await fetchUserTokens();
-
-      //     if (tokens) {
-      //       mutate("getUserTokens", tokens); // Update SWR cache
-      //     }
-      //   } catch (error) {
-      //     console.error("Error fetching user tokens:", error);
-      //   }
-      // };
-      // fetchData();
+      mutate("getUserTokens");
     }
-    mutate("getUserTokens");
     return () => {};
   }, [id]);
 
