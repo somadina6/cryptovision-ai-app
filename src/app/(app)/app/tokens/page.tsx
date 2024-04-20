@@ -1,22 +1,23 @@
 "use client";
 import Balance from "@/components/Balance/Balance";
 import Table from "@/components/Table/Table";
-import { TokenData, addToken, getTokens } from "@/utils/apis/apis";
-import axios from "axios";
-import { getSession, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { MutatingDots } from "react-loader-spinner";
-import useSWR from "swr";
 
 const Page = () => {
   const { data: session, status } = useSession();
-  const userId = session?.user.id;
 
   if (status == "loading") {
-    return <MutatingDots height="100" width="100" />;
+    return (
+      <>
+        <MutatingDots height="100" width="100" />
+        <p>{status}...</p>
+      </>
+    );
   }
 
-  if (status == "authenticated" && userId !== undefined) {
+  if (status == "authenticated") {
+    const userId = session.user.id;
     console.log("USER ID:", userId);
     return (
       <div className="w-full ">
@@ -42,12 +43,6 @@ const Page = () => {
           </div>
         </section>
       </div>
-    );
-  } else {
-    return (
-      <>
-        <MutatingDots height="100" width="100" />
-      </>
     );
   }
 };
