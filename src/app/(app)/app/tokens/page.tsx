@@ -5,6 +5,7 @@ import { TokenData, addToken, getTokens } from "@/utils/apis/apis";
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { MutatingDots } from "react-loader-spinner";
 import useSWR from "swr";
 
 const Page = () => {
@@ -37,6 +38,8 @@ const Page = () => {
         </section>
       </div>
     );
+  } else if (status == "loading") {
+    return <MutatingDots height="100" width="100" />;
   }
 };
 
