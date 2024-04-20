@@ -43,6 +43,12 @@ const Page = () => {
         </section>
       </div>
     );
+  } else {
+    return (
+      <>
+        <MutatingDots height="100" width="100" />
+      </>
+    );
   }
 };
 
