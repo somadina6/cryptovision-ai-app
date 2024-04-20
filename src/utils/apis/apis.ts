@@ -14,7 +14,7 @@ export async function getTokens(userId: string) {
 
 export type TokenData = {
   _id?: string;
-  userId: string;
+  userId: string | undefined;
   coinId: string;
   name: string;
   symbol: string;

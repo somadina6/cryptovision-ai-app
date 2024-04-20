@@ -36,12 +36,14 @@ export type CoingeckoResult = {
   market_cap_rank: number;
 };
 
-const Table: FC<{ userId: string }> = ({ userId }) => {
+const Table: FC<{ id: string }> = ({ id }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   // const { userId } = useContext(UserContext)
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [userId, setUserId] = useState<string>();
+  const [toastId, setToastId] = useState("");
 
   const inputStyles =
     "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
@@ -115,7 +117,11 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   };
 
   const fetchUserTokens = async () => {
-    if (!userId) return;
+    console.log(userId);
+    console.log("about to fetch..");
+    if (!userId) return undefined;
+    console.log("fetching..");
+
     try {
       const tokens = await getTokens(userId);
 
@@ -213,7 +219,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
         {
           data: { userId, updatedUserTokens },
         },
-        { timeout: 3000 }
+        { timeout: 20000 }
       );
 
       if (data.success) {
@@ -232,11 +238,11 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     }
   };
 
-  let {
+  const {
     data: coinDetails,
     error: fetchingError,
     isLoading,
-  } = useSWR("getUserTokens", fetchUserTokens, { revalidateOnFocus: true });
+  } = useSWR("getUserTokens", fetchUserTokens);
 
   useSWR("updatePricesAndSaveToDB", updatePricesAndSaveToDB, {
     revalidateOnFocus: false,
@@ -247,22 +253,28 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   });
 
   useEffect(() => {
-    // Fetch initial user tokens
-    if (userId) {
-      const fetchData = async () => {
-        try {
-          const tokens = await fetchUserTokens();
-          if (tokens) {
-            mutate("getUserTokens", tokens); // Update SWR cache
-          }
-        } catch (error) {
-          console.error("Error fetching user tokens:", error);
-        }
-      };
-      fetchData();
+    console.log("USER ID received:", id);
+
+    if (id) {
+      setUserId(id);
+      // const fetchData = async () => {
+      //   try {
+      //     const tokens = await fetchUserTokens();
+
+      //     if (tokens) {
+      //       mutate("getUserTokens", tokens); // Update SWR cache
+      //     }
+      //   } catch (error) {
+      //     console.error("Error fetching user tokens:", error);
+      //   }
+      // };
+      // fetchData();
     }
+    mutate("getUserTokens");
     return () => {};
   });
+
+  if (!coinDetails) return <MutatingDots height="100" width="100" />;
 
   return (
     <div className="md:w-full ">
@@ -280,7 +292,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
           </tr>
         </thead>
         <tbody className="text-sm text-black dark:text-white uppercase">
-          {isLoading && (
+          {(!coinDetails || isLoading) && (
             <div className="text-primary">
               <MutatingDots height="100" width="100" />
             </div>
@@ -288,7 +300,6 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
 
           {coinDetails &&
             !isLoading &&
-            !fetchingError &&
             coinDetails.map((coin, index) => (
               <tr
                 key={coin._id}
