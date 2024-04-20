@@ -19,8 +19,6 @@ const Page = () => {
         </div>
       </div>
     );
-  } else {
-    router.push("/auth/login");
   }
 };
 
