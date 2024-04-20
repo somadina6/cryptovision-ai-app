@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import { CoingeckoResult } from "./Table";
 import Image from "next/image";
 import { TokenData, formatPrice } from "@/utils/apis/apis";
 import { IoIosCloseCircleOutline } from "react-icons/io";
@@ -7,6 +6,7 @@ import axios from "axios";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import Backdrop from "../Backdrop/Backdrop";
 import { MutatingDots } from "react-loader-spinner";
+import { CoingeckoResult } from "@/types/types";
 
 type Props = {
   search: CoingeckoResult[] | undefined;
