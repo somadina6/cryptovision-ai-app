@@ -264,9 +264,9 @@ const Table: FC<{ id: string }> = ({ id }) => {
   if (isLoading) return <MutatingDots height="100" width="100" />;
 
   return (
-    <div className="md:w-full ">
+    <div className="md:w-full overflow-scroll">
       <table className="w-full text-sm text-left text-gray-500 ">
-        <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200">
+        <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200 w-full">
           <tr>
             <th className="px-6 py-3 w-5/12">Coin</th>
             <th className="px-6 py-3">Symbol</th>

@@ -10,6 +10,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Logo from "./Logo";
 import Image from "next/image";
 import { CgProfile } from "react-icons/cg";
+import SettingsMenu from "./SettingsMenu";
 
 const Header = () => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
@@ -21,8 +22,6 @@ const Header = () => {
     <section className="h-16 flex px-4 md:px-12 py-4 items-center justify-between shadow-sm sticky top-0 z-50 bg-white dark:bg-slate-950">
       <Logo />
 
-      <GiHamburgerMenu className="md:hidden cursor-pointer text-primary text-lg" />
-
       {status === "unauthenticated" && (
         <div className="hidden md:flex gap-2 items-center">
           <ButtonPrimary href="/auth/login" text="Login" />
@@ -31,8 +30,15 @@ const Header = () => {
       )}
       {session && status === "authenticated" && (
         <div>
+          <div className="md:hidden cursor-pointer text-lg">
+            <GiHamburgerMenu
+              onClick={() => setShowSettings((prev) => !prev)}
+              className="text-primary "
+            />
+            {showSettings && <SettingsMenu setShowSettings={setShowSettings} />}
+          </div>
           <div
-            className="flex items-center justify-center cursor-pointer h-6 hover:opacity-80 flex-col"
+            className="hidden md:flex items-center justify-center cursor-pointer h-6 hover:opacity-80 flex-col"
             onClick={() => setShowSettings((prev) => !prev)}
           >
             {session.user?.image ? (
@@ -56,19 +62,7 @@ const Header = () => {
               </div>
             )}
 
-            {showSettings && (
-              <div className="border absolute top-14 py-1 px-2 rounded">
-                <ul>
-                  <li className="p-1 hover:text-primary">Profile</li>
-                  <li
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className="hover:text-red-500  p-1 rounded-md"
-                  >
-                    Logout
-                  </li>
-                </ul>
-              </div>
-            )}
+            {showSettings && <SettingsMenu setShowSettings={setShowSettings} />}
           </div>
         </div>
       )}
