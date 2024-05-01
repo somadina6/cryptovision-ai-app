@@ -4,27 +4,24 @@ import { useSession } from "next-auth/react";
 import { MutatingDots } from "react-loader-spinner";
 import Balance from "@/components/Balance/Balance";
 import Table from "@/components/Table/Table";
+import { useAppSelector } from "@/store/hooks";
 
 const Page = () => {
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<string | null>(null); // State to hold userId
+  // const { status } = useSession();
 
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.id) {
-      setUserId(session.user.id); // Set userId from session
-    }
-  }, [status, session]);
+  const userId = useAppSelector((state) => state.user.userId);
+  const status = useAppSelector((state) => state.user.status);
 
   if (status === "loading") {
     return (
-      <>
+      <div className="flex gap-2">
         <MutatingDots height="100" width="100" />
         <p>{status}...</p>
-      </>
+      </div>
     );
   }
 
-  if (status === "authenticated" && userId) {
+  if (userId) {
     // console.log("USER ID:", userId);
     return (
       <div className="w-full ">
@@ -42,7 +39,7 @@ const Page = () => {
 
         <section className="sm:flex sm:flex-col-reverse md:grid grid-cols-12 gap-4">
           <div className="md:col-span-9 block">
-            <Table id={userId} />
+            <Table userId={userId} />
           </div>
 
           <div className="md:col-span-3 ">
@@ -54,7 +51,7 @@ const Page = () => {
   }
 
   // Handle other states or unauthenticated status
-  console.log(session);
+
   return (
     <div>
       <p>You are not authenticated</p>

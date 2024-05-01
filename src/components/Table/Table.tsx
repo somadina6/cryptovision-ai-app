@@ -17,23 +17,24 @@ import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
 import Backdrop from "../Backdrop/Backdrop";
 import axios from "axios";
-import { truncate } from "fs";
 import { CoingeckoResult } from "@/types/types";
+import { useAppDispatch } from "@/store/hooks";
+import { setSum } from "@/store/features/tokenSlice";
 
 type Props = {
   coinDetails: TokenData[] | undefined;
 };
 
-const Table: FC<{ id: string }> = ({ id }) => {
+const inputStyles =
+  "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
+
+const Table: FC<{ userId: string }> = ({ userId }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [userId, setUserId] = useState<string>();
   const [isUserTokensLoading, setUserTokensLoading] = useState(true);
-
-  const inputStyles =
-    "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
+  const dispatch = useAppDispatch();
 
   const initTokenDetail: TokenData = {
     userId,
@@ -49,6 +50,13 @@ const Table: FC<{ id: string }> = ({ id }) => {
     useState<TokenData>(initTokenDetail);
 
   const resetFields = async () => setTokenToAddDetails(initTokenDetail);
+
+  const updateUserTokensState = async () => {
+    if (coinDetails) {
+      await mutate("getUserTokens");
+      dispatch(setSum(coinDetails));
+    }
+  };
 
   const fetchSearchResults = async (query: any) => {
     setSearchLoading(true);
@@ -78,7 +86,7 @@ const Table: FC<{ id: string }> = ({ id }) => {
         const res = await deleteToken(id);
         if (res.acknowledged === true) {
           toast.success("Deleted successfully", { id: loadingId });
-          mutate("getUserTokens");
+          updateUserTokensState();
         } else {
           toast.error("Failed to delete", { id: loadingId });
         }
@@ -96,7 +104,7 @@ const Table: FC<{ id: string }> = ({ id }) => {
       });
       toast.success("Added successfully", { id: loadingId });
       resetFields();
-      mutate("getUserTokens");
+      updateUserTokensState();
       return newTokenAdded;
     } catch (error) {
       toast.error("Failed to add", { id: loadingId });
@@ -104,14 +112,8 @@ const Table: FC<{ id: string }> = ({ id }) => {
   };
 
   const fetchUserTokens = async () => {
-    console.log("User Id used to fetch:", userId);
-    console.log("about to fetch..");
-    if (!userId) return undefined;
-    console.log("fetching..");
-
     try {
       const tokens = await getTokens(userId);
-      console.log("fetched success!");
       setUserTokensLoading(false);
       return tokens;
     } catch (error) {
@@ -211,7 +213,7 @@ const Table: FC<{ id: string }> = ({ id }) => {
       );
 
       if (data.success) {
-        mutate("getUserTokens");
+        updateUserTokensState();
         toast.success("Prices Updated", { id: toastId });
       } else {
         toast.error("Failed to fetch prices", { id: toastId });
@@ -226,11 +228,11 @@ const Table: FC<{ id: string }> = ({ id }) => {
     }
   };
 
-  const {
-    data: coinDetails,
-    error: fetchingError,
-    isLoading,
-  } = useSWR("getUserTokens", fetchUserTokens, { revalidateIfStale: true });
+  const { data: coinDetails, isLoading } = useSWR(
+    "getUserTokens",
+    fetchUserTokens,
+    { revalidateIfStale: true }
+  );
 
   useSWR("updatePricesAndSaveToDB", updatePricesAndSaveToDB, {
     revalidateOnFocus: false,
@@ -240,26 +242,9 @@ const Table: FC<{ id: string }> = ({ id }) => {
   });
 
   useEffect(() => {
-    console.log("USER ID received initial:", id);
-
-    if (id) {
-      setUserId(id);
-      console.log("USER ID received:", id);
-    }
-    return () => {};
-  }, [id]);
-
-  useEffect(() => {
-    if (userId) {
-      console.log("user id changed!");
-      fetchUserTokens();
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    console.log("isUserTokensLoading:", isUserTokensLoading);
-    mutate("getUserTokens");
-  }, [isUserTokensLoading]);
+    console.log("CoinDetails changed!");
+    updateUserTokensState();
+  }, [coinDetails]);
 
   if (isLoading) return <MutatingDots height="100" width="100" />;
 
@@ -382,6 +367,9 @@ const Table: FC<{ id: string }> = ({ id }) => {
                 step="any"
                 value={tokenToAddDetails.amount}
                 disabled={!tokenToAddDetails.price}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") addUserTokens();
+                }}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const parsedValue = parseFloat(inputValue);

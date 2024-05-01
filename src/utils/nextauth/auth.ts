@@ -76,15 +76,18 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       const signInDate = new Date();
+      console.log("Just Signed In At", signInDate.toLocaleDateString());
       await connect();
       const updatedUser = await userModel.findOneAndUpdate(
         { email: user.email as string },
         { lastSignIn: signInDate }
       );
+
       return true;
     },
     async session({ session, token, user }) {
       await connect();
+      console.log("Just Had a Session");
       const userObject = await userModel.findOne<IUser>({
         email: token.email as string,
       });

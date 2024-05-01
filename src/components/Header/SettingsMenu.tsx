@@ -6,12 +6,22 @@ import toast from "react-hot-toast";
 type Props = {
   setShowSettings: Dispatch<React.SetStateAction<boolean>>;
   showSettings?: boolean;
+  userRef: React.RefObject<HTMLDivElement>;
 };
-const SettingsMenu: FC<Props> = ({ showSettings, setShowSettings }) => {
+const SettingsMenu: FC<Props> = ({
+  showSettings,
+  setShowSettings,
+  userRef,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback((event: any) => {
-    if (ref.current && !ref.current.contains(event.target as Node)) {
+    if (
+      ref.current &&
+      !ref.current.contains(event.target as Node) &&
+      userRef.current &&
+      !userRef.current.contains(event.target as Node)
+    ) {
       setShowSettings(false);
     }
   }, []);
