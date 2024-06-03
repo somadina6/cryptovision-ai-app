@@ -9,9 +9,5 @@ export const store = configureStore({
   },
 });
 
-store.subscribe(() => {
-  console.log("Sum In Store Updated:", store.getState().token.sum);
-});
-
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

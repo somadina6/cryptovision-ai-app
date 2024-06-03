@@ -87,7 +87,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token, user }) {
       await connect();
-      console.log("Just Had a Session");
+      // console.log("Just Had a Session");
       const userObject = await userModel.findOne<IUser>({
         email: token.email as string,
       });

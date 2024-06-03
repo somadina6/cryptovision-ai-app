@@ -251,7 +251,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   return (
     <div className="md:w-full overflow-scroll">
       <table className="w-full text-sm text-left text-gray-500 ">
-        <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200 w-full">
+        <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200 w-full ">
           <tr>
             <th className="px-6 py-3 w-5/12">Coin</th>
             <th className="px-6 py-3">Symbol</th>
@@ -302,7 +302,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
 
                 <td className="px-6 py-4">{coin.amount}</td>
                 <td className="px-6 py-4">
-                  {formatPrice(coin.amount * coin.price)}
+                  {formatPrice(coin.amount * coin.price, "USD")}
                 </td>
                 <td
                   className="px-6  hover:text-red-500 "
@@ -382,7 +382,10 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
               />
             </td>
             <td className="px-6 py-4">
-              {formatPrice(tokenToAddDetails.amount * tokenToAddDetails.price)}
+              {formatPrice(
+                tokenToAddDetails.amount * tokenToAddDetails.price,
+                "USD"
+              )}
             </td>
             <td className="px-6 py-4 hover:text-primary">
               <button

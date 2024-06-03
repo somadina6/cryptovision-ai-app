@@ -46,13 +46,43 @@ export async function deleteToken(tokenId: string) {
     throw new Error(error);
   }
 }
-export function formatPrice(price: number): string {
-  // Format number to USD locale
+export function formatPrice(price: number, currency: string): string {
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currency,
     minimumFractionDigits: 2,
   }).format(price);
 
   return formattedPrice;
 }
+
+export const fetchExchangeRates = async () => {
+  const ecburl = process.env.NEXT_PUBLIC_ECB_API_URL;
+  if (!ecburl) throw new Error("Fetch URL Not Available");
+
+  try {
+    const response = await fetch(ecburl);
+    if (!response) throw new Error("No Response from CUrrency Exchange API");
+
+    const data = await response.json();
+
+    return data.usd;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const convertCurrency = async (
+  amount: number,
+  toCurrency: string
+): Promise<number | undefined> => {
+  // if (toCurrency === "USD") return amount;
+  try {
+    const rates = await fetchExchangeRates();
+    const rate: number = rates[toCurrency.toLowerCase()];
+    return amount * rate;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+};

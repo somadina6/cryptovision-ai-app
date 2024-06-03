@@ -43,7 +43,9 @@ const Page = () => {
           </div>
 
           <div className="md:col-span-3 ">
-            <Balance />
+            <div className="sticky top-16">
+              <Balance />
+            </div>
           </div>
         </section>
       </div>

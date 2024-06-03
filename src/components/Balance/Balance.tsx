@@ -1,23 +1,87 @@
-import { formatPrice } from "@/utils/apis/apis";
+"use client";
+import { convertCurrency, formatPrice } from "@/utils/apis/apis"; // Adjust the import path as needed
 import { mutate } from "swr";
 import { FiRefreshCw } from "react-icons/fi";
 import { useAppSelector } from "@/store/hooks";
+import { useEffect, useState } from "react";
+import "./Balance.css"; // Import the CSS file
 
-const Balance = () => {
+interface Currency {
+  code: string;
+  label: string;
+}
+
+const currencies: Currency[] = [
+  { code: "USD", label: "US Dollar" },
+  { code: "CAD", label: "Canadian Dollar" },
+  { code: "GBP", label: "British Pound" },
+  { code: "NGN", label: "Nigerian Naira" },
+  { code: "EUR", label: "Euro" },
+];
+
+const Balance: React.FC = () => {
+  const [balance, setBalance] = useState<string>("");
+  const [currency, setCurrency] = useState<string>(currencies[0].code);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
   const sum = useAppSelector((state) => state.token.sum);
 
+  useEffect(() => {
+    const fetchConvertedBalance = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const convertedBalance = await convertCurrency(sum, currency);
+        if (convertedBalance) {
+          setBalance(formatPrice(convertedBalance, currency));
+        }
+      } catch (err) {
+        console.log(err);
+        setError("Failed to fetch conversion rate");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConvertedBalance();
+  }, [sum, currency]);
+
+  const handleCurrencyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setCurrency(event.target.value);
+  };
+
   return (
-    <div className="h-32 text-center w-full rounded-lg flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md px-2  min-w-16">
-      <div className="text-4xl font-bold w-full">
-        {sum !== 0 ? formatPrice(sum) : ""}
-      </div>
+    <div className="balance-container">
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <div className="balance-value">{balance}</div>
+      )}
+
+      <select
+        className="currency-dropdown"
+        value={currency}
+        onChange={handleCurrencyChange}
+      >
+        {currencies.map((currency) => (
+          <option key={currency.code} value={currency.code}>
+            {currency.label}
+          </option>
+        ))}
+      </select>
+
       <button
-        className="mt-4 px-6 py-2 bg-white text-blue-500 rounded-full hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+        className="refresh-button"
         onClick={() => {
           mutate("updatePricesAndSaveToDB");
         }}
       >
-        <FiRefreshCw className="w-6 h-6 mr-2 inline-block" />
+        <FiRefreshCw className="refresh-icon" />
         Refresh
       </button>
     </div>
