@@ -12,11 +12,11 @@ interface Currency {
 }
 
 const currencies: Currency[] = [
-  { code: "USD", label: "US Dollar" },
-  { code: "CAD", label: "Canadian Dollar" },
-  { code: "GBP", label: "British Pound" },
-  { code: "NGN", label: "Nigerian Naira" },
-  { code: "EUR", label: "Euro" },
+  { code: "USD", label: "USD" },
+  { code: "CAD", label: "CAD" },
+  { code: "GBP", label: "GBP" },
+  { code: "NGN", label: "NGN" },
+  { code: "EUR", label: "EUR" },
 ];
 
 const Balance: React.FC = () => {
@@ -54,7 +54,30 @@ const Balance: React.FC = () => {
   };
 
   return (
-    <div className="balance-container">
+    <div className="balance-container bg-primary">
+      <div className="flex justify-between w-full">
+        <select
+          className="currency-dropdown"
+          value={currency}
+          onChange={handleCurrencyChange}
+        >
+          {currencies.map((currency) => (
+            <option key={currency.code} value={currency.code}>
+              {currency.label}
+            </option>
+          ))}
+        </select>
+
+        <button
+          className="refresh-button"
+          onClick={() => {
+            mutate("updatePricesAndSaveToDB");
+          }}
+        >
+          <FiRefreshCw className="refresh-icon" />
+        </button>
+      </div>
+
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
@@ -62,28 +85,6 @@ const Balance: React.FC = () => {
       ) : (
         <div className="balance-value">{balance}</div>
       )}
-
-      <select
-        className="currency-dropdown"
-        value={currency}
-        onChange={handleCurrencyChange}
-      >
-        {currencies.map((currency) => (
-          <option key={currency.code} value={currency.code}>
-            {currency.label}
-          </option>
-        ))}
-      </select>
-
-      <button
-        className="refresh-button"
-        onClick={() => {
-          mutate("updatePricesAndSaveToDB");
-        }}
-      >
-        <FiRefreshCw className="refresh-icon" />
-        Refresh
-      </button>
     </div>
   );
 };

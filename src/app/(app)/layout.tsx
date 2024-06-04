@@ -36,7 +36,7 @@ export default function RootLayout({
               <ThemeProvider>
                 <Toast />
                 <Header />
-                <div className="w-screen flex">
+                <div className="sm:w-4/5 md:w-screen flex">
                   <SideBar />
                   <div
                     id="mainbar"

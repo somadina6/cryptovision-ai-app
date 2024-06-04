@@ -2,23 +2,16 @@
 
 /* Container styles */
 .balance-container {
-  /* height: 8rem; */
   text-align: center;
   width: 100%; /* equivalent to w-full */
   border-radius: 0.5rem; /* equivalent to rounded-lg */
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    to right,
-    #4299e1,
-    #2b6cb0
-  ); /* equivalent to bg-gradient-to-r from-blue-500 to-blue-700 */
-  color: white; /* equivalent to text-white */
+  color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* equivalent to shadow-md */
-  padding: 0.5rem;
-  min-width: 4rem; /* equivalent to min-w-16 */
+  padding: 0.5rem 1rem;
+  min-width: 200px;
 }
 
 /* Balance text styles */
@@ -30,47 +23,32 @@
 
 /* Button styles */
 .refresh-button {
-  margin-top: 0.25rem;
-  padding: 0.5rem 1.5rem;
-  background-color: white; /* equivalent to bg-white */
-  color: #4299e1; /* equivalent to text-blue-500 */
-  border-radius: 9999px; /* equivalent to rounded-full */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.3s;
   outline: none; /* equivalent to focus:outline-none */
-  width: 80%;
 }
 
-.refresh-button:hover {
-  background-color: #ebf8ff; /* equivalent to hover:bg-blue-100 */
-}
-
-.refresh-button:focus {
-  box-shadow: 0 0 0 2px #4299e1; /* equivalent to focus:ring-2 focus:ring-blue-500 */
+.refresh-icon:hover {
+  color: black;
 }
 
 .refresh-icon {
-  width: 1.5rem; /* equivalent to w-6 */
-  height: 1.5rem; /* equivalent to h-6 */
-  margin-right: 0.5rem; /* equivalent to mr-2 */
-  display: inline-block;
   vertical-align: middle;
+  color: #fff;
 }
 
 /* Dropdown styles */
 .currency-dropdown {
   margin-top: 0.25rem; /* equivalent to mt-4 */
-  padding: 0.5rem; /* equivalent to py-2 px-2 */
-  background-color: white; /* equivalent to bg-white */
-  color: #4299e1; /* equivalent to text-blue-500 */
-  border: 1px solid #4299e1; /* equivalent to border-blue-500 */
-  border-radius: 0.5rem; /* equivalent to rounded */
+  padding: 1px;
+  color: #fff; /* equivalent to text-blue-500 */
+  border-radius: 0.5rem;
   cursor: pointer;
   outline: none; /* equivalent to focus:outline-none */
-  width: 80%; /* equivalent to w-full */
+  width: 60px; /* equivalent to w-full */
   text-align: center; /* center text */
-}
-
-.currency-dropdown:focus {
-  box-shadow: 0 0 0 2px #4299e1; /* equivalent to focus:ring-2 focus:ring-blue-500 */
+  background: transparent;
 }

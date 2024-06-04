@@ -42,8 +42,8 @@ const Page = () => {
             <Table userId={userId} />
           </div>
 
-          <div className="md:col-span-3 ">
-            <div className="sticky top-16">
+          <div className="md:col-span-3 min-w-[204px]">
+            <div className="sticky top-16 min-w-[204px]">
               <Balance />
             </div>
           </div>
