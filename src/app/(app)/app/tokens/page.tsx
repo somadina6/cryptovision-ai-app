@@ -29,21 +29,19 @@ const Page = () => {
           Tokens
         </h2>
         <section className="w-5/6 ">
-          <div>
-            <p className="text-sm text-gray-700 dark:text-white mb-2">
-              This page displays a table of user tokens, including their name,
-              symbol, real-time price, and amount.
-            </p>
-          </div>
+          <p className="text-sm text-gray-700 dark:text-white mb-2">
+            This page displays a table of user tokens, including their name,
+            symbol, real-time price, and amount.
+          </p>
         </section>
 
-        <section className="sm:flex sm:flex-col-reverse md:grid grid-cols-12 gap-4">
-          <div className="md:col-span-9 block">
+        <section className="flex flex-col-reverse md:grid md:grid-cols-[1fr_200px] gap-4 ">
+          <div id="first-col" className="block overflow-x-auto">
             <Table userId={userId} />
           </div>
 
-          <div className="md:col-span-3 min-w-[204px]">
-            <div className="sticky top-16 min-w-[204px]">
+          <div id="second-col" className="">
+            <div className="sticky top-28">
               <Balance />
             </div>
           </div>

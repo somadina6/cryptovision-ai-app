@@ -32,6 +32,10 @@ const userSchema = new Schema(
     image: {
       type: String,
     },
+    preffered_currency: {
+      type: String,
+      default: "USD",
+    },
     lastSignIn: {
       type: Date,
     },

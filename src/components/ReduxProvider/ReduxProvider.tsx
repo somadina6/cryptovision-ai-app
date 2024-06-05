@@ -42,7 +42,7 @@ const UserComp = () => {
       }
     };
     userStateCheck();
-  }, [status, data]);
+  }, [status, data, dispatch]);
 
   if (status == "unauthenticated") {
     router.push("/auth/login");

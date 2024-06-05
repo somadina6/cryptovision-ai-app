@@ -15,16 +15,19 @@ const SettingsMenu: FC<Props> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const handleClickOutside = useCallback((event: any) => {
-    if (
-      ref.current &&
-      !ref.current.contains(event.target as Node) &&
-      userRef.current &&
-      !userRef.current.contains(event.target as Node)
-    ) {
-      setShowSettings(false);
-    }
-  }, []);
+  const handleClickOutside = useCallback(
+    (event: any) => {
+      if (
+        ref.current &&
+        !ref.current.contains(event.target as Node) &&
+        userRef.current &&
+        !userRef.current.contains(event.target as Node)
+      ) {
+        setShowSettings(false);
+      }
+    },
+    [userRef, setShowSettings, ref]
+  );
 
   useEffect(() => {
     // Add click outside event listener when the component mounts

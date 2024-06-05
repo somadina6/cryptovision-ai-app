@@ -79,9 +79,9 @@ const Balance: React.FC = () => {
       </div>
 
       {loading ? (
-        <div>Loading...</div>
+        <div className="spinner"></div>
       ) : error ? (
-        <div>{error}</div>
+        <div className="error">{error}</div>
       ) : (
         <div className="balance-value">{balance}</div>
       )}

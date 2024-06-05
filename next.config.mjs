@@ -9,6 +9,7 @@ const nextConfig = {
       "images.unsplash.com",
       "plus.unsplash.com",
       "assets.coingecko.com",
+      "coin-images.coingecko.com",
     ],
   },
 };

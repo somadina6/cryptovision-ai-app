@@ -33,7 +33,8 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isUserTokensLoading, setUserTokensLoading] = useState(true);
+  const [isUserTokensLoading, setUserTokensLoading] = useState(false);
+  const [firstTime, setFirstTime] = useState(true);
   const dispatch = useAppDispatch();
 
   const initTokenDetail: TokenData = {
@@ -49,16 +50,10 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   const [tokenToAddDetails, setTokenToAddDetails] =
     useState<TokenData>(initTokenDetail);
 
-  const resetFields = async () => setTokenToAddDetails(initTokenDetail);
-
-  const updateUserTokensState = async () => {
-    if (coinDetails) {
-      await mutate("getUserTokens");
-      dispatch(setSum(coinDetails));
-    }
-  };
+  const resetFields = () => setTokenToAddDetails(initTokenDetail);
 
   const fetchSearchResults = async (query: any) => {
+    if (searchLoading) return;
     setSearchLoading(true);
     try {
       const response = await axios.get(
@@ -69,12 +64,12 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       const filteredResults = data.filter((coin) =>
         coin.name.toLowerCase().includes(query.toLowerCase())
       );
-      //   console.log(filteredResults);
 
       setSearchResults(filteredResults);
-      setSearchLoading(false);
     } catch (error) {
       console.error("Error fetching search results:", error);
+    } finally {
+      setSearchLoading(false);
     }
   };
 
@@ -86,7 +81,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
         const res = await deleteToken(id);
         if (res.acknowledged === true) {
           toast.success("Deleted successfully", { id: loadingId });
-          updateUserTokensState();
+          await mutate("fetchUserTokens");
         } else {
           toast.error("Failed to delete", { id: loadingId });
         }
@@ -96,7 +91,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
 
   const addUserTokens = async () => {
     const loadingId = toast.loading("Adding Token");
-    if (!userId) return;
+
     try {
       const newTokenAdded = await addToken({
         ...tokenToAddDetails,
@@ -104,7 +99,8 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       });
       toast.success("Added successfully", { id: loadingId });
       resetFields();
-      updateUserTokensState();
+      await mutate("fetchUserTokens");
+
       return newTokenAdded;
     } catch (error) {
       toast.error("Failed to add", { id: loadingId });
@@ -112,13 +108,18 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   };
 
   const fetchUserTokens = async () => {
+    if (isUserTokensLoading) return;
+    setUserTokensLoading(true);
+
     try {
       const tokens = await getTokens(userId);
-      setUserTokensLoading(false);
+      dispatch(setSum(tokens));
       return tokens;
     } catch (error) {
       console.error("Error fetching user tokens:", error);
       throw error;
+    } finally {
+      setUserTokensLoading(false);
     }
   };
 
@@ -182,10 +183,9 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   };
 
   const updatePricesAndSaveToDB = async () => {
-    if (isUpdating) {
-      return; // Exit early if an update is already in progress
-    }
-    setIsUpdating(true); // Set update status to true
+    if (isUserTokensLoading) return;
+
+    setUserTokensLoading(true); // Set update status to true
     const toastId = toast.loading("Fetching Prices");
     if (!coinDetails) {
       setIsUpdating(false);
@@ -213,7 +213,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       );
 
       if (data.success) {
-        updateUserTokensState();
+        await fetchUserTokens();
         toast.success("Prices Updated", { id: toastId });
       } else {
         toast.error("Failed to fetch prices", { id: toastId });
@@ -224,12 +224,12 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       toast.error("An error occurred while updating prices", { id: toastId });
       return null;
     } finally {
-      setIsUpdating(false);
+      setUserTokensLoading(false);
     }
   };
 
   const { data: coinDetails, isLoading } = useSWR(
-    "getUserTokens",
+    "fetchUserTokens",
     fetchUserTokens,
     { revalidateIfStale: true }
   );
@@ -242,17 +242,16 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   });
 
   useEffect(() => {
-    console.log("CoinDetails changed!");
-    updateUserTokensState();
+    mutate("fetchUserTokens");
   }, [coinDetails]);
 
   if (isLoading) return <MutatingDots height="100" width="100" />;
 
   return (
-    <div className="md:w-full overflow-scroll">
-      <table className="w-full text-sm text-left text-gray-500 ">
-        <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-200 w-full ">
-          <tr>
+    <div className="max-w-[340px] md:max-w-full  rounded-lg">
+      <table className="md:w-full text-sm text-left text-gray-500 ">
+        <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-600 w-full ">
+          <tr className="">
             <th className="px-6 py-3 w-5/12">Coin</th>
             <th className="px-6 py-3">Symbol</th>
             <th className="px-6 py-3">Price</th>
@@ -263,6 +262,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
             <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
+
         <tbody className="text-sm text-black dark:text-white uppercase">
           {coinDetails &&
             coinDetails.map((coin, index) => (

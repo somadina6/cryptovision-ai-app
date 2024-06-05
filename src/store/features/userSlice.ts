@@ -5,11 +5,13 @@ type UserState = {
   name?: string | null | undefined;
   image?: string | null | undefined;
   status: "authenticated" | "unauthenticated" | "loading";
+  preferred_currency: string;
 };
 
 const initialState: UserState = {
   userId: null,
   status: "unauthenticated",
+  preferred_currency: "USD",
 };
 
 export const userSlice = createSlice({
@@ -31,10 +33,18 @@ export const userSlice = createSlice({
     setUserName: (state, action: PayloadAction<string | null | undefined>) => {
       state.name = action.payload;
     },
+    setUserCurrency: (state, action: PayloadAction<string>) => {
+      state.preferred_currency = action.payload;
+    },
   },
 });
 
-export const { setUserId, setUserStatus, setUserImage, setUserName } =
-  userSlice.actions;
+export const {
+  setUserId,
+  setUserStatus,
+  setUserImage,
+  setUserName,
+  setUserCurrency,
+} = userSlice.actions;
 
 export default userSlice.reducer;
