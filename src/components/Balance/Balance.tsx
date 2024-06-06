@@ -53,6 +53,13 @@ const Balance: React.FC = () => {
     setCurrency(event.target.value);
   };
 
+  const getFontSizeClass = (balance: string) => {
+    const length = balance.length;
+    if (length > 10) return "balance-value-small";
+    if (length > 7) return "balance-value-medium";
+    return "balance-value-large";
+  };
+
   return (
     <div className="balance-container bg-primary">
       <div className="flex justify-between w-full">
@@ -83,7 +90,9 @@ const Balance: React.FC = () => {
       ) : error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="balance-value">{balance}</div>
+        <div className={`balance-value ${getFontSizeClass(balance)}`}>
+          {balance}
+        </div>
       )}
     </div>
   );

@@ -30,7 +30,7 @@ const Page = () => {
         </h2>
         <section className="w-5/6 ">
           <p className="text-sm text-gray-700 dark:text-white mb-2">
-            This page displays a table of user tokens, including their name,
+            This page displays a table of your tokens, including their name,
             symbol, real-time price, and amount.
           </p>
         </section>

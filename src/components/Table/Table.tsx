@@ -16,14 +16,11 @@ import useSWR, { mutate } from "swr";
 import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
 import Backdrop from "../Backdrop/Backdrop";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { CoingeckoResult } from "@/types/types";
-import { useAppDispatch } from "@/store/hooks";
-import { setSum } from "@/store/features/tokenSlice";
-
-type Props = {
-  coinDetails: TokenData[] | undefined;
-};
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setUserTokens } from "@/store/features/tokenSlice";
+import useSWRImmutable from "swr/immutable";
 
 const inputStyles =
   "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
@@ -32,9 +29,10 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [isUserTokensLoading, setUserTokensLoading] = useState(false);
-  const [firstTime, setFirstTime] = useState(true);
+
+  const coinDetails = useAppSelector((state) => state.token.userTokens);
+
   const dispatch = useAppDispatch();
 
   const initTokenDetail: TokenData = {
@@ -66,8 +64,10 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       );
 
       setSearchResults(filteredResults);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching search results:", error);
+      // toast.error("Error fetching search results:");
+      throw new Error(error);
     } finally {
       setSearchLoading(false);
     }
@@ -112,8 +112,9 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     setUserTokensLoading(true);
 
     try {
+      console.log("fetching from DB");
       const tokens = await getTokens(userId);
-      dispatch(setSum(tokens));
+      dispatch(setUserTokens(tokens));
       return tokens;
     } catch (error) {
       console.error("Error fetching user tokens:", error);
@@ -126,17 +127,22 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   const fetchRealTimePrices = async (tokens: TokenData[] | undefined) => {
     if (tokens) {
       const coinIds = tokens.map((token) => token.coinId).join(",");
-      const response = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price`,
-        {
-          params: {
-            vs_currencies: "usd",
-            ids: coinIds,
-          },
-        }
-      );
+      try {
+        const response = await axios.get(
+          `https://api.coingecko.com/api/v3/simple/price`,
+          {
+            params: {
+              vs_currencies: "usd",
+              ids: coinIds,
+            },
+          }
+        );
 
-      return response.data;
+        return response.data;
+      } catch (error: any) {
+        console.error(error);
+        throw new Error(error);
+      }
     }
   };
 
@@ -155,7 +161,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
           },
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching 24h price change:", error);
@@ -188,9 +194,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     setUserTokensLoading(true); // Set update status to true
     const toastId = toast.loading("Fetching Prices");
     if (!coinDetails) {
-      setIsUpdating(false);
       toast.remove(toastId);
-
       return;
     }
 
@@ -221,19 +225,14 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       return data;
     } catch (error) {
       console.log("Error updating prices:", error);
-      toast.error("An error occurred while updating prices", { id: toastId });
-      return null;
+
+      toast.error("Network Error. Try again later", { id: toastId });
     } finally {
       setUserTokensLoading(false);
     }
   };
 
-  const { data: coinDetails, isLoading } = useSWR(
-    "fetchUserTokens",
-    fetchUserTokens,
-    { revalidateIfStale: true }
-  );
-
+  const { isLoading } = useSWRImmutable("fetchUserTokens", fetchUserTokens);
   useSWR("updatePricesAndSaveToDB", updatePricesAndSaveToDB, {
     revalidateOnFocus: false,
     refreshInterval: 3 * 60000,
@@ -241,14 +240,10 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     revalidateIfStale: false,
   });
 
-  useEffect(() => {
-    mutate("fetchUserTokens");
-  }, [coinDetails]);
-
   if (isLoading) return <MutatingDots height="100" width="100" />;
 
   return (
-    <div className="max-w-[340px] md:max-w-full  rounded-lg">
+    <div className="max-w-[380px] md:max-w-full rounded-lg">
       <table className="md:w-full text-sm text-left text-gray-500 ">
         <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-600 w-full ">
           <tr className="">

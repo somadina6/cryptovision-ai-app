@@ -9,7 +9,6 @@ export async function GET(
   { params }: { params: { userId: string | undefined } }
 ) {
   const { userId } = params;
-  console.log("User ID is:", userId);
 
   if (
     !userId ||

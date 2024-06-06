@@ -1,5 +1,3 @@
-/* Balance.css */
-
 /* Container styles */
 .balance-container {
   text-align: center;
@@ -16,9 +14,20 @@
 
 /* Balance text styles */
 .balance-value {
-  font-size: 1.5rem; /* equivalent to text-4xl */
   font-weight: bold; /* equivalent to font-bold */
   width: 100%; /* equivalent to w-full */
+}
+
+.balance-value-large {
+  font-size: 1.5rem; /* equivalent to text-4xl */
+}
+
+.balance-value-medium {
+  font-size: 1.25rem; /* slightly smaller */
+}
+
+.balance-value-small {
+  font-size: 1rem; /* even smaller */
 }
 
 /* Button styles */
