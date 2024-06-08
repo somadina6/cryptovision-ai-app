@@ -33,9 +33,7 @@ const Balance: React.FC = () => {
         setLoading(true);
         setError(null);
         const convertedBalance = await convertCurrency(sum, currency);
-        if (convertedBalance) {
-          setBalance(formatPrice(convertedBalance, currency));
-        }
+        setBalance(formatPrice(convertedBalance, currency));
       } catch (err) {
         console.log(err);
         setError("Failed to fetch conversion rate");
@@ -43,7 +41,6 @@ const Balance: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchConvertedBalance();
   }, [sum, currency]);
 

@@ -7,6 +7,7 @@ import { RiArrowGoBackFill } from "react-icons/ri";
 import Backdrop from "../Backdrop/Backdrop";
 import { MutatingDots } from "react-loader-spinner";
 import { CoingeckoResult } from "@/types/types";
+import { coingeckoAxios } from "@/utils/axios/axios";
 
 type Props = {
   search: CoingeckoResult[] | undefined;
@@ -43,25 +44,26 @@ const SearchResultModal: FC<Props> = ({
     setIsTokenLoading(true);
     setShowTokenModal(true);
     try {
-      const { data } = await axios.get(
-        "https://api.coingecko.com/api/v3/coins/markets",
-        {
-          params: {
-            vs_currency: "usd",
-            ids: coinId,
-          },
-        }
-      );
-      console.log(data[0]);
-      setIsTokenLoading(false);
+      const { data } = await coingeckoAxios.get("coins/markets", {
+        params: {
+          vs_currency: "usd",
+          ids: coinId,
+        },
+      });
+
       setTokenDetailFromAPI(data[0]);
-      //   setShowTokenModal(false);
+
       return data;
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to Get Token Details");
+    } finally {
+      setIsTokenLoading(false);
+    }
   };
 
   return (
-    <div className="absolute top-1/4 left-1/3 w-[600px] z-20">
+    <div className="mx-auto my-auto w-[600px] z-20">
       {searchLoading && (
         <div className="absolute top-1/3 left-1/3">
           <MutatingDots height="100" width="100" />
@@ -71,14 +73,16 @@ const SearchResultModal: FC<Props> = ({
       {showModal && !searchLoading && (
         <div className=" mx-auto w-full border px-4 rounded-lg h-[400px] bg-white dark:bg-black ">
           <section className="w-full h-full">
-            <div className=" h-[12%] w-full">
-              <h3 className="text-primary text-2xl font-medium pt-3  text-center w-full">
-                Search Results
-              </h3>
+            <div className="h-[12%] w-full flex items-center justify-between">
+              <div className="flex-grow text-center">
+                <h3 className="text-primary text-2xl font-medium ">
+                  Search Results
+                </h3>
+              </div>
               <IoIosCloseCircleOutline
                 size={24}
                 color="red"
-                className="cursor-pointer absolute right-3 top-3"
+                className="cursor-pointer"
                 onClick={() => {
                   setShowModal(false);
                   setCurrentPage(1);

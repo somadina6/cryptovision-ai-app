@@ -3,12 +3,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type TokenState = {
   sum: number;
-  userTokens: TokenData[] | null;
+  userTokens: TokenData[];
 };
 
 const initialState: TokenState = {
   sum: 0,
-  userTokens: null,
+  userTokens: [],
 };
 
 export const tokenSlice = createSlice({

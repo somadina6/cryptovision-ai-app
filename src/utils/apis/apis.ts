@@ -75,7 +75,7 @@ export const fetchExchangeRates = async () => {
 export const convertCurrency = async (
   amount: number,
   toCurrency: string
-): Promise<number | undefined> => {
+): Promise<number> => {
   // if (toCurrency === "USD") return amount;
   try {
     const rates = await fetchExchangeRates();
@@ -83,6 +83,6 @@ export const convertCurrency = async (
     return amount * rate;
   } catch (error) {
     console.log(error);
-    return;
+    throw new Error("Failed To Convert");
   }
 };
