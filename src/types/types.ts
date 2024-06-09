@@ -6,6 +6,6 @@ export type CoingeckoResult = {
   image: string;
   ath?: number;
   low_24h?: number;
-  price_change_percentage_24h?: number;
+  price_change_percentage_24h: number;
   market_cap_rank: number;
 };
