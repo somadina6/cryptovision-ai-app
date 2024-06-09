@@ -45,6 +45,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     amount: 0,
     price: 0,
     image: "",
+    price_change_percentage_24h: 0,
   };
 
   const [tokenToAddDetails, setTokenToAddDetails] =
@@ -109,6 +110,8 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   };
 
   const fetchUserTokens = async () => {
+    console.log("fetching from DB");
+
     if (coinsLoading) return;
     try {
       setCoinsLoading(true);

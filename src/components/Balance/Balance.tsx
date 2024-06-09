@@ -21,11 +21,14 @@ const currencies: Currency[] = [
 
 const Balance: React.FC = () => {
   const [balance, setBalance] = useState<string>("");
+  const [balanceChange, setBalanceChange] = useState<string>("");
   const [currency, setCurrency] = useState<string>(currencies[0].code);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sum = useAppSelector((state) => state.token.sum);
+  const { sum, sum_change_24hr, change_24hr } = useAppSelector(
+    (state) => state.token
+  );
 
   useEffect(() => {
     const fetchConvertedBalance = async () => {
@@ -33,7 +36,12 @@ const Balance: React.FC = () => {
         setLoading(true);
         setError(null);
         const convertedBalance = await convertCurrency(sum, currency);
+        const convertedBalanceChange = await convertCurrency(
+          sum_change_24hr,
+          currency
+        );
         setBalance(formatPrice(convertedBalance, currency));
+        setBalanceChange(formatPrice(convertedBalanceChange, currency));
       } catch (err) {
         console.log(err);
         setError("Failed to fetch conversion rate");
@@ -88,7 +96,11 @@ const Balance: React.FC = () => {
         <div className="error">{error}</div>
       ) : (
         <div className={`balance-value ${getFontSizeClass(balance)}`}>
-          {balance}
+          <span>{balance}</span>
+          <p className={`block text-xs font-thin `}>
+            {balanceChange}
+            {"  "}({change_24hr.toFixed(2)}%)
+          </p>
         </div>
       )}
     </div>
