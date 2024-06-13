@@ -1,4 +1,4 @@
-import { TokenData } from "@/utils/apis/apis";
+import { TokenData } from "@/types/types";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type TokenState = {
