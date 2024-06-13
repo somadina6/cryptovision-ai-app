@@ -65,6 +65,8 @@ const Balance: React.FC = () => {
     return "balance-value-large";
   };
 
+  const sign = change_24hr > 0 ? "+" : "";
+
   return (
     <div className="balance-container bg-primary">
       <div className="flex justify-between w-full">
@@ -98,8 +100,10 @@ const Balance: React.FC = () => {
         <div className={`balance-value ${getFontSizeClass(balance)}`}>
           <span>{balance}</span>
           <p className={`block text-xs font-thin `}>
+            {sign}
             {balanceChange}
-            {"  "}({change_24hr.toFixed(2)}%)
+            {"  "}({sign}
+            {change_24hr.toFixed(2)}%)
           </p>
         </div>
       )}

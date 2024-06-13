@@ -9,3 +9,20 @@ export type CoingeckoResult = {
   price_change_percentage_24h: number;
   market_cap_rank: number;
 };
+
+export type TokenData = {
+  _id?: string;
+  userId: string | null;
+  coinId: string;
+  name: string;
+  symbol: string;
+  amount: number;
+  price: number;
+  image?: string;
+  price_change_percentage_24h: number;
+};
+
+export type CoingeckoResponse = {
+  usd: number;
+  usd_24h_change: number;
+};

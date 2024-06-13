@@ -1,27 +1,18 @@
 "use client";
 import "./styles.css";
-import { UserContext } from "@/context/userContext";
-import {
-  TokenData,
-  addToken,
-  deleteToken,
-  formatPrice,
-  getTokens,
-} from "@/utils/apis/apis";
+import { addToken, deleteToken, formatPrice } from "@/utils/apis/apis";
 import React, { FC, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { MutatingDots } from "react-loader-spinner";
 import { CiSearch, CiTrash } from "react-icons/ci";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
 import Backdrop from "../Backdrop/Backdrop";
-import axios, { AxiosError } from "axios";
-import { CoingeckoResult } from "@/types/types";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setUserTokens } from "@/store/features/tokenSlice";
-import useSWRImmutable from "swr/immutable";
+import { CoingeckoResult, TokenData } from "@/types/types";
+import { useAppSelector } from "@/store/hooks";
+
 import { coingeckoAxios } from "@/utils/axios/axios";
+import LoadUserData from "../LoadUserData/LoadUserData";
 
 const inputStyles =
   "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
@@ -30,12 +21,8 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
   const [searchLoading, setSearchLoading] = useState(false);
-  const [isUserTokensLoading, setUserTokensLoading] = useState(false);
-  const [coinsLoading, setCoinsLoading] = useState(false);
 
   const coinDetails = useAppSelector((state) => state.token.userTokens);
-
-  const dispatch = useAppDispatch();
 
   const initTokenDetail: TokenData = {
     userId,
@@ -88,7 +75,9 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
           toast.error("Failed to delete", { id: loadingId });
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Failed to delete", { id: loadingId });
+    }
   };
 
   const addUserTokens = async () => {
@@ -109,119 +98,9 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     }
   };
 
-  const fetchUserTokens = async () => {
-    console.log("fetching from DB");
-
-    if (coinsLoading) return;
-    try {
-      setCoinsLoading(true);
-      const tokens = await getTokens(userId);
-
-      dispatch(setUserTokens(tokens));
-      return tokens;
-    } catch (error) {
-      console.error("Error fetching user tokens:", error);
-      throw new Error("Error fetching user tokens");
-    } finally {
-      setCoinsLoading(false);
-    }
-  };
-
-  const fetchRealTimePrices = async (tokens: TokenData[]) => {
-    const coinIds = tokens.map((token) => token.coinId).join(",");
-    try {
-      const { data, status } = await coingeckoAxios.get("/simple/price", {
-        params: {
-          vs_currencies: "usd",
-          ids: coinIds,
-          include_24hr_change: "true",
-        },
-      });
-      console.log(data);
-      if (status == 200) return data;
-    } catch (error: any) {
-      console.error("Error fetching real time price:", error);
-      if (axios.isAxiosError(error)) {
-        console.log({
-          request_error: error.request,
-          response_status: error.response?.status,
-          response_text: error.response?.statusText,
-          response_data_error: error.response?.data,
-          error_message: error.message,
-          error_status_code: error.status,
-        });
-      }
-      throw new Error("Error fetching realtime price");
-    }
-  };
-
-  const updateTokens = async (tokens: TokenData[], coingeckoResponse: any) => {
-    return tokens.map((token) => {
-      const realTimePrice = coingeckoResponse[token.coinId]?.usd || 0;
-      const priceChange = coingeckoResponse[token.coinId]?.usd_24h_change || 0;
-
-      return {
-        ...token,
-        price: realTimePrice,
-        price_change_percentage_24h: priceChange,
-      };
-    });
-  };
-
-  const updatePricesAndSaveToDB = async () => {
-    if (isUserTokensLoading) return;
-    setUserTokensLoading(true); // Set update status to true
-
-    if (!coinDetails) {
-      throw new Error("CoinDetails is Undefined");
-    }
-    const toastId = toast.loading("Fetching Prices");
-
-    try {
-      const realTimePrices = await fetchRealTimePrices(coinDetails);
-
-      const updatedUserTokens = await updateTokens(coinDetails, realTimePrices);
-
-      const { data } = await axios.put(
-        "/api/token",
-        {
-          data: { userId, updatedUserTokens },
-        },
-        { timeout: 20000 }
-      );
-
-      if (data.success) {
-        await fetchUserTokens();
-        toast.success("Prices Updated", { id: toastId });
-      } else {
-        toast.error("Failed to fetch prices", { id: toastId });
-      }
-      return data;
-    } catch (error) {
-      console.log("Error updating prices:", error);
-
-      toast.error("Network Error. Try again later", { id: toastId });
-    } finally {
-      setUserTokensLoading(false);
-    }
-  };
-
-  const { isLoading } = useSWRImmutable("fetchUserTokens", fetchUserTokens);
-  useSWR(
-    coinDetails ? "updatePricesAndSaveToDB" : null,
-    updatePricesAndSaveToDB,
-    {
-      revalidateOnFocus: false,
-      refreshInterval: 3 * 60000,
-      errorRetryInterval: 0,
-      revalidateIfStale: false,
-    }
-  );
-
-  if (isLoading) return <MutatingDots height="100" width="100" />;
-
   return (
     <div className="max-w-[380px] md:max-w-full rounded-lg">
+      <LoadUserData />
       <table className="md:w-full text-sm text-left text-gray-500 ">
         <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-600 w-full ">
           <tr className="">
