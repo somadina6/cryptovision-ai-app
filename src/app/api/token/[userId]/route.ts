@@ -1,5 +1,5 @@
 import TokenModel from "@/models/token";
-import { TokenData } from "@/utils/apis/apis";
+import { TokenData } from "@/types/types";
 import connect from "@/utils/mongodb/db";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
