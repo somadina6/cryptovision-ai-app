@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import Image from "next/image";
-import { TokenData, formatPrice } from "@/utils/apis/apis";
+import { TokenData } from "@/types/types";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import axios from "axios";
 import { RiArrowGoBackFill } from "react-icons/ri";

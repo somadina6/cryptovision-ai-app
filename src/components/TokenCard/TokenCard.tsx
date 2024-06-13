@@ -1,6 +1,7 @@
 import React from "react";
 import { formatPrice } from "@/utils/apis/apis";
 import { TokenData } from "@/types/types";
+import Image from "next/image";
 
 type TokenCardProps = {
   token: TokenData;
@@ -16,7 +17,7 @@ const TokenCard = ({ token }: TokenCardProps) => {
 
   return (
     <div className="border p-4 rounded-lg shadow-md flex items-center">
-      <img src={image} alt={name} className="w-12 h-12 mr-4" />
+      <Image src={image ?? ""} alt={name} className="w-12 h-12 mr-4" />
       <div>
         <h5 className="font-bold text-lg">
           {name} ({symbol.toUpperCase()})

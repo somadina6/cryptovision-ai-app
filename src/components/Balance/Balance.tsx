@@ -50,7 +50,7 @@ const Balance: React.FC = () => {
       }
     };
     fetchConvertedBalance();
-  }, [sum, currency]);
+  }, [sum, currency, sum_change_24hr]);
 
   const handleCurrencyChange = (
     event: React.ChangeEvent<HTMLSelectElement>
