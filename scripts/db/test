@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+require('dotenv').config(); // Load environment variables from .env file
+const { MongoClient } = require('mongodb');
+
+const URI = process.env.MONGO_URI;
+const DB_NAME = process.env.DB_NAME;
+
+
+if (!URI || !DB_NAME) {
+  console.error("Error: Environment variables MONGO_URI and MONGO_DB_NAME must be set.");
+  process.exit(1);
+}
+
+const client = new MongoClient(URI, { useUnifiedTopology: true });
+
+async function main() {
+  try {
+    await client.connect();
+    console.log("Connected to the database");
+
+    const database = client.db(DB_NAME);
+    await database.command({ ping: 1 });
+    console.log("Pinged the database successfully");
+  } 
+  catch (e) {
+    console.error("An error occurred while connecting to the database:", e);
+  } 
+  finally {
+    await client.close();
+    console.log("Connection closed");
+  }
+}
+
+main()
+  .then(() => console.log("Done"))
+  .catch((e) => console.error("An error occurred during the main execution:", e));
