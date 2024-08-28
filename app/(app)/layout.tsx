@@ -31,16 +31,15 @@ export default function RootLayout({
               <ThemeProvider>
                 <Toast />
                 <Header />
-                <main className="flex">
+                <main className="flex w-screen min-h-screen">
                   <SideBar />
 
-                  <section className="ml-60 flex-grow  px-10 py-2 w-full overflow-y-auto overflow-x-hidden">
+                  <section className="ml-36 mr-56 flex-grow px-2 md:px-4 py-2 md:py-3 w-full overflow-y-auto overflow-x-hidden">
                     {children}
                   </section>
 
-                  <section className="hidden lg:block">
-                    <RightSection />
-                  </section>
+                  <RightSection />
+
                   {/* <Footer /> */}
                 </main>
               </ThemeProvider>

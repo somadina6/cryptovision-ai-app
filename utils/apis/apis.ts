@@ -2,8 +2,6 @@ import axios from "axios";
 import { DeleteResult } from "mongodb";
 import { coingeckoAxios } from "../axios/axios";
 import { CoingeckoResponse, TokenData } from "../../types/types";
-import connect from "../mongodb/db";
-import TokenModel from "@/models/token";
 
 export async function getTokens(userId: string) {
   try {
@@ -23,10 +21,13 @@ export async function addToken(
 ) {
   console.log(userId, tokenId, amount);
   try {
-    const { data } = await axios.post<TokenData>(`/api/token/${userId}`, {
-      tokenId,
-      amount,
-    });
+    const { data, status } = await axios.post<TokenData>(
+      `/api/token/${userId}`,
+      {
+        tokenId,
+        amount,
+      }
+    );
     return data;
   } catch (error: any) {
     console.log(error);

@@ -11,8 +11,6 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
-import Backdrop from "../Backdrop/Backdrop";
-import { MutatingDots } from "react-loader-spinner";
 
 const LoadUserData = () => {
   const [isUserTokensLoading, setUserTokensLoading] = useState(false);

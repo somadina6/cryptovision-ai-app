@@ -1,3 +1,4 @@
+import TokenCard from "@/components/TokenCard/TokenCard";
 import { ObjectId } from "mongodb";
 
 export type CoingeckoResult = {
@@ -10,18 +11,6 @@ export type CoingeckoResult = {
   low_24h?: number;
   price_change_percentage_24h: number;
   market_cap_rank: number;
-};
-
-export type TokenData = {
-  _id?: string;
-  userId: string | null;
-  coinId: string;
-  name: string;
-  symbol: string;
-  amount: number;
-  price: number;
-  image?: string;
-  price_change_percentage_24h: number;
 };
 
 export type CoingeckoResponse = {
@@ -50,4 +39,11 @@ export type Token = {
   atl: number; // All-time low
   atl_date: string; // Date in ISO format
   last_updated: string; // Date in ISO format
+};
+
+export type TokenData = {
+  token: Token;
+  amount: number;
+  last_updated: string;
+  _id: ObjectId;
 };

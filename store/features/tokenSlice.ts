@@ -25,16 +25,16 @@ export const tokenSlice = createSlice({
 
       // Store Total User Balance
       let sum = 0;
-      tokens.forEach((coin) => {
-        sum += coin.price * coin.amount;
+      tokens.forEach(({ token, amount }) => {
+        sum += token.current_price * amount;
       });
       state.sum = sum;
 
       // Store User Balance 24HR Change
       let sum_change_24hr = 0;
-      tokens.forEach((coin) => {
-        const current = coin.price * coin.amount;
-        const change_percentage = coin.price_change_percentage_24h / 100;
+      tokens.forEach(({ token, amount }) => {
+        const current = token.current_price * amount;
+        const change_percentage = token.price_change_percentage_24h / 100;
         const previous = current / (1 + change_percentage);
         sum_change_24hr += current - previous;
       });

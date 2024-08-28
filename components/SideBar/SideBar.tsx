@@ -26,9 +26,9 @@ const SideBar = () => {
   const router = useRouter();
 
   return (
-    <div className="border-r border-border fixed top-16 left-0 min-h-screen w-60 bg-background flex flex-col gap-2 px-2 py-6">
+    <div className="border-r border-border fixed top-16 left-0 min-h-screen w-36 bg-background flex flex-col gap-2 md:px-2 md:py-6">
       {navLinks.map((navlink) => {
-        const isActive = pathname === navlink.href;
+        const isActive = pathname?.startsWith(navlink.href);
 
         return (
           <div

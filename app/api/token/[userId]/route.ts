@@ -1,6 +1,6 @@
 import TokenModel from "../../../../models/token";
 import { UserPortfolioModel } from "../../../../models/userPortfolio";
-import { TokenData } from "../../../../types/types";
+import { addTokenToDB, getTokensFromDB } from "../../../../utils/apis/db.apis";
 import connect from "../../../../utils/mongodb/db";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
@@ -11,23 +11,14 @@ export async function GET(
 ) {
   const { userId } = params;
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    return NextResponse.json({ message: "User Is Invalid" }, { status: 500 });
-  }
-
   try {
-    await connect();
-    // const userTokens = await TokenModel.find<TokenData>({ userId });
-    const userTokens = await UserPortfolioModel.findOne({ userId }).populate(
-      "holdings.token_id"
-    );
-    // console.log(userTokens);
-    return NextResponse.json(userTokens, { status: 200 });
+    const portfolio = await getTokensFromDB(userId);
+    return NextResponse.json(portfolio, { status: 200, statusText: "OK" });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { message: "Failed to retrieve tokens" },
-      { status: 500 }
+      { status: 500, statusText: "Internal Server Error" }
     );
   }
 }
@@ -36,25 +27,20 @@ export async function POST(
   req: Request,
   { params }: { params: { userId: string } }
 ) {
-  const { userId } = params;
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    return NextResponse.json({ message: "User Is Invalid" }, { status: 500 });
-  }
-
   try {
-    const { tokenId, quantity }: { tokenId: string; quantity: number } =
+    const { tokenId, amount }: { tokenId: string; amount: number } =
       await req.json();
-    await connect();
+    const { userId } = params;
 
-    const result = await UserPortfolioModel.create({
-      userId,
-      holdings: [{ token_id: tokenId, quantity: quantity }],
-    });
+    const data = await addTokenToDB({ userId, tokenId, amount });
 
-    return NextResponse.json(result, { status: 200 });
-  } catch (err) {
-    console.log(err);
-    return NextResponse.json({ message: "Unable to Fetch" }, { status: 400 });
+    return NextResponse.json(data, { status: 200, statusText: "OK" });
+  } catch (err: any) {
+    console.error("Error updating user portfolio:", err);
+    return NextResponse.json(
+      { message: "Unable to update portfolio", error: err.message },
+      { status: 500 }
+    );
   }
 }
 

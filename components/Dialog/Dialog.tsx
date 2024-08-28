@@ -1,3 +1,5 @@
+import { ChangeEvent, useState } from "react";
+import { addToken } from "../../utils/apis/apis";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -10,16 +12,39 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { useAppSelector } from "../../store/hooks";
+import { Token } from "../../types/types";
 
-export default function AddTokenDialog({
-  token,
-}: {
-  token: { name: string; id: string };
-}) {
+export default function AddTokenDialog({ token }: { token: Token }) {
+  const [tokenQuantity, setTokenQuantity] = useState<number | undefined>(1000);
+  const { userId } = useAppSelector((state) => state.user);
+  const [open, setOpen] = useState(false);
+
+  const handleAddToken = async () => {
+    // Add token to the user's portfolio
+    if (!userId) return;
+    if (!tokenQuantity) return;
+    try {
+      const res = await addToken(userId, token._id.toString(), tokenQuantity);
+    } catch (error) {
+      console.error("Error adding token:", error);
+      throw new Error("Error adding token");
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    setTokenQuantity(newValue ? parseFloat(newValue) : undefined);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Track</Button>
+        <Button variant="outline" className="hover:bg-primary hover:text-white">
+          Track
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -45,11 +70,19 @@ export default function AddTokenDialog({
             <Label htmlFor="quantity" className="text-right">
               Quantity
             </Label>
-            <Input id="quantity" value="1000" className="col-span-3" />
+            <Input
+              type="number"
+              id="quantity"
+              value={tokenQuantity || "1000"}
+              className="col-span-3"
+              onChange={handleChange}
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Track Now</Button>
+          <Button type="submit" onClick={handleAddToken}>
+            Track Now
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,39 +1,28 @@
 #!/usr/bin/env node
 const axios = require("axios");
 const dotenv = require("dotenv");
-const { MongoClient } = require("mongodb");
-
-dotenv.config(); // Load environment variables from .env file
-
-const ENDPOINT = process.env.UPDATE_TOKENS_ENDPOINT;
-if (!ENDPOINT) {
-  console.error("Error: Environment variable ENDPOINT must be set.");
-  process.exit(1);
-}
+const { connect, disconnect } = require("mongoose");
+dotenv.config();
+const tokens = require("../../models/token").default;
 
 const URI = process.env.MONGO_URI;
 const DB_NAME = process.env.DB_NAME;
-const client = new MongoClient(URI, { useUnifiedTopology: true });
+if (!URI || !DB_NAME) {
+  console.error("Error: Environment variables URI and DB_NAME must be set.");
+  process.exit(1);
+}
 
 const main = async () => {
   try {
     let count = 0;
     let page = 1;
 
-    await client.connect();
+    await connect(URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      dbName: DB_NAME,
+    });
     console.log("Connected to the database");
-
-    const database = client.db(DB_NAME);
-    await database.command({ ping: 1 });
-    console.log("Pinged the database successfully");
-
-    const tokens = database.collection("tokens");
-
-    // Create a unique index on 'id'
-    await tokens.createIndex({ id: 1 }, { unique: true });
-    console.log("Unique index on 'id' created.");
-    await tokens.createIndex({ name: 1 });
-    await tokens.createIndex({ symbol: 1 });
 
     let response = await axios.get(ENDPOINT, { params: { page: page } });
 
@@ -78,7 +67,8 @@ const main = async () => {
           console.log(`Updated token: ${token.name}`);
         } else {
           // Insert the document with selected fields if it doesn't exist
-          await tokens.insertOne(insertFields);
+          const token = new tokens(insertFields);
+          await token.save({ validateBeforeSave: false });
         }
 
         count += 1;
@@ -95,8 +85,9 @@ const main = async () => {
   } catch (error) {
     console.error("An error occurred during execution:", error);
   } finally {
-    await client.close();
+    await disconnect();
     console.log("Connection closed");
+    process.exit(0);
   }
 };
 

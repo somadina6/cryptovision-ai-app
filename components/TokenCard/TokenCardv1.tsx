@@ -20,7 +20,7 @@ const TokenRow = ({ token }: { token: Token }) => {
 
   return (
     <TableRow className="hover:bg-muted dark:hover:bg-accent transition-colors">
-      <TableCell className="text-right py-2">
+      <TableCell className="text-left py-2">
         <AddTokenDialog token={token} />
       </TableCell>
 
@@ -76,12 +76,12 @@ const TokenHeader = () => {
 // The main TokenList component using Shadcn UI Table and TableBody
 const TokenList = ({ tokens }: { tokens: Token[] }) => {
   return (
-    <div className="w-full bg-background text-foreground p-4 rounded-lg">
+    <div className="w-full bg-background text-foreground p-4 rounded-lg ">
       {/* Heading */}
       <h2 className="text-2xl font-bold text-center mb-4">Search Results</h2>
 
       {/* Table */}
-      <Table>
+      <Table className="">
         {/* Sticky Header */}
         <TokenHeader />
 

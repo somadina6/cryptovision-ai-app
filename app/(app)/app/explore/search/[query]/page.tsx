@@ -1,11 +1,11 @@
 "use client";
-import MagnifyingGlassComp from "../../../../../components/Loadings/MagnifyingGlass";
-import { Token } from "../../../../../types/types";
-import { fetchSearchResults } from "../../../../../utils/apis/apis";
+
 import { useEffect, useState } from "react";
-import { Container, Grid, Typography, CircularProgress } from "@mui/material";
-import TokenCardv1 from "../../../../../components/TokenCard/TokenCardv1";
-import TokenList from "../../../../../components/TokenCard/TokenCardv1";
+import { fetchSearchResults } from "../../../../../../utils/apis/apis";
+import { Container } from "postcss";
+import MagnifyingGlassComp from "../../../../../../components/Loadings/MagnifyingGlass";
+import TokenList from "../../../../../../components/TokenCard/TokenCardv1";
+import { Token } from "../../../../../../types/types";
 
 const Page = ({ params }: { params: { query: string } }) => {
   const [loading, setLoading] = useState(true);
@@ -31,22 +31,18 @@ const Page = ({ params }: { params: { query: string } }) => {
 
   if (loading) {
     return (
-      <Container sx={{ textAlign: "center", marginTop: 4 }}>
+      <div>
         <MagnifyingGlassComp />
-        <Typography variant="h6" component="p">
-          Searching for tokens...
-        </Typography>
-      </Container>
+        <p>Searching for tokens...</p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container sx={{ textAlign: "center", marginTop: 4 }}>
-        <Typography color="error" variant="h6">
-          {error}
-        </Typography>
-      </Container>
+      <div>
+        <p className="">{error}</p>
+      </div>
     );
   }
 
