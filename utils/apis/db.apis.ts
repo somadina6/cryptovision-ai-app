@@ -49,7 +49,7 @@ export async function addTokenToDB(params: {
     } else {
       // Add a new token to holdings
       existingUserPortfolio.holdings.push({
-        token_id: tokenObjectId, // No conversion to ObjectId needed
+        token: tokenObjectId, // No conversion to ObjectId needed
         amount: amount,
         last_updated: new Date(),
       });

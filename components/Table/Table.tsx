@@ -127,49 +127,49 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
 
         <tbody className="text-sm text-black dark:text-white uppercase">
           {coinDetails &&
-            coinDetails.map((coin, index) => (
+            coinDetails.map(({ token, amount, _id }, index) => (
               <tr
-                key={coin._id}
+                key={_id.toString()}
                 className="border-b hover:bg-gray-50 dark:hover:text-primary  dark:hover:bg-gray-950 h-10 overflow-clip"
               >
                 <th className="px-6 py-4 flex gap-2 items-center">
-                  <p className="">{coin.name}</p>
+                  <p className="">{token.name}</p>
                   <span>
-                    {coin.image && (
+                    {token.image && (
                       <Image
-                        src={coin.image}
-                        alt={coin.name}
+                        src={token.image}
+                        alt={token.name}
                         width={20}
                         height={20}
                       />
                     )}
                   </span>
                 </th>
-                <td className="px-6 py-4">{coin.symbol}</td>
-                <td className="px-6 py-4">${coin.price}</td>
-                {coin.price_change_percentage_24h ? (
+                <td className="px-6 py-4">{token.symbol}</td>
+                <td className="px-6 py-4">${token.current_price}</td>
+                {token.price_change_percentage_24h ? (
                   <td
                     className={`px-6 py-4 ${
-                      coin.price_change_percentage_24h < 0
+                      token.price_change_percentage_24h < 0
                         ? "text-red-600"
                         : "text-green-500"
                     }`}
                   >
-                    {coin.price_change_percentage_24h > 0 ? "+" : ""}
-                    {coin.price_change_percentage_24h?.toFixed(2)}%
+                    {token.price_change_percentage_24h > 0 ? "+" : ""}
+                    {token.price_change_percentage_24h?.toFixed(2)}%
                   </td>
                 ) : (
                   <td></td>
                 )}
 
-                <td className="px-6 py-4">{coin.amount}</td>
+                <td className="px-6 py-4">{amount}</td>
                 <td className="px-6 py-4">
-                  {formatPrice(coin.amount * coin.price, "USD")}
+                  {formatPrice(amount * token.current_price, "USD")}
                 </td>
                 <td
                   className="px-6  hover:text-red-500 "
-                  id={coin._id}
-                  onClick={() => removeUserToken(coin._id)}
+                  id={_id.toString()}
+                  onClick={() => removeUserToken(_id.toString())}
                 >
                   <CiTrash
                     size={17}

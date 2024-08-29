@@ -44,6 +44,6 @@ export type Token = {
 export type TokenData = {
   token: Token;
   amount: number;
-  last_updated: string;
+  last_updated?: string;
   _id: ObjectId;
 };

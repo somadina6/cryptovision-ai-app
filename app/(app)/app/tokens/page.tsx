@@ -22,11 +22,7 @@ const Page = () => {
   if (userId) {
     return (
       <div className="w-full ">
-        <section className="flex flex-col-reverse md:grid md:grid-cols-[1fr_200px] gap-4 ">
-          <div id="first-col" className="block overflow-x-auto">
-            <Table userId={userId} />
-          </div>
-        </section>
+        <Table userId={userId} />
       </div>
     );
   }

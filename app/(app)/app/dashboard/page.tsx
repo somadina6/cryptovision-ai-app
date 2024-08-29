@@ -27,8 +27,13 @@ const Dashboard = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {userTokens && userTokens.length > 0 ? (
-          userTokens.map((token: TokenData) => (
-            <TokenCard key={token.coinId} token={token} />
+          userTokens.map(({ token, _id, amount }) => (
+            <TokenCard
+              key={_id.toString()}
+              token={token}
+              amount={amount}
+              _id={_id}
+            />
           ))
         ) : (
           <p className="col-span-full text-center text-lg">
