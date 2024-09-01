@@ -1,6 +1,12 @@
 import TokenCard from "@/components/TokenCard/TokenCard";
 import { ObjectId } from "mongodb";
 
+export type ApiResponse = {
+  status?: number;
+  message: string;
+  success: boolean;
+};
+
 export type CoingeckoResult = {
   id: string;
   symbol: string;

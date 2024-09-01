@@ -56,7 +56,7 @@ export async function addTokenToDB(params: {
     }
 
     await existingUserPortfolio.save();
-    console.log("Existing portfolio", existingUserPortfolio);
+    console.log("Portfolio updated");
     return { portfolio: existingUserPortfolio, status: 200 };
   } else {
     // If the user portfolio does not exist, create a new one
@@ -100,11 +100,41 @@ export async function getTokensFromDB(userId: string) {
       throw new Error("User Portfolio Not Found");
     }
 
-    console.log("User Portfolio:", userPortfolio.holdings);
-
     return userPortfolio.holdings;
   } catch (error: any) {
     console.error(error);
     throw new Error(error);
   }
+}
+
+export async function deleteTokenFromDB(params: {
+  userId: string;
+  tokenId: string;
+}) {
+  const { userId, tokenId } = params;
+
+  if (!userId || !tokenId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("User Is Invalid");
+  }
+
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+  const tokenObjectId = new mongoose.Types.ObjectId(tokenId);
+
+  await connect();
+
+  const userPortfolio = await UserPortfolioModel.findOne({
+    userId: userObjectId,
+  });
+
+  if (!userPortfolio) {
+    throw new Error("User Portfolio Not Found");
+  }
+
+  userPortfolio.holdings = userPortfolio.holdings.filter(
+    (holding: Holding) => holding.token.toString() !== tokenObjectId.toString()
+  );
+
+  await userPortfolio.save();
+
+  return userPortfolio.holdings;
 }

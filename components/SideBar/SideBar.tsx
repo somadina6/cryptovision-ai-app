@@ -1,5 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
+import Logo from "../Header/Logo";
 
 type navType = {
   name: string;
@@ -26,7 +27,13 @@ const SideBar = () => {
   const router = useRouter();
 
   return (
-    <div className="border-r border-border fixed top-16 left-0 min-h-screen w-36 bg-background flex flex-col gap-2 md:px-2 md:py-6">
+    <div
+      id="sidebar"
+      className="border-r border-border fixed top-0 z-20 left-0 min-h-screen bg-background flex flex-col gap-2 md:px-2 lg:px-5 md:py-6"
+    >
+      <div className="mb-12">
+        <Logo />
+      </div>
       {navLinks.map((navlink) => {
         const isActive = pathname?.startsWith(navlink.href);
 

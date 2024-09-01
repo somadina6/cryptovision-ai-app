@@ -24,8 +24,6 @@ export async function GET(
       .sort({ market_cap_rank: 1 })
       .toArray();
 
-    console.log("Query Results:", results);
-
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.error(error);

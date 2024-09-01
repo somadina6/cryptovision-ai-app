@@ -14,18 +14,21 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
+import { mutate } from "swr";
+import useTokens from "@/lib/useTokens";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
-  const [tokenQuantity, setTokenQuantity] = useState<number | undefined>(1000);
+  const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
   const { userId } = useAppSelector((state) => state.user);
   const [open, setOpen] = useState(false);
 
   const handleAddToken = async () => {
-    // Add token to the user's portfolio
     if (!userId) return;
     if (!tokenQuantity) return;
     try {
-      const res = await addToken(userId, token._id.toString(), tokenQuantity);
+      await addToken(userId, token._id.toString(), tokenQuantity);
+      useTokens(userId ?? "");
+      await mutate(`${userId}`);
     } catch (error) {
       console.error("Error adding token:", error);
       throw new Error("Error adding token");
@@ -73,7 +76,8 @@ export default function AddTokenDialog({ token }: { token: Token }) {
             <Input
               type="number"
               id="quantity"
-              value={tokenQuantity || "1000"}
+              value={tokenQuantity || ""}
+              placeholder="1000"
               className="col-span-3"
               onChange={handleChange}
             />

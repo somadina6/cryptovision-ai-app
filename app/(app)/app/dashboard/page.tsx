@@ -1,22 +1,31 @@
 "use client";
-import React from "react";
-import { useAppSelector } from "../../../../store/hooks";
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import TokenCard from "../../../../components/TokenCard/TokenCard";
 import { formatPrice } from "../../../../utils/apis/apis";
 import LoadUserData from "../../../../components/LoadUserData/LoadUserData";
-import { TokenData } from "../../../../types/types";
+import useTokens from "@/lib/useTokens";
+import { setUserTokens } from "@/store/features/tokenSlice";
 
 const Dashboard = () => {
-  const { name } = useAppSelector((state) => state.user);
-  const { userTokens, sum, change_24hr } = useAppSelector(
-    (state) => state.token
-  );
+  const { name, userId } = useAppSelector((state) => state.user);
+  const { sum, change_24hr } = useAppSelector((state) => state.token);
   const firstName = name ? name.split(" ")[0] : "User";
   const sign = change_24hr > 0 ? "+" : "";
 
+  const dispatch = useAppDispatch();
+
+  const { tokens: userTokens, isLoading } = useTokens(userId ?? "");
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
+        <h2 className="text-xl font-semibold ">Loading...</h2>
+      </div>
+    );
+  }
   return (
     <div className="p-8">
-      <LoadUserData />
       <div className="mb-8">
         <h3 className="text-2xl font-bold">Welcome, {firstName}!</h3>
         <h4 className="text-xl">

@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    --customwidth: 13rem;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -59,6 +60,10 @@
   }
 }
 
-.sidebar {
-  @apply sticky left-0 top-0 flex h-screen w-fit flex-col  justify-between border-r border-gray-200 bg-background pt-8 max-md:hidden sm:p-4 xl:p-6 2xl:w-[355px];
+#sidebar {
+  width: var(--customwidth);
+}
+
+#main {
+  margin-left: var(--customwidth);
 }

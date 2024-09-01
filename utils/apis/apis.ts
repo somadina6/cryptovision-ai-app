@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DeleteResult } from "mongodb";
 import { coingeckoAxios } from "../axios/axios";
-import { CoingeckoResponse, TokenData } from "../../types/types";
+import { ApiResponse, CoingeckoResponse, TokenData } from "../../types/types";
 
 export async function getTokens(userId: string) {
   try {
@@ -28,19 +28,29 @@ export async function addToken(
         amount,
       }
     );
-    return data;
+    if (status === 200 || status === 201) {
+      return data;
+    }
   } catch (error: any) {
     console.log(error);
     throw new Error(error);
   }
 }
 
-export async function deleteToken(tokenId: string) {
+export async function deleteToken(userId: string, tokenId: string) {
   try {
-    const { data: result } = await axios.delete<DeleteResult>("/api/token", {
-      data: { tokenId },
-    });
-    return result;
+    const { data, status } = await axios.delete<ApiResponse>(
+      `/api/token/${userId}`,
+      {
+        data: { userId, tokenId },
+      }
+    );
+    if (status === 200 || status === 204) {
+      console.log(data);
+      return data;
+    } else {
+      throw new Error("Failed to delete token");
+    }
   } catch (error: any) {
     console.log(error);
     throw new Error(error);
@@ -94,53 +104,5 @@ export const convertCurrency = async (
   } catch (error) {
     console.log(error);
     throw new Error("Failed To Convert");
-  }
-};
-
-export const updateTokens = async (
-  tokens: TokenData[],
-  coingeckoResponse: CoingeckoResponse
-) => {
-  return tokens.map((token) => {
-    const realTimePrice = coingeckoResponse[token.coinId].usd || 0;
-    const priceChange = coingeckoResponse[token.coinId].usd_24h_change || 0;
-
-    return {
-      ...token,
-      price: realTimePrice,
-      price_change_percentage_24h: priceChange,
-    };
-  });
-};
-
-export const fetchRealTimePrices = async (tokens: TokenData[]) => {
-  const coinIds = tokens.map((token) => token.coinId).join(",");
-  try {
-    const { data, status } = await coingeckoAxios.get("/simple/price", {
-      params: {
-        vs_currencies: "usd",
-        ids: coinIds,
-        include_24hr_change: "true",
-      },
-    });
-    console.log(data);
-    if (status == 200) {
-      return data;
-    } else {
-      throw new Error("Failed to get update prices");
-    }
-  } catch (error: any) {
-    console.error("Error fetching real time price:", error);
-    if (axios.isAxiosError(error)) {
-      console.log({
-        request_error: error.request,
-        response_status: error.response?.status,
-        response_text: error.response?.statusText,
-        response_data_error: error.response?.data,
-        error_message: error.message,
-        error_status_code: error.status,
-      });
-    }
-    throw new Error("Error fetching realtime price");
   }
 };

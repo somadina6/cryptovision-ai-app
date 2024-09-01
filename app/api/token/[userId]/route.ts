@@ -1,8 +1,12 @@
 import TokenModel from "../../../../models/token";
-import { UserPortfolioModel } from "../../../../models/userPortfolio";
-import { addTokenToDB, getTokensFromDB } from "../../../../utils/apis/db.apis";
+
+import {
+  addTokenToDB,
+  deleteTokenFromDB,
+  getTokensFromDB,
+} from "../../../../utils/apis/db.apis";
 import connect from "../../../../utils/mongodb/db";
-import mongoose from "mongoose";
+
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -46,19 +50,23 @@ export async function POST(
 
 export async function DELETE(req: Request) {
   try {
-    const body = await req.json();
-    await connect();
-    const { tokenId } = body;
+    const { userId, tokenId } = await req.json();
 
-    const userToken = await TokenModel.deleteOne({
-      _id: tokenId,
-    });
+    await deleteTokenFromDB({ userId, tokenId });
 
-    console.log(userToken);
-    return NextResponse.json(userToken, { status: 200 });
+    return NextResponse.json(
+      {
+        message: "Token deleted successfully",
+        success: true,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(err);
-    return NextResponse.json({ message: "Unable to Fetch" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Unable to Fetch", success: false },
+      { status: 400 }
+    );
   }
 }
 

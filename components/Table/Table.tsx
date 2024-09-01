@@ -1,100 +1,52 @@
 "use client";
 import "./styles.css";
-import { addToken, deleteToken, formatPrice } from "../../utils/apis/apis";
-import React, { FC, useContext, useEffect, useState } from "react";
+import { deleteToken, formatPrice } from "../../utils/apis/apis";
+import { FC, useEffect } from "react";
 import toast from "react-hot-toast";
-import { CiSearch, CiTrash } from "react-icons/ci";
+import { CiTrash } from "react-icons/ci";
 import { mutate } from "swr";
-import SearchResultModal from "./SearchResultModal";
 import Image from "next/image";
-import Backdrop from "../Backdrop/Backdrop";
-import { CoingeckoResult, TokenData } from "../../types/types";
-import { useAppSelector } from "../../store/hooks";
-
-import { coingeckoAxios } from "../../utils/axios/axios";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import LoadUserData from "../LoadUserData/LoadUserData";
-import SearchBar from "../SearchBar/SearchBar";
-
-const inputStyles =
-  "block w-full p-2 h-full text-md border-none rounded-md dark:text-black";
+import useTokens from "@/lib/useTokens";
+import { setUserTokens } from "@/store/features/tokenSlice";
 
 const Table: FC<{ userId: string }> = ({ userId }) => {
-  const [showSearch, setShowSearch] = useState<boolean>(false);
-  const [searchResults, setSearchResults] = useState<CoingeckoResult[]>();
-  const [searchLoading, setSearchLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const coinDetails = useAppSelector((state) => state.token.userTokens);
+  const { tokens: coinDetails, isLoading } = useTokens(userId);
 
-  const initTokenDetail = {
-    userId,
-    token_id: "",
-    amount: 0,
-  };
+  useEffect(() => {
+    if (coinDetails) dispatch(setUserTokens(coinDetails));
+  }, [coinDetails]);
 
-  const [tokenToAddDetails, setTokenToAddDetails] = useState(initTokenDetail);
-
-  const resetFields = () => setTokenToAddDetails(initTokenDetail);
-
-  const fetchSearchResults = async (query: any) => {
-    if (searchLoading) return;
-    setSearchLoading(true);
-    try {
-      const response = await coingeckoAxios.get(
-        `/coins/list?include_platform=false` // https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd
-      );
-      const data: CoingeckoResult[] = await response.data;
-      const filteredResults = data.filter((coin) =>
-        coin.name.toLowerCase().includes(query.toLowerCase())
-      );
-
-      setSearchResults(filteredResults);
-    } catch (error: any) {
-      console.error("Error fetching search results:", error);
-      // toast.error("Error fetching search results:");
-      throw new Error(error);
-    } finally {
-      setSearchLoading(false);
-    }
-  };
-
-  const removeUserToken = async (id: string | undefined) => {
+  const removeUserToken = async (id: string) => {
     const loadingId = toast.loading("Deleting Token");
 
     try {
-      if (id) {
-        const res = await deleteToken(id);
-        if (res.acknowledged === true) {
-          toast.success("Deleted successfully", { id: loadingId });
-          await mutate("fetchUserTokens");
-        } else {
-          toast.error("Failed to delete", { id: loadingId });
-        }
+      const res = await deleteToken(userId, id);
+      if (res.success === true) {
+        toast.success(res.message, { id: loadingId });
+        await mutate(`${userId}`);
+      } else {
+        throw new Error("Failed to delete");
       }
     } catch (error) {
       toast.error("Failed to delete", { id: loadingId });
+    } finally {
+      toast.dismiss(loadingId);
     }
   };
 
-  const addUserTokens = async () => {
-    const loadingId = toast.loading("Adding Token");
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
+        <h2 className="text-xl font-semibold ">Loading...</h2>
+      </div>
+    );
+  }
 
-    try {
-      const newTokenAdded = await addToken(
-        userId,
-        tokenToAddDetails.token_id,
-        tokenToAddDetails.amount
-      );
-      toast.success("Added successfully", { id: loadingId });
-      resetFields();
-      await mutate("fetchUserTokens");
-
-      return newTokenAdded;
-    } catch (error) {
-      toast.error("Failed to add", { id: loadingId });
-    }
-  };
-
-  if (!coinDetails)
+  if (coinDetails && coinDetails.length === 0)
     return (
       <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
         <h2 className="text-xl font-semibold ">
@@ -109,8 +61,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
         This page displays a table of your tokens, including their name, symbol,
         real-time price, and amount.
       </p>
-      <h1 className="text-2xl font-bold text-center">Your Tokens</h1>
-      <LoadUserData />
+
       <table className="md:w-full text-sm text-left text-gray-500 ">
         <thead className="text-xs text-black dark:text-primary uppercase border-b border-gray-600 w-full ">
           <tr className="">
@@ -127,7 +78,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
 
         <tbody className="text-sm text-black dark:text-white uppercase">
           {coinDetails &&
-            coinDetails.map(({ token, amount, _id }, index) => (
+            coinDetails.map(({ token, amount, _id }) => (
               <tr
                 key={_id.toString()}
                 className="border-b hover:bg-gray-50 dark:hover:text-primary  dark:hover:bg-gray-950 h-10 overflow-clip"
@@ -168,8 +119,7 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
                 </td>
                 <td
                   className="px-6  hover:text-red-500 "
-                  id={_id.toString()}
-                  onClick={() => removeUserToken(_id.toString())}
+                  onClick={() => removeUserToken(token._id.toString())}
                 >
                   <CiTrash
                     size={17}
