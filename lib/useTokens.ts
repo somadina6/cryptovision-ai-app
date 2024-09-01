@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getTokens } from "@/utils/apis/apis";
 import useSWR from "swr";
 
-const fetchUserTokens = async (userId: string) => {
+export const fetchUserTokens = async (userId: string) => {
   console.log("fetchUserTokens");
 
   try {

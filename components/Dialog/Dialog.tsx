@@ -17,6 +17,7 @@ import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
 import { mutate } from "swr";
 import useTokens from "@/lib/useTokens";
+import toast from "react-hot-toast";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
   const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
@@ -28,6 +29,7 @@ export default function AddTokenDialog({ token }: { token: Token }) {
     if (!tokenQuantity) return;
     try {
       await addToken(userId, token._id.toString(), tokenQuantity);
+      toast.success("Token added successfully");
     } catch (error) {
       console.error("Error adding token:", error);
       throw new Error("Error adding token");
@@ -61,12 +63,9 @@ export default function AddTokenDialog({ token }: { token: Token }) {
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input
-              id="name"
-              value={token.name}
-              className="col-span-3"
-              readOnly
-            />
+            <p id="name" className="col-span-3">
+              {token.name}
+            </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="quantity" className="text-right">
@@ -79,6 +78,9 @@ export default function AddTokenDialog({ token }: { token: Token }) {
               placeholder="1000"
               className="col-span-3"
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAddToken();
+              }}
             />
           </div>
         </div>
