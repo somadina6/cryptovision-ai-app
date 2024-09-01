@@ -2,6 +2,7 @@ import axios from "axios";
 import { DeleteResult } from "mongodb";
 import { coingeckoAxios } from "../axios/axios";
 import { ApiResponse, CoingeckoResponse, TokenData } from "../../types/types";
+import { mutate } from "swr";
 
 export async function getTokens(userId: string) {
   try {
@@ -19,7 +20,6 @@ export async function addToken(
   tokenId: string,
   amount: number
 ) {
-  console.log(userId, tokenId, amount);
   try {
     const { data, status } = await axios.post<TokenData>(
       `/api/token/${userId}`,
@@ -29,6 +29,7 @@ export async function addToken(
       }
     );
     if (status === 200 || status === 201) {
+      await mutate(`${userId}`);
       return data;
     }
   } catch (error: any) {
@@ -46,6 +47,7 @@ export async function deleteToken(userId: string, tokenId: string) {
       }
     );
     if (status === 200 || status === 204) {
+      await mutate(`${userId}`);
       console.log(data);
       return data;
     } else {

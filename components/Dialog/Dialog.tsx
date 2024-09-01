@@ -1,3 +1,4 @@
+" use client";
 import { ChangeEvent, useState } from "react";
 import { addToken } from "../../utils/apis/apis";
 import { Button } from "../ui/button";
@@ -27,8 +28,6 @@ export default function AddTokenDialog({ token }: { token: Token }) {
     if (!tokenQuantity) return;
     try {
       await addToken(userId, token._id.toString(), tokenQuantity);
-      useTokens(userId ?? "");
-      await mutate(`${userId}`);
     } catch (error) {
       console.error("Error adding token:", error);
       throw new Error("Error adding token");

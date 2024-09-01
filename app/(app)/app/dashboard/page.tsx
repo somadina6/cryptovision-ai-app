@@ -13,8 +13,6 @@ const Dashboard = () => {
   const firstName = name ? name.split(" ")[0] : "User";
   const sign = change_24hr > 0 ? "+" : "";
 
-  const dispatch = useAppDispatch();
-
   const { tokens: userTokens, isLoading } = useTokens(userId ?? "");
 
   if (isLoading) {

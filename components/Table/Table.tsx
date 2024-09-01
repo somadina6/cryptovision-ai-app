@@ -1,24 +1,13 @@
-"use client";
 import "./styles.css";
 import { deleteToken, formatPrice } from "../../utils/apis/apis";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import toast from "react-hot-toast";
 import { CiTrash } from "react-icons/ci";
-import { mutate } from "swr";
 import Image from "next/image";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import LoadUserData from "../LoadUserData/LoadUserData";
-import useTokens from "@/lib/useTokens";
-import { setUserTokens } from "@/store/features/tokenSlice";
+import { useAppSelector } from "@/store/hooks";
 
 const Table: FC<{ userId: string }> = ({ userId }) => {
-  const dispatch = useAppDispatch();
-
-  const { tokens: coinDetails, isLoading } = useTokens(userId);
-
-  useEffect(() => {
-    if (coinDetails) dispatch(setUserTokens(coinDetails));
-  }, [coinDetails]);
+  const { userTokens: coinDetails } = useAppSelector((state) => state.token);
 
   const removeUserToken = async (id: string) => {
     const loadingId = toast.loading("Deleting Token");
@@ -27,7 +16,6 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
       const res = await deleteToken(userId, id);
       if (res.success === true) {
         toast.success(res.message, { id: loadingId });
-        await mutate(`${userId}`);
       } else {
         throw new Error("Failed to delete");
       }
@@ -38,19 +26,11 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
-        <h2 className="text-xl font-semibold ">Loading...</h2>
-      </div>
-    );
-  }
-
   if (coinDetails && coinDetails.length === 0)
     return (
       <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
         <h2 className="text-xl font-semibold ">
-          Looks like you don't have any tokens tracked
+          Looks like you don&apos;t have any tokens tracked
         </h2>
       </div>
     );
@@ -129,24 +109,8 @@ const Table: FC<{ userId: string }> = ({ userId }) => {
                 </td>
               </tr>
             ))}
-
-          {/* SEARCH ROW BEGIN*/}
-
-          {/* END OF TABLE  */}
         </tbody>
       </table>
-      {/* {showSearch && (
-        <Backdrop isOpen={showSearch}>
-          <SearchResultModal
-            search={searchResults}
-            tokenToAddDetails={tokenToAddDetails}
-            setTokenToAddDetails={setTokenToAddDetails}
-            showModal={showSearch}
-            setShowModal={setShowSearch}
-            searchLoading={searchLoading}
-          />
-        </Backdrop>
-      )} */}
     </div>
   );
 };

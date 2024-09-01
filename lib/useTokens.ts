@@ -16,8 +16,9 @@ const fetchUserTokens = async (userId: string) => {
 };
 
 function useTokens(userId: string) {
-  console.log("useTokens");
-  const { data, isLoading, error } = useSWR(`${userId}`, fetchUserTokens);
+  const { data, isLoading, error } = useSWR(`${userId}`, fetchUserTokens, {
+    revalidateOnFocus: false,
+  });
 
   return {
     tokens: data,
