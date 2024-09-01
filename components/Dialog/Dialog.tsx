@@ -53,7 +53,7 @@ export default function AddTokenDialog({ token }: { token: Token }) {
           <DialogTitle>Add token to your portfolio</DialogTitle>
           <DialogDescription>
             Add the total quantity of the token you have here. Click save when
-            you're done.
+            you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
