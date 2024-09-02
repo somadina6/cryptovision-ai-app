@@ -1,42 +1,108 @@
 import TokenModel from "@/models/token";
-import { TokenData } from "../../../types/types";
-import connect from "../../../utils/mongodb/db";
-import { NextResponse } from "next/server";
+import {
+  getTokensFromDB,
+  addTokenToDB,
+  deleteTokenFromDB,
+} from "@/utils/apis/db.apis";
+import connect from "@/utils/mongodb/db";
+import { getToken } from "next-auth/jwt";
 
-export async function POST(req: Request) {
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(req: NextRequest) {
   try {
-    const { userTokenData }: { userTokenData: TokenData } = await req.json();
-    await connect();
-    console.log(userTokenData);
-    // const { userId, name, symbol, price, amount, image } = userTokenData;
-
-    const userToken: TokenData = await TokenModel.create<TokenData>(
-      userTokenData
+    const token = await getToken({ req });
+    if (!token) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    const id = token.id as string;
+    if (!id) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    console.log("User ID:", id);
+    const portfolio = await getTokensFromDB(id);
+    return NextResponse.json(portfolio, { status: 200, statusText: "OK" });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { message: "Failed to retrieve tokens" },
+      { status: 500, statusText: "Internal Server Error" }
     );
-
-    console.log(userToken);
-    return NextResponse.json(userToken, { status: 200 });
-  } catch (err) {
-    console.log(err);
-    return NextResponse.json({ message: "Unable to Fetch" }, { status: 400 });
   }
 }
 
-export async function DELETE(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    await connect();
-    const { tokenId } = body;
+    const token = await getToken({ req });
+    if (!token) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    const id = token.id as string;
+    if (!id) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    console.log("User ID:", id);
+    const { tokenId, amount }: { tokenId: string; amount: number } =
+      await req.json();
 
-    const userToken = await TokenModel.deleteOne({
-      _id: tokenId,
-    });
+    const data = await addTokenToDB({ userId: id, tokenId, amount });
 
-    console.log(userToken);
-    return NextResponse.json(userToken, { status: 200 });
+    return NextResponse.json(data, { status: 200, statusText: "OK" });
+  } catch (err: any) {
+    console.error("Error updating user portfolio:", err);
+    return NextResponse.json(
+      { message: "Unable to update portfolio", error: err.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const token = await getToken({ req });
+    if (!token) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    const id = token.id as string;
+    if (!id) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    console.log("User ID:", id);
+    const { tokenId } = await req.json();
+
+    await deleteTokenFromDB({ userId: id, tokenId });
+
+    return NextResponse.json(
+      {
+        message: "Token deleted successfully",
+        success: true,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(err);
-    return NextResponse.json({ message: "Unable to Fetch" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Unable to Fetch", success: false },
+      { status: 400 }
+    );
   }
 }
 

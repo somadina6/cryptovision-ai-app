@@ -20,17 +20,8 @@ export const columns: ColumnDef<TokenData>[] = [
     accessorKey: "token.name",
   },
   {
-    header: () => <div className="text-left">Amount</div>,
+    header: "Amount",
     accessorKey: "amount",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-left font-medium">{formatted}</div>;
-    },
   },
   {
     header: "Price",

@@ -4,9 +4,9 @@ import { coingeckoAxios } from "../axios/axios";
 import { ApiResponse, CoingeckoResponse, TokenData } from "../../types/types";
 import { mutate } from "swr";
 
-export async function getTokens(userId: string) {
+export async function getTokens() {
   try {
-    const { data } = await axios.get<TokenData[]>(`/api/token/${userId}`);
+    const { data } = await axios.get<TokenData[]>(`/api/token`);
     // console.log(data);
     return data;
   } catch (error: any) {
@@ -15,21 +15,14 @@ export async function getTokens(userId: string) {
   }
 }
 
-export async function addToken(
-  userId: string,
-  tokenId: string,
-  amount: number
-) {
+export async function addToken(tokenId: string, amount: number) {
   try {
-    const { data, status } = await axios.post<TokenData>(
-      `/api/token/${userId}`,
-      {
-        tokenId,
-        amount,
-      }
-    );
+    const { data, status } = await axios.post<TokenData>(`/api/token`, {
+      tokenId,
+      amount,
+    });
     if (status === 200 || status === 201) {
-      await mutate(`${userId}`);
+      await mutate(`fetchUserTokens`);
       return data;
     }
   } catch (error: any) {
@@ -38,16 +31,13 @@ export async function addToken(
   }
 }
 
-export async function deleteToken(userId: string, tokenId: string) {
+export async function deleteToken(tokenId: string) {
   try {
-    const { data, status } = await axios.delete<ApiResponse>(
-      `/api/token/${userId}`,
-      {
-        data: { userId, tokenId },
-      }
-    );
+    const { data, status } = await axios.delete<ApiResponse>(`/api/token`, {
+      data: { tokenId },
+    });
     if (status === 200 || status === 204) {
-      await mutate(`${userId}`);
+      await mutate(`fetchUserTokens`);
       console.log(data);
       return data;
     } else {

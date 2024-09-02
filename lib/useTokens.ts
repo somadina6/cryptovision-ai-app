@@ -7,7 +7,7 @@ export const fetchUserTokens = async (userId: string) => {
   console.log("fetchUserTokens");
 
   try {
-    const tokens = await getTokens(userId);
+    const tokens = await getTokens();
     return tokens;
   } catch (error) {
     console.error("Error fetching user tokens:", error);
@@ -15,10 +15,14 @@ export const fetchUserTokens = async (userId: string) => {
   }
 };
 
-function useTokens(userId: string) {
-  const { data, isLoading, error } = useSWR(`${userId}`, fetchUserTokens, {
-    revalidateOnFocus: false,
-  });
+function useTokens() {
+  const { data, isLoading, error } = useSWR(
+    `fetchUserTokens`,
+    fetchUserTokens,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
     tokens: data,

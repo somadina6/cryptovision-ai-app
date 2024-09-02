@@ -1,39 +1,51 @@
 "use client";
-import { MutatingDots } from "react-loader-spinner";
-import Balance from "../../../../components/Balance/Balance";
-import Table from "../../../../components/Table/Table";
-import { useAppSelector } from "../../../../store/hooks";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import useTokens from "@/lib/useTokens";
 
-const Page = () => {
-  // const { status } = useSession();
+// async function getData(): Promise<TokenData[]> {
+//   // Fetch data from your API here.
+//   return [
+//     {
+//       token: {
+//         _id: new ObjectId("66cf9abae66f8f7cd8d28a86"),
+//         id: "polkadot",
+//         symbol: "dot",
+//         name: "Polkadot",
+//         image:
+//           "https://coin-images.coingecko.com/coins/images/12171/large/polkadot.png?1696512008",
+//         current_price: 4.29,
+//         price_change_percentage_24h: -1.50255,
+//         price_change_24h: 0,
+//         market_cap: 0,
+//         market_cap_rank: 0,
+//         circulating_supply: 0,
+//         total_supply: 0,
+//         max_supply: 0,
+//         ath: 0,
+//         ath_date: "",
+//         atl: 0,
+//         atl_date: "",
+//         last_updated: "",
+//       },
+//       amount: 234,
+//       last_updated: "2024-09-01T22:12:59.320Z",
+//       _id: new ObjectId("66d4e6ebf829bd153d9cd206"),
+//     },
+//   ];
+// }
 
-  const userId = useAppSelector((state) => state.user.userId);
-  const status = useAppSelector((state) => state.user.status);
+export default function DemoPage() {
+  const { tokens: data, isLoading } = useTokens();
+  if (!data) return null;
 
-  if (status === "loading") {
-    return (
-      <div className="flex gap-2">
-        <MutatingDots height="100" width="100" />
-        <p>{status}...</p>
-      </div>
-    );
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
-
-  if (userId) {
-    return (
-      <div className="w-full ">
-        <Table userId={userId} />
-      </div>
-    );
-  }
-
-  // Handle other states or unauthenticated status
 
   return (
-    <div>
-      <p>You are not authenticated</p>
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={data} />
     </div>
   );
-};
-
-export default Page;
+}

@@ -28,7 +28,7 @@ export default function AddTokenDialog({ token }: { token: Token }) {
     if (!userId) return;
     if (!tokenQuantity) return;
     try {
-      await addToken(userId, token._id.toString(), tokenQuantity);
+      await addToken(token._id.toString(), tokenQuantity);
       toast.success("Token added successfully");
     } catch (error) {
       console.error("Error adding token:", error);

@@ -3,7 +3,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type TokenState = {
   sum: number;
-  userTokens: TokenData[];
+  userTokens: TokenData[] | null;
   change_24hr: number;
   sum_change_24hr: number;
 };
@@ -21,6 +21,7 @@ export const tokenSlice = createSlice({
   reducers: {
     setUserTokens: (state, action: PayloadAction<TokenData[]>) => {
       const tokens = action.payload;
+      if (!tokens) return;
       state.userTokens = tokens;
 
       let sum = 0;

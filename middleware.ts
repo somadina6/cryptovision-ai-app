@@ -4,9 +4,10 @@ import { NextRequest } from "next/server";
 
 export default withAuth(
   // `withAuth` augments your `Request` with the user's token.
-  function middleware(req: NextRequest) {
+  async function middleware(req: NextRequest) {
     console.log(req.method, req.url);
   },
+
   {
     pages: {
       signIn: "/auth/login",

@@ -2,7 +2,7 @@ import Balance from "../Balance/Balance";
 
 const RightSection = () => {
   return (
-    <section className="fixed top-16 right-0 w-56 min-h-screen overflow-y-scroll md:px-2 md:py-6">
+    <section className="fixed top-16 right-0 w-[220px] min-h-screen overflow-y-scroll pl-0 pr-6 md:py-6 ">
       <Balance />
     </section>
   );

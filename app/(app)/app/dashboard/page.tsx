@@ -8,12 +8,12 @@ import useTokens from "@/lib/useTokens";
 import { setUserTokens } from "@/store/features/tokenSlice";
 
 const Dashboard = () => {
-  const { name, userId } = useAppSelector((state) => state.user);
+  const { name } = useAppSelector((state) => state.user);
   const { sum, change_24hr } = useAppSelector((state) => state.token);
   const firstName = name ? name.split(" ")[0] : "User";
   const sign = change_24hr > 0 ? "+" : "";
 
-  const { tokens: userTokens, isLoading } = useTokens(userId ?? "");
+  const { tokens: userTokens, isLoading } = useTokens();
 
   if (isLoading) {
     return (

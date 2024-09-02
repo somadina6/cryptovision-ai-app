@@ -78,14 +78,16 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       const signInDate = new Date();
       console.log("Just Signed In At", signInDate.toLocaleDateString());
-      await connect();
-      const updatedUser = await userModel.findOneAndUpdate(
-        { email: user.email as string },
-        { lastSignIn: signInDate }
-      );
-
       return true;
     },
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+
     async session({ session, token, user }) {
       await connect();
       // console.log("Just Had a Session");
