@@ -1,11 +1,8 @@
 "use client";
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { useAppSelector } from "../../../../store/hooks";
 import TokenCard from "../../../../components/TokenCard/TokenCard";
 import { formatPrice } from "../../../../utils/apis/apis";
-import LoadUserData from "../../../../components/LoadUserData/LoadUserData";
 import useTokens from "@/lib/useTokens";
-import { setUserTokens } from "@/store/features/tokenSlice";
 
 const Dashboard = () => {
   const { name } = useAppSelector((state) => state.user);
