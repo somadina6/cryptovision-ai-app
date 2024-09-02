@@ -23,9 +23,8 @@ const UserComp = () => {
   const { data, status } = useSession();
   const router = useRouter();
 
-  const { userId } = useAppSelector((state) => state.user);
   console.log("useTokens from ReduxProvider");
-  const { tokens: coinDetails } = useTokens(userId ?? "");
+  const { tokens: coinDetails } = useTokens();
 
   useEffect(() => {
     if (coinDetails) {

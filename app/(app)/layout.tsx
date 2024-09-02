@@ -18,7 +18,7 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: "CryptoVison - Dashboard",
   description: "CryptoVison - Dashboard",
 };
