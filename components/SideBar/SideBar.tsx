@@ -29,7 +29,7 @@ const SideBar = () => {
   return (
     <div
       id="sidebar"
-      className="border-r border-border fixed top-0 z-20 left-0 min-h-screen bg-background flex flex-col gap-2 md:px-2 lg:px-5 md:py-6"
+      className="border-r border-border fixed top-0 z-20 left-0 min-h-screen bg-background flex flex-col gap-2 px-2 md:px-5 md:py-6"
     >
       <div className="mb-12">
         <Logo />
@@ -46,7 +46,7 @@ const SideBar = () => {
             onClick={() => router.push(navlink.href)}
           >
             <p
-              className={`font-semibold font-sans ${
+              className={`font-semibold font-sans hidden md:block ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >

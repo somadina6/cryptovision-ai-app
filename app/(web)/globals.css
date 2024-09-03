@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --customwidth: 13rem;
+    --customwidth: 5rem;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -66,4 +66,14 @@
 
 #main {
   margin-left: var(--customwidth);
+}
+
+@media (min-width: 768px) {
+  #sidebar {
+    width: 13rem;
+  }
+
+  #main {
+    margin-left: 13rem;
+  }
 }
