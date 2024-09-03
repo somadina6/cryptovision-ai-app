@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+const dotenv = require("dotenv");
+
+const TokenModel = require("../../models/token").default;
+const { connect, disconnect } = require("mongoose");
+dotenv.config();
+
+const main = async () => {
+  const URI = process.env.MONGO_URI;
+  await connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  const token = await TokenModel.findById("66cf9ab7e66f8f7cd8d28a50");
+  console.log(token);
+};
+
+main();
