@@ -3,9 +3,7 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build('app', '-f Dockerfile .')
-                }
+               sh 'ls -la'
             }
         }
         stage('Build') {
