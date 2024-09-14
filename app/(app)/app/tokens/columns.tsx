@@ -9,19 +9,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { deleteToken, formatPrice } from "@/utils/apis/apis";
-import toast from "react-hot-toast";
+
 import { DeleteDialog } from "./delete-dialog";
-import { useState } from "react";
-import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import EditTokenAmountDialog from "@/components/Dialog/EditTokenAmountDialog";
 
 export type Payment = {
@@ -142,14 +135,8 @@ export const columns: ColumnDef<TokenData>[] = [
       const token = row.original.token;
       const amount = row.original.amount;
 
-      const [open, setOpen] = useState(false);
-
       return (
-        <DropdownMenu
-          open={open}
-          onOpenChange={setOpen}
-          key={token._id.toString()}
-        >
+        <DropdownMenu key={token._id.toString()}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
