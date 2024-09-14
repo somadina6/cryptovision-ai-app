@@ -5,35 +5,35 @@ REPO_URL="https://github.com/somadina6/cryptovision-ai-app.git"
 APP_DIR="/var/www/html/cryptovision-ai-app"
 
 # Navigate to the parent directory
-cd /var/www/html || { echo "Failed to change directory"; exit 1; }
+cd /var/www/html || { echo "Failed to change directory";  }
 
 # Remove the existing application directory
 rm -rf "$APP_DIR"
 
 # Clone the repository afresh
-git clone "$REPO_URL" "$APP_DIR" || { echo "Failed to clone repository"; exit 1; }
+git clone "$REPO_URL" "$APP_DIR" || { echo "Failed to clone repository";  }
 
 # Navigate to the application directory
-cd "$APP_DIR" || { echo "Failed to change directory"; exit 1; }
+cd "$APP_DIR" || { echo "Failed to change directory";  }
 
 # Install any new dependencies
-npm install || { echo "Failed to install dependencies"; exit 1; }
+npm install || { echo "Failed to install dependencies"; }
 
 # Build the application if necessary
-npm run build || { echo "Build failed"; exit 1; }
+npm run build || { echo "Build failed"; }
 
-pm2 stop crypto-app || { echo "Failed to stop PM2 process"; exit 1; }
+pm2 stop crypto-app || { echo "Failed to stop PM2 process"; }
 
 # Optionally, remove the existing PM2 process
-pm2 delete crypto-app || { echo "Failed to delete PM2 process"; exit 1; }
+pm2 delete crypto-app || { echo "Failed to delete PM2 process"; }
 
 # Start the PM2 process
-pm2 start npm --name "crypto-app" -- start || { echo "Failed to start PM2 process"; exit 1; }
+pm2 start npm --name "crypto-app" -- start || { echo "Failed to start PM2 process"; }
 
 # Restart the PM2 process
-pm2 restart crypto-app || { echo "Failed to restart PM2 process"; exit 1; }
+pm2 restart crypto-app || { echo "Failed to restart PM2 process"; }
 
 # Optionally, save the PM2 process list
-pm2 save || { echo "Failed to save PM2 process list"; exit 1; }
+pm2 save || { echo "Failed to save PM2 process list";  }
 
 echo "Deployment complete and PM2 process restarted."
