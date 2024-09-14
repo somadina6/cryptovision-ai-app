@@ -26,7 +26,7 @@ export const tokenSlice = createSlice({
 
       let sum = 0;
       let sum_change_24hr = 0;
-
+      console.log(typeof tokens);
       tokens.forEach(({ token, amount }) => {
         const current = token.current_price * amount;
         const change_percentage = token.price_change_percentage_24h / 100;
