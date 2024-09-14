@@ -9,6 +9,9 @@ git pull origin main
 # Install any new dependencies
 npm install
 
+# Build the application if necessary
+npm run build
+
 # Restart the PM2 process
 pm2 restart crypto-app
 
