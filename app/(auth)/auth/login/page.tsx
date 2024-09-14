@@ -31,11 +31,14 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === "authenticated") router.push("/app/dashboard");
+  }, [status]);
+
+  useEffect(() => {
     const emailFromSignUp = queryParams?.get("email");
     if (emailFromSignUp) {
       setuserData({ ...userData, email: emailFromSignUp });
     }
-  }, [userData, router, queryParams, status]);
+  }, []);
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     setSignInLoading(true);
