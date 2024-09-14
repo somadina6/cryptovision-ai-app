@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Navigate to your application directory
+cd /var/www/html/cryptovision-ai-app || exit
+
+# Pull the latest code from the repository
+git pull origin main
+
+# Install any new dependencies
+npm install
+
+# Restart the PM2 process
+pm2 restart crypto-app
+
+# Optionally, save the PM2 process list
+pm2 save
+
+echo "Deployment complete and PM2 process restarted."
