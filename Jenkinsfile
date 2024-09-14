@@ -10,6 +10,14 @@ pipeline {
             steps {
                 sh 'npm install'
             }
+            post {
+                success {
+                    echo 'Build Success'
+                }
+                failure {
+                    echo 'Build Failure'
+                }
+            }
         }
     }
 }
