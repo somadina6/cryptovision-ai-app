@@ -1,6 +1,6 @@
 " use client";
-import { ChangeEvent, useState } from "react";
-import { addToken } from "../../utils/apis/apis";
+import { ChangeEvent, useEffect, useState } from "react";
+import { addToken, updateToken } from "../../utils/apis/apis";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -17,20 +17,23 @@ import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
 import toast from "react-hot-toast";
 
-export default function AddTokenDialog({ token }: { token: Token }) {
-  const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
-  const { userId } = useAppSelector((state) => state.user);
+export default function EditTokenAmountDialog({
+  currentAmount,
+  token,
+}: {
+  currentAmount: number;
+  token: Token;
+}) {
+  const [tokenQuantity, setTokenQuantity] = useState<number>(currentAmount);
   const [open, setOpen] = useState(false);
 
-  const handleAddToken = async () => {
-    if (!userId) return;
-    if (!tokenQuantity) return;
+  const handleEditToken = async () => {
     try {
-      await addToken(token._id.toString(), tokenQuantity);
-      toast.success("Token added successfully");
+      await updateToken(token._id.toString(), tokenQuantity);
+      toast.success("Token updated successfully");
     } catch (error) {
-      console.error("Error adding token:", error);
-      throw new Error("Error adding token");
+      console.error("Error updating token:", error);
+      throw new Error("Error updating token");
     } finally {
       setOpen(false);
     }
@@ -38,15 +41,13 @@ export default function AddTokenDialog({ token }: { token: Token }) {
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-    setTokenQuantity(newValue ? parseFloat(newValue) : undefined);
+    setTokenQuantity(newValue ? parseFloat(newValue) : 0);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="hover:bg-primary hover:text-white">
-          Track
-        </Button>
+        <p>Edit</p>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -77,14 +78,14 @@ export default function AddTokenDialog({ token }: { token: Token }) {
               className="col-span-3"
               onChange={handleChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleAddToken();
+                if (e.key === "Enter") handleEditToken();
               }}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleAddToken}>
-            Track Now
+          <Button type="submit" onClick={handleEditToken}>
+            Update
           </Button>
         </DialogFooter>
       </DialogContent>

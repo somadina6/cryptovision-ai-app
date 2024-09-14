@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Input } from "../ui/input";
 
 const SearchBar = () => {
   const [query, setQuery] = useState<string>("");
@@ -14,10 +15,9 @@ const SearchBar = () => {
 
   return (
     <div className="w-full">
-      <input
-        type="text"
+      <Input
+        type="search"
         placeholder="Search"
-        className="border border-border w-full p-2 md:py-2 md:px-4 rounded-full text-md bg-transparent dark:text-white focus:outline-ring"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}

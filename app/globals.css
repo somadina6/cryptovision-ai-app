@@ -60,6 +60,10 @@
   }
 }
 
+#header {
+  @apply h-16 w-full flex px-4 md:px-12 py-4 items-center sticky top-0 z-10 bg-background;
+}
+
 #sidebar {
   width: var(--customwidth);
 }

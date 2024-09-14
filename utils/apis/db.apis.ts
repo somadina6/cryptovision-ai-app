@@ -137,3 +137,35 @@ export async function deleteTokenFromDB(params: {
 
   return userPortfolio.holdings;
 }
+
+export async function updateTokenInDB({
+  userId,
+  tokenId,
+  amount,
+}: {
+  userId: string;
+  tokenId: string;
+  amount: number;
+}) {
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+  const tokenObjectId = new mongoose.Types.ObjectId(tokenId);
+
+  await connect();
+
+  const updatedToken = await UserPortfolioModel.findOneAndUpdate(
+    { userId: userObjectId, "holdings.token": tokenObjectId },
+    {
+      $set: {
+        "holdings.$.amount": amount,
+        "holdings.$.last_updated": new Date(),
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedToken) {
+    throw new Error("Token not found");
+  }
+
+  return updatedToken;
+}

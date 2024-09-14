@@ -9,12 +9,20 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { deleteToken, formatPrice } from "@/utils/apis/apis";
 import toast from "react-hot-toast";
+import { DeleteDialog } from "./delete-dialog";
+import { useState } from "react";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
+import EditTokenAmountDialog from "@/components/Dialog/EditTokenAmountDialog";
 
 export type Payment = {
   id: string;
@@ -132,28 +140,34 @@ export const columns: ColumnDef<TokenData>[] = [
     id: "actions",
     cell: ({ row }) => {
       const token = row.original.token;
+      const amount = row.original.amount;
+
+      const [open, setOpen] = useState(false);
 
       return (
-        <DropdownMenu>
+        <DropdownMenu
+          open={open}
+          onOpenChange={setOpen}
+          key={token._id.toString()}
+        >
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+              <EditTokenAmountDialog token={token} currentAmount={amount} />
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+              <DeleteDialog tokenId={token._id.toString()} />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem>View {token.name} Page</DropdownMenuItem>
             <DropdownMenuItem>View on CoinGecko</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={async () => {
-                await deleteToken(token._id.toString());
-                toast.success("Token deleted successfully");
-              }}
-            >
-              <p className="text-red-500 hover:text-red-600">Delete</p>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

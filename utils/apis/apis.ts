@@ -1,8 +1,7 @@
 import axios from "axios";
-import { DeleteResult } from "mongodb";
-import { coingeckoAxios } from "../axios/axios";
-import { ApiResponse, CoingeckoResponse, TokenData } from "../../types/types";
+import { ApiResponse, TokenData } from "../../types/types";
 import { mutate } from "swr";
+import toast from "react-hot-toast";
 
 export async function getTokens() {
   try {
@@ -38,10 +37,27 @@ export async function deleteToken(tokenId: string) {
     });
     if (status === 200 || status === 204) {
       await mutate(`fetchUserTokens`);
+      toast.success("Token deleted");
       console.log(data);
       return data;
     } else {
       throw new Error("Failed to delete token");
+    }
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error);
+  }
+}
+
+export async function updateToken(tokenId: string, amount: number) {
+  try {
+    const { data, status } = await axios.put<TokenData>(`/api/token`, {
+      tokenId,
+      amount,
+    });
+    if (status === 200 || status === 201) {
+      await mutate(`fetchUserTokens`);
+      return data;
     }
   } catch (error: any) {
     console.log(error);

@@ -1,14 +1,17 @@
 import SearchBar from "../SearchBar/SearchBar";
-import Profile from "./Profile";
+import { ProfileDropdown } from "./Profilev2";
 
 const Header = () => {
   return (
-    <section className="h-16 w-full flex px-4 md:px-12 py-4 items-center justify-center sticky top-0 z-10 bg-background ">
-      <div className="md:w-[600px]">
-        <SearchBar />
-      </div>
-      <div className="self-end border">
-        <Profile />
+    <section id="header">
+      <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
+        <div className="flex-1 flex justify-center">
+          <div className="md:w-[600px] w-full">
+            <SearchBar />
+          </div>
+        </div>
+
+        <ProfileDropdown />
       </div>
     </section>
   );

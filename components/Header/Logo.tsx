@@ -13,10 +13,7 @@ const Logo = () => {
       id="logo"
       className="flex font-bold sm:text-sm md:text-lg items-center "
     >
-      <p
-        className={`dark:text-white cursor-pointer`}
-        onClick={() => router.push("/")}
-      >
+      <p className={` cursor-pointer`} onClick={() => router.push("/")}>
         CryptoVision
       </p>
       <p className="ml-1 text-primary">AI</p>

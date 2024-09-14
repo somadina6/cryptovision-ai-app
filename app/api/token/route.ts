@@ -1,8 +1,11 @@
 import TokenModel from "@/models/token";
+import { UserPortfolioModel } from "@/models/userPortfolio";
+import user from "@/schemas/user";
 import {
   getTokensFromDB,
   addTokenToDB,
   deleteTokenFromDB,
+  updateTokenInDB,
 } from "@/utils/apis/db.apis";
 import connect from "@/utils/mongodb/db";
 import { getToken } from "next-auth/jwt";
@@ -106,34 +109,39 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-export async function PUT(req: Request) {
-  const body = await req.json();
-  await connect();
-  const { userId, updatedUserTokens } = body.data;
-
+export async function PUT(req: NextRequest) {
   try {
-    // Loop through updatedTokens and update each token in the database
-    for (const token of updatedUserTokens) {
-      // Find the token by userId and coinId
-      const existingToken = await TokenModel.findOne({
-        userId,
-        coinId: token.coinId,
-      });
-
-      if (existingToken) {
-        // Update the token price
-        existingToken.price = token.price;
-        existingToken.price_change_percentage_24h =
-          token.price_change_percentage_24h;
-
-        // Save the updated token
-        await existingToken.save();
-      }
+    // Parse request body
+    const body = await req.json();
+    await connect();
+    // Get token from request
+    const token = await getToken({ req });
+    if (!token) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
     }
+    // Get user ID from token
+    const userId = token.id as string;
+    if (!userId) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    // Get token ID and amount from request body
+    const { tokenId, amount } = body;
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    const data = await updateTokenInDB({ userId, tokenId, amount });
+    if (data) {
+      return NextResponse.json(data, { status: 200, statusText: "OK" });
+    }
   } catch (error) {
-    console.error("Error updating user tokens:", error);
-    return NextResponse.json({ success: false }, { status: 400 });
+    console.log(error);
+    return NextResponse.json(
+      { message: "Failed to update token" },
+      { status: 500, statusText: "Internal Server Error" }
+    );
   }
 }
