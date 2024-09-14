@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db-update": "node ./scripts/db./update-tokens"
+    "db-update": "node ./scripts/db/update-tokens"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
