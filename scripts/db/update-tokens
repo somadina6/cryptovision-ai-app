@@ -17,6 +17,7 @@ const main = async () => {
   try {
     let count = 0;
     let page = 1;
+    let numberOfTokensToProcess = 1000;
 
     await connect(URI, {
       useNewUrlParser: true,
@@ -27,7 +28,7 @@ const main = async () => {
 
     let response = await axios.get(ENDPOINT, { params: { page: page } });
 
-    while (response.data.length > 0) {
+    while (response.data.length > 0 && count < numberOfTokensToProcess) {
       for (const token of response.data) {
         // Fields for inserting a new document
         const insertFields = {
