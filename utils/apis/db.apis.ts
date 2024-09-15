@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { UserPortfolioModel } from "../../models/userPortfolio";
 import connect from "../mongodb/db";
 import TokenModel from "@/models/token";
+import { disconnect } from "../mongodb/disconnect";
 
 type Holding = {
   token: mongoose.Types.ObjectId;
@@ -76,7 +77,7 @@ export async function addTokenToDB(params: {
     console.error("Error updating token in DB:", error);
     throw error;
   } finally {
-    await mongoose.disconnect(); // Close the connection after the operation
+    await disconnect();
   }
 }
 
@@ -105,7 +106,7 @@ export async function getTokensFromDB(userId: string) {
     console.error("Error fetching tokens from DB:", error);
     throw error;
   } finally {
-    await mongoose.disconnect(); // Close the connection after the operation
+    await disconnect();
   }
 }
 
@@ -144,7 +145,7 @@ export async function deleteTokenFromDB(params: {
     console.error("Error deleting token from DB:", error);
     throw error;
   } finally {
-    await mongoose.disconnect(); // Close the connection after the operation
+    await disconnect();
   }
 }
 
@@ -183,6 +184,6 @@ export async function updateTokenInDB({
     console.error("Error updating token in DB:", error);
     throw error;
   } finally {
-    await mongoose.disconnect(); // Close the connection after the operation
+    await disconnect();
   }
 }
