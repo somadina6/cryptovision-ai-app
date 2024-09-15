@@ -3,11 +3,12 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 const { connect, disconnect } = require("mongoose");
 dotenv.config();
-const tokens = require("../../models/token").default;
+const tokens = require("../../models/token.js").default;
 
 const URI = process.env.MONGO_URI;
 const DB_NAME = process.env.DB_NAME;
 const ENDPOINT = process.env.UPDATE_TOKENS_ENDPOINT;
+console.log(URI, DB_NAME, ENDPOINT);
 if (!URI || !DB_NAME || !ENDPOINT) {
   console.error("Error: Environment variables URI and DB_NAME must be set.");
   process.exit(1);
@@ -66,7 +67,6 @@ const main = async () => {
         if (existingToken) {
           // Update the fields if the document exists
           await tokens.updateOne({ id: token.id }, { $set: updateFields });
-          console.log(`Updated token: ${token.name}`);
         } else {
           // Insert the document with selected fields if it doesn't exist
           const token = new tokens(insertFields);

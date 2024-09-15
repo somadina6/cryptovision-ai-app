@@ -4,8 +4,6 @@ import { getTokens } from "@/utils/apis/apis";
 import useSWR from "swr";
 
 export const fetchUserTokens = async (userId: string) => {
-  console.log("fetchUserTokens");
-
   try {
     const tokens = await getTokens();
     return tokens;

@@ -21,12 +21,14 @@ const UserComp = memo(() => {
   const dispatch = useDispatch();
   const { data, status } = useSession();
   const router = useRouter();
-  const { tokens: coinDetails } = useTokens();
+  const { tokens, error, isLoading } = useTokens(); // Assuming these states exist in useTokens
+  const coinDetails = tokens || [];
 
+  // Update user state in store based on session status
   const updateUserState = useCallback(() => {
     dispatch(setUserStatus(status));
 
-    if (status === "authenticated") {
+    if (status === "authenticated" && data) {
       dispatch(setUserId(data.user.id));
       dispatch(setUserImage(data.user.image));
       dispatch(setUserName(data.user.name));
@@ -34,24 +36,20 @@ const UserComp = memo(() => {
       dispatch(setUserId(null));
       dispatch(setUserImage(null));
       dispatch(setUserName(null));
+      router.push("/auth/login");
     }
-  }, [status, data, dispatch]);
-
-  useEffect(() => {
-    if (coinDetails) {
-      dispatch(setUserTokens(coinDetails));
-    }
-  }, [coinDetails, dispatch]);
+  }, [status, data, dispatch, router]);
 
   useEffect(() => {
     updateUserState();
-  }, [status, data, updateUserState]);
+  }, [status, updateUserState]);
 
+  // Update user tokens in store when fetched from API call
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/login");
+    if (coinDetails && !isLoading && !error) {
+      dispatch(setUserTokens(coinDetails));
     }
-  }, [status, router]);
+  }, [coinDetails, isLoading, error, dispatch]);
 
   return null;
 });

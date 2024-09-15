@@ -44,6 +44,6 @@ const TokenSchema: Schema = new Schema({
   last_updated: { type: Date, required: true },
 });
 
-const TokenModel = models.Token || model("Token", TokenSchema);
+const TokenModel = model("Token", TokenSchema);
 
 export default TokenModel;

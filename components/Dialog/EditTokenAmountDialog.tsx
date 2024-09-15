@@ -51,9 +51,9 @@ export default function EditTokenAmountDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add token to your portfolio</DialogTitle>
+          <DialogTitle>Edit token amount</DialogTitle>
           <DialogDescription>
-            Add the total quantity of the token you have here. Click save when
+            Add the total quantity of the token you have here. Click update when
             you&apos;re done.
           </DialogDescription>
         </DialogHeader>

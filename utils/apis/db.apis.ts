@@ -1,7 +1,8 @@
 // Custom CRUD operations for the database
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import { UserPortfolioModel } from "../../models/userPortfolio";
 import connect from "../mongodb/db";
+import TokenModel from "@/models/token";
 
 type Holding = {
   token: mongoose.Types.ObjectId;
@@ -82,12 +83,14 @@ export async function getTokensFromDB(userId: string) {
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
     // Populate the 'holdings' array and the 'token_id' field within 'holdings'
+
     const userPortfolio = await UserPortfolioModel.findOne({
       userId: userObjectId,
     }).populate({
       path: "holdings",
       populate: {
         path: "token",
+        model: TokenModel,
         select:
           "_id id symbol name image current_price price_change_percentage_24h",
       },

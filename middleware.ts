@@ -17,4 +17,4 @@ export default withAuth(
   }
 );
 
-export const config = { matcher: ["/api/token/:path*"] };
+export const config = { matcher: ["/app/:path*"] };

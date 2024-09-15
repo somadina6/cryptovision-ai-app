@@ -2,12 +2,27 @@ import axios from "axios";
 import { ApiResponse, TokenData } from "../../types/types";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 export async function getTokens() {
   try {
-    const { data } = await axios.get<TokenData[]>(`/api/token`);
-    // console.log(data);
-    return data;
+    const { data, status, headers } = await axios.get<TokenData[]>(
+      `/api/token`
+    );
+
+    if (status === 200) {
+      return data;
+    } else if (status === 307) {
+      const newUri = headers.Location;
+      console.log("newUri", newUri);
+      if (newUri && newUri.startsWith("/auth/login")) {
+        window.location.href = newUri;
+      } else {
+        throw new Error("Redirect location not provided or invalid");
+      }
+    } else {
+      throw new Error("Failed to fetch tokens");
+    }
   } catch (error: any) {
     console.log(error);
     throw new Error(error);
