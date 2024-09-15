@@ -1,6 +1,6 @@
 import mongoose, { ConnectOptions } from "mongoose";
 
-export const options: ConnectOptions = {
+export const options = {
   connectTimeoutMS: 30000,
   maxPoolSize: 40,
 };
