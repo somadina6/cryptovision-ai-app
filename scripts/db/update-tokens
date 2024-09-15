@@ -25,6 +25,7 @@ const main = async () => {
       useUnifiedTopology: true,
       dbName: DB_NAME,
     });
+    console.log("Date: ", new Date());
     console.log("Connected to the database");
 
     let response = await axios.get(ENDPOINT, { params: { page: page } });
