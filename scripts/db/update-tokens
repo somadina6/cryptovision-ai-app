@@ -22,7 +22,6 @@ const main = async () => {
 
     await connect(URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
       dbName: DB_NAME,
     });
     console.log("Date: ", new Date());
