@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-export const options = {
+export const options: mongoose.ConnectOptions = {
   connectTimeoutMS: 30000,
-  poolSize: 30,
+  maxPoolSize: 40,
 };
 
 const connect = async () => {
