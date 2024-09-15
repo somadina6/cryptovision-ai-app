@@ -21,7 +21,8 @@ export const tokenSlice = createSlice({
   reducers: {
     setUserTokens: (state, action: PayloadAction<TokenData[]>) => {
       const tokens = action.payload;
-      if (!tokens) return;
+      // If the payload is a string, it means the user is not authenticated
+      if (!tokens || typeof tokens == "string") return;
       state.userTokens = tokens;
 
       let sum = 0;
