@@ -16,6 +16,9 @@ git clone "$REPO_URL" "$APP_DIR" || { echo "Failed to clone repository";  }
 # Navigate to the application directory
 cd "$APP_DIR" || { echo "Failed to change directory";  }
 
+// Copy the .env file to the application directory
+cp /home/node/.env /var/www/html/cryptovision-ai-app/.env
+
 # Install any new dependencies
 npm install || { echo "Failed to install dependencies"; }
 
