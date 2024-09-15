@@ -18,9 +18,11 @@ cd "$APP_DIR" || { echo "Failed to change directory";  }
 
 # Install any new dependencies
 npm install || { echo "Failed to install dependencies"; }
+echo "Dependencies installed."
 
 # Build the application if necessary
 npm run build || { echo "Build failed"; }
+echo "Build successful."
 
 pm2 stop crypto-app || { echo "Failed to stop PM2 process"; }
 

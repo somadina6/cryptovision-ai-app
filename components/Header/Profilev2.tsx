@@ -12,6 +12,7 @@ import { useAppSelector } from "@/store/hooks"; // Ensure this hook is properly 
 import { Button } from "../ui/button";
 import { LogOutIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { CgProfile } from "react-icons/cg";
 
 export const ProfileDropdown = () => {
   const { name, image } = useAppSelector((state) => state.user);
@@ -20,11 +21,15 @@ export const ProfileDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="border-0 focus:ring-0">
-          <img
-            src={image ?? "/path-to-placeholder.jpg"}
-            alt="User profile"
-            className="w-8 h-8 rounded-full mr-2"
-          />
+          {image ? (
+            <img
+              src={image}
+              alt="User profile"
+              className="w-8 h-8 rounded-full mr-2"
+            />
+          ) : (
+            <CgProfile className="w-6 h-6" />
+          )}
 
           <span>{name ?? "Guest"}</span>
         </Button>
