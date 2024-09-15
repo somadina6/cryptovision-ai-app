@@ -1,5 +1,4 @@
-// Custom CRUD operations for the database
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 import { UserPortfolioModel } from "../../models/userPortfolio";
 import connect from "../mongodb/db";
 import TokenModel from "@/models/token";
@@ -29,51 +28,55 @@ export async function addTokenToDB(params: {
 
   await connect();
 
-  // Find the user's portfolio
-  const existingUserPortfolio = await UserPortfolioModel.findOne({
-    userId: userObjectId,
-  });
-
-  if (existingUserPortfolio) {
-    // Check if the token already exists in the user's holdings
-    const existingToken = existingUserPortfolio.holdings.find(
-      (holding: Holding) => holding.token === tokenObjectId
-    );
-
-    if (existingToken) {
-      // Update quantity and last_updated timestamp
-      existingToken.amount = amount;
-      existingToken.last_updated = new Date();
-    } else {
-      // Add a new token to holdings
-      existingUserPortfolio.holdings.push({
-        token: tokenObjectId, // No conversion to ObjectId needed
-        amount: amount,
-        last_updated: new Date(),
-      });
-    }
-
-    await existingUserPortfolio.save();
-    console.log("Portfolio updated");
-    return { portfolio: existingUserPortfolio, status: 200 };
-  } else {
-    // If the user portfolio does not exist, create a new one
-    console.log("Creating new portfolio");
-    console.log("userObjectId", userId);
-    console.log("tokenId", tokenId);
-    console.log("quantity", amount);
-    const newPortfolio = await UserPortfolioModel.create({
-      userId: userId,
-      holdings: [
-        {
-          token: tokenObjectId,
-          amount: amount,
-          last_updated: new Date(),
-        },
-      ],
+  try {
+    // Find the user's portfolio
+    const existingUserPortfolio = await UserPortfolioModel.findOne({
+      userId: userObjectId,
     });
 
-    return { portfolio: newPortfolio, status: 201 };
+    if (existingUserPortfolio) {
+      // Check if the token already exists in the user's holdings
+      const existingToken = existingUserPortfolio.holdings.find(
+        (holding: Holding) => holding.token.equals(tokenObjectId)
+      );
+
+      if (existingToken) {
+        // Update quantity and last_updated timestamp
+        existingToken.amount = amount;
+        existingToken.last_updated = new Date();
+      } else {
+        // Add a new token to holdings
+        existingUserPortfolio.holdings.push({
+          token: tokenObjectId, // No conversion to ObjectId needed
+          amount: amount,
+          last_updated: new Date(),
+        });
+      }
+
+      await existingUserPortfolio.save();
+      console.log("Portfolio updated");
+      return { portfolio: existingUserPortfolio, status: 200 };
+    } else {
+      // If the user portfolio does not exist, create a new one
+      console.log("Creating new portfolio");
+      const newPortfolio = await UserPortfolioModel.create({
+        userId: userObjectId,
+        holdings: [
+          {
+            token: tokenObjectId,
+            amount: amount,
+            last_updated: new Date(),
+          },
+        ],
+      });
+
+      return { portfolio: newPortfolio, status: 201 };
+    }
+  } catch (error) {
+    console.error("Error updating token in DB:", error);
+    throw error;
+  } finally {
+    await mongoose.disconnect(); // Close the connection after the operation
   }
 }
 
@@ -81,8 +84,6 @@ export async function getTokensFromDB(userId: string) {
   try {
     await connect();
     const userObjectId = new mongoose.Types.ObjectId(userId);
-
-    // Populate the 'holdings' array and the 'token_id' field within 'holdings'
 
     const userPortfolio = await UserPortfolioModel.findOne({
       userId: userObjectId,
@@ -100,9 +101,11 @@ export async function getTokensFromDB(userId: string) {
       throw new Error("User Portfolio Not Found");
     }
     return userPortfolio.holdings;
-  } catch (error: any) {
-    console.error(error);
-    throw new Error(error);
+  } catch (error) {
+    console.error("Error fetching tokens from DB:", error);
+    throw error;
+  } finally {
+    await mongoose.disconnect(); // Close the connection after the operation
   }
 }
 
@@ -121,21 +124,28 @@ export async function deleteTokenFromDB(params: {
 
   await connect();
 
-  const userPortfolio = await UserPortfolioModel.findOne({
-    userId: userObjectId,
-  });
+  try {
+    const userPortfolio = await UserPortfolioModel.findOne({
+      userId: userObjectId,
+    });
 
-  if (!userPortfolio) {
-    throw new Error("User Portfolio Not Found");
+    if (!userPortfolio) {
+      throw new Error("User Portfolio Not Found");
+    }
+
+    userPortfolio.holdings = userPortfolio.holdings.filter(
+      (holding: Holding) => !holding.token.equals(tokenObjectId)
+    );
+
+    await userPortfolio.save();
+
+    return userPortfolio.holdings;
+  } catch (error) {
+    console.error("Error deleting token from DB:", error);
+    throw error;
+  } finally {
+    await mongoose.disconnect(); // Close the connection after the operation
   }
-
-  userPortfolio.holdings = userPortfolio.holdings.filter(
-    (holding: Holding) => holding.token.toString() !== tokenObjectId.toString()
-  );
-
-  await userPortfolio.save();
-
-  return userPortfolio.holdings;
 }
 
 export async function updateTokenInDB({
@@ -152,20 +162,27 @@ export async function updateTokenInDB({
 
   await connect();
 
-  const updatedToken = await UserPortfolioModel.findOneAndUpdate(
-    { userId: userObjectId, "holdings.token": tokenObjectId },
-    {
-      $set: {
-        "holdings.$.amount": amount,
-        "holdings.$.last_updated": new Date(),
+  try {
+    const updatedToken = await UserPortfolioModel.findOneAndUpdate(
+      { userId: userObjectId, "holdings.token": tokenObjectId },
+      {
+        $set: {
+          "holdings.$.amount": amount,
+          "holdings.$.last_updated": new Date(),
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
 
-  if (!updatedToken) {
-    throw new Error("Token not found");
+    if (!updatedToken) {
+      throw new Error("Token not found");
+    }
+
+    return updatedToken;
+  } catch (error) {
+    console.error("Error updating token in DB:", error);
+    throw error;
+  } finally {
+    await mongoose.disconnect(); // Close the connection after the operation
   }
-
-  return updatedToken;
 }

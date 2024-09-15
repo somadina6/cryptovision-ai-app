@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export const options = {
   connectTimeoutMS: 30000,
+  poolSize: 30,
 };
 
 const connect = async () => {
