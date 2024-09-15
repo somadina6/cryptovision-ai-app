@@ -19,11 +19,9 @@ import toast from "react-hot-toast";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
   const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
-  const { userId } = useAppSelector((state) => state.user);
   const [open, setOpen] = useState(false);
 
   const handleAddToken = async () => {
-    if (!userId) return;
     if (!tokenQuantity) return;
     try {
       await addToken(token._id.toString(), tokenQuantity);
