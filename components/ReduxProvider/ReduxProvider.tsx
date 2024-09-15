@@ -56,6 +56,8 @@ const UserComp = memo(() => {
   return null;
 });
 
+UserComp.displayName = "UserComp";
+
 const ReduxProvider = ({ children }: Props) => {
   return (
     <Provider store={store}>
