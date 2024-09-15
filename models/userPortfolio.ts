@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import TokenModel from "./token";
 
 const { Schema, model, models } = mongoose;
 

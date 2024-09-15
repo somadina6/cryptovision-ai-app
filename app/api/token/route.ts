@@ -1,6 +1,3 @@
-import TokenModel from "@/models/token";
-import { UserPortfolioModel } from "@/models/userPortfolio";
-import user from "@/schemas/user";
 import {
   getTokensFromDB,
   addTokenToDB,

@@ -2,9 +2,6 @@
 import mongoose from "mongoose";
 import { UserPortfolioModel } from "../../models/userPortfolio";
 import connect from "../mongodb/db";
-const { Schema } = mongoose;
-
-import TokenModel from "@/models/token";
 
 type Holding = {
   token: mongoose.Types.ObjectId;
