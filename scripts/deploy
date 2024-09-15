@@ -30,10 +30,7 @@ pm2 stop crypto-app || { echo "Failed to stop PM2 process"; }
 pm2 delete crypto-app || { echo "Failed to delete PM2 process"; }
 
 # Start the PM2 process
-pm2 start npm --name "crypto-app" -- start || { echo "Failed to start PM2 process"; }
-
-# Restart the PM2 process
-pm2 restart crypto-app || { echo "Failed to restart PM2 process"; }
+sudo pm2 start npm --name "crypto-app" -- start || { echo "Failed to start PM2 process"; }
 
 # Optionally, save the PM2 process list
 pm2 save || { echo "Failed to save PM2 process list";  }
