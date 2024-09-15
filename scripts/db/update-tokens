@@ -8,7 +8,7 @@ const tokens = require("../../models/token.js").default;
 const URI = process.env.MONGO_URI;
 const DB_NAME = process.env.DB_NAME;
 const ENDPOINT = process.env.UPDATE_TOKENS_ENDPOINT;
-console.log(URI, DB_NAME, ENDPOINT);
+
 if (!URI || !DB_NAME || !ENDPOINT) {
   console.error("Error: Environment variables URI and DB_NAME must be set.");
   process.exit(1);
