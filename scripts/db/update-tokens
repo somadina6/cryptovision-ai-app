@@ -21,7 +21,6 @@ const main = async () => {
     let numberOfTokensToProcess = 1000;
 
     await connect(URI, {
-      useNewUrlParser: true,
       dbName: DB_NAME,
     });
     console.log("Date: ", new Date());

@@ -42,7 +42,9 @@ export const ProfileDropdown = () => {
         <DropdownMenuGroup className="cursor-pointer">
           <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+          <DropdownMenuItem
+            onClick={() => signOut({ callbackUrl: "/auth/login" })}
+          >
             <p className="text-destructive hover:text-red-600 flex items-center">
               Log out
               <LogOutIcon className="w-4 h-4 ml-2" />
