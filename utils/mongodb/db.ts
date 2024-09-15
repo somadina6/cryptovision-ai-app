@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { ConnectOptions } from "mongoose";
 
-export const options: mongoose.ConnectOptions = {
+export const options: ConnectOptions = {
   connectTimeoutMS: 30000,
   maxPoolSize: 40,
 };
