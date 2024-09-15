@@ -8,6 +8,7 @@ import {
 } from "../ui/table";
 import { Token } from "../../types/types";
 import AddTokenDialog from "../Dialog/Dialog";
+import Image from "next/image";
 
 // A single TokenRow component using Shadcn UI TableRow and TableCell
 const TokenRow = ({ token }: { token: Token }) => {
@@ -27,10 +28,12 @@ const TokenRow = ({ token }: { token: Token }) => {
       {/* Token Image, Name, and Symbol */}
       <TableCell className="flex items-center py-2 text-foreground">
         <div className="rounded-full overflow-hidden mr-2">
-          <img
+          <Image
             src={token.image}
             alt={`${token.name} logo`}
             className="w-10 h-10"
+            width={40}
+            height={40}
           />
         </div>
 

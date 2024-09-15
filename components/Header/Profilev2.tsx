@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { LogOutIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { CgProfile } from "react-icons/cg";
+import Image from "next/image";
 
 export const ProfileDropdown = () => {
   const { name, image } = useAppSelector((state) => state.user);
@@ -22,10 +23,12 @@ export const ProfileDropdown = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="border-0 focus:ring-0">
           {image ? (
-            <img
+            <Image
               src={image}
               alt="User profile"
               className="w-8 h-8 rounded-full mr-2"
+              width={32}
+              height={32}
             />
           ) : (
             <CgProfile className="w-6 h-6" />

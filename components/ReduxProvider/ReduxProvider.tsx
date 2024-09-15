@@ -8,61 +8,53 @@ import {
   setUserStatus,
 } from "../../store/features/userSlice";
 import { store } from "../../store/store";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useCallback, memo } from "react";
 import { Provider, useDispatch } from "react-redux";
-import { useAppSelector } from "@/store/hooks";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const UserComp = () => {
+const UserComp = memo(() => {
   const dispatch = useDispatch();
   const { data, status } = useSession();
   const router = useRouter();
-
-  console.log("useTokens from ReduxProvider");
   const { tokens: coinDetails } = useTokens();
+
+  const updateUserState = useCallback(() => {
+    dispatch(setUserStatus(status));
+
+    if (status === "authenticated") {
+      dispatch(setUserId(data.user.id));
+      dispatch(setUserImage(data.user.image));
+      dispatch(setUserName(data.user.name));
+    } else if (status === "unauthenticated") {
+      dispatch(setUserId(null));
+      dispatch(setUserImage(null));
+      dispatch(setUserName(null));
+    }
+  }, [status, data, dispatch]);
 
   useEffect(() => {
     if (coinDetails) {
       dispatch(setUserTokens(coinDetails));
-      console.log("ReduxProvider dispatch setUserTokens");
     }
-  }, [coinDetails]);
+  }, [coinDetails, dispatch]);
 
   useEffect(() => {
-    const userStateCheck = async () => {
-      dispatch(setUserStatus(status));
+    updateUserState();
+  }, [status, data, updateUserState]);
 
-      switch (status) {
-        case "authenticated":
-          dispatch(setUserId(data.user.id));
-          dispatch(setUserImage(data.user.image));
-          dispatch(setUserName(data.user.name));
-          break;
-
-        case "unauthenticated":
-          dispatch(setUserId(null));
-          dispatch(setUserImage(null));
-          dispatch(setUserName(null));
-          break;
-
-        default:
-          break;
-      }
-    };
-    userStateCheck();
-  }, [status, data, dispatch]);
-
-  if (status == "unauthenticated") {
-    router.push("/auth/login");
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
+    }
+  }, [status, router]);
 
   return null;
-};
+});
 
 const ReduxProvider = ({ children }: Props) => {
   return (

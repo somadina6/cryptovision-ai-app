@@ -31,7 +31,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === "authenticated") router.push("/app/dashboard");
-  }, [status]);
+  }, [status, router]);
 
   useEffect(() => {
     const emailFromSignUp = queryParams?.get("email");

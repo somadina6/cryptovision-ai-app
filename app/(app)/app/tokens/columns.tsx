@@ -16,6 +16,7 @@ import { MoreHorizontal } from "lucide-react";
 
 import { DeleteDialog } from "./delete-dialog";
 import EditTokenAmountDialog from "@/components/Dialog/EditTokenAmountDialog";
+import Image from "next/image";
 
 export type Payment = {
   id: string;
@@ -41,10 +42,12 @@ export const columns: ColumnDef<TokenData>[] = [
 
       return (
         <div className="flex items-center space-x-2">
-          <img
+          <Image
             src={token.image}
             alt={token.name}
             className="w-8 h-8 rounded-full"
+            width={32}
+            height={32}
           />
           <div>
             <div className="font-medium">{token.name}</div>
