@@ -12,6 +12,14 @@ const Dashboard = () => {
 
   const { tokens: userTokens, isLoading } = useTokens();
 
+  if (!userTokens) {
+    return (
+      <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
+        <h2 className="text-xl font-semibold ">Loading...</h2>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
