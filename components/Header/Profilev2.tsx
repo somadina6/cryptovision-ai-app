@@ -17,6 +17,7 @@ import Image from "next/image";
 
 export const ProfileDropdown = () => {
   const { name, image } = useAppSelector((state) => state.user);
+  const firstName = name?.split(" ")[0];
 
   return (
     <DropdownMenu>
@@ -31,15 +32,13 @@ export const ProfileDropdown = () => {
               height={32}
             />
           ) : (
-            <CgProfile className="w-6 h-6" />
+            <CgProfile className="w-6 h-6 mr-2" />
           )}
 
-          <span>{name ?? "Guest"}</span>
+          <span>{firstName ?? "Guest"}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48" align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <DropdownMenuGroup className="cursor-pointer">
           <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuSeparator />
