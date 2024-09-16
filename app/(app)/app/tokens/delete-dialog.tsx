@@ -42,7 +42,7 @@ export function DeleteDialog({ tokenId }: { tokenId: string }) {
             onClick={handleDelete}
             className="bg-destructive hover:bg-red-600"
           >
-            "Delete"
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
