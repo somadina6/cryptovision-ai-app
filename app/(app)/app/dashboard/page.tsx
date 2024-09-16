@@ -3,6 +3,7 @@ import { useAppSelector } from "../../../../store/hooks";
 import TokenCard from "../../../../components/TokenCard/TokenCard";
 import { formatPrice } from "../../../../utils/apis/apis";
 import useTokens from "@/lib/useTokens";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Dashboard = () => {
   const { name } = useAppSelector((state) => state.user);
@@ -12,18 +13,19 @@ const Dashboard = () => {
 
   const { tokens: userTokens, isLoading } = useTokens();
 
-  if (!userTokens) {
+  if (!userTokens || isLoading) {
+    // Return Skeleton UI if userTokens is undefined
     return (
-      <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
-        <h2 className="text-xl font-semibold ">Loading...</h2>
-      </div>
-    );
-  }
+      <div>
+        <div className="flex">
+          <Skeleton className="rounded-full w-12 h-12 mr-2" />
+          <Skeleton className="w-80 h-12" />
+        </div>
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center max-w-[600px] p-4 mx-auto my-8 bg-popover-background rounded-lg ">
-        <h2 className="text-xl font-semibold ">Loading...</h2>
+        <div>
+          <Skeleton className="w-full h-72 mt-4" />
+          <Skeleton className="w-full h-40 mt-4" />
+        </div>
       </div>
     );
   }

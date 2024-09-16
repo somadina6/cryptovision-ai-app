@@ -1,4 +1,5 @@
 "use client";
+import { Skeleton } from "@/components/ui/skeleton";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import useTokens from "@/lib/useTokens";
@@ -37,11 +38,20 @@ import useTokens from "@/lib/useTokens";
 
 export default function DemoPage() {
   const { tokens: data, isLoading } = useTokens();
-  if (!data) return null;
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading || !data)
+    return (
+      <div>
+        <div className="flex">
+          <Skeleton className="w-full h-12" />
+        </div>
+
+        <div>
+          <Skeleton className="w-full h-72 mt-4" />
+          <Skeleton className="w-full h-40 mt-4" />
+        </div>
+      </div>
+    );
 
   return (
     <div className="container mx-auto py-10">

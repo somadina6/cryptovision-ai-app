@@ -6,7 +6,6 @@ import { NextAuthProvider } from "@/components/AuthProvider/AuthProvider";
 import Header from "@/components/Header/Header";
 import ReduxProvider from "@/components/ReduxProvider/ReduxProvider";
 import Toast from "@/components/Toast/Toast";
-import UserProvider from "@/components/UserProvider/UserProvider";
 import ThemeProvider from "@/components/ThemeProvider/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -31,17 +30,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextAuthProvider>
-          <ReduxProvider>
-            <UserProvider>
-              <ThemeProvider>
-                <Toast />
-                <Header />
-                {children}
-              </ThemeProvider>
-            </UserProvider>
-          </ReduxProvider>
-        </NextAuthProvider>
+        <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>
   );

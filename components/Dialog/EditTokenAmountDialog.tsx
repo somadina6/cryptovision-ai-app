@@ -16,6 +16,7 @@ import { Label } from "../ui/label";
 import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
 import toast from "react-hot-toast";
+import { ColorRing } from "react-loader-spinner";
 
 export default function EditTokenAmountDialog({
   currentAmount,
@@ -26,9 +27,14 @@ export default function EditTokenAmountDialog({
 }) {
   const [tokenQuantity, setTokenQuantity] = useState<number>(currentAmount);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleEditToken = async () => {
+    if (!tokenQuantity) return;
+    if (loading) return;
+
     try {
+      setLoading(true);
       await updateToken(token._id.toString(), tokenQuantity);
       toast.success("Token updated successfully");
     } catch (error) {
@@ -36,6 +42,7 @@ export default function EditTokenAmountDialog({
       throw new Error("Error updating token");
     } finally {
       setOpen(false);
+      setLoading(false);
     }
   };
 
@@ -85,7 +92,16 @@ export default function EditTokenAmountDialog({
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleEditToken}>
-            Update
+            {loading ? (
+              <ColorRing
+                visible={true}
+                height="30"
+                width="30"
+                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+              />
+            ) : (
+              "Update"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

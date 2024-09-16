@@ -60,8 +60,8 @@ const Balance: React.FC = () => {
 
   const getFontSizeClass = (balance: string) => {
     const length = balance.length;
-    if (length > 10) return "text-sm";
-    if (length > 7) return "text-lg";
+    if (length > 10) return "text-md";
+    if (length > 8) return "text-lg";
     return "text-2xl";
   };
 

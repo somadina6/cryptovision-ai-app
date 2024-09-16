@@ -13,17 +13,19 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
 import toast from "react-hot-toast";
+import { ColorRing } from "react-loader-spinner";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
   const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAddToken = async () => {
     if (!tokenQuantity) return;
     try {
+      setLoading(true);
       await addToken(token._id.toString(), tokenQuantity);
       toast.success("Token added successfully");
     } catch (error) {
@@ -31,6 +33,7 @@ export default function AddTokenDialog({ token }: { token: Token }) {
       throw new Error("Error adding token");
     } finally {
       setOpen(false);
+      setLoading(false);
     }
   };
 
@@ -82,7 +85,16 @@ export default function AddTokenDialog({ token }: { token: Token }) {
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleAddToken}>
-            Track Now
+            {loading ? (
+              <ColorRing
+                visible={true}
+                height="30"
+                width="30"
+                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+              />
+            ) : (
+              "Save"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -12,12 +12,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Token } from "@/types/types";
 import { deleteToken } from "@/utils/apis/apis";
-import { useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
+import { ColorRing } from "react-loader-spinner";
 
 export function DeleteDialog({ tokenId }: { tokenId: string }) {
-  const [open, setOpen] = useState(false);
+  const handleDelete = async () => {
+    await deleteToken(tokenId);
+  };
+
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog>
       <AlertDialogTrigger asChild>
         <p className="text-red-500 hover:text-red-600">Delete</p>
       </AlertDialogTrigger>
@@ -32,13 +36,13 @@ export function DeleteDialog({ tokenId }: { tokenId: string }) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={async () => {
-              // delete token
-              deleteToken(tokenId).finally(() => setOpen(false));
+            onSelect={(event: SyntheticEvent) => {
+              event.preventDefault();
             }}
+            onClick={handleDelete}
             className="bg-destructive hover:bg-red-600"
           >
-            Delete
+            "Delete"
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
