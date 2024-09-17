@@ -18,7 +18,7 @@ COPY package*.json ./
 
 RUN npm install --omit-dev
 
-RUN npm audit fix
+RUN npm audit fix --force
 
 COPY . .
 
