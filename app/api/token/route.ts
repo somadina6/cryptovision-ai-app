@@ -4,29 +4,20 @@ import {
   deleteTokenFromDB,
   updateTokenInDB,
 } from "@/utils/apis/db.apis";
+import { getUserIdFromToken } from "@/utils/auth/auth.utils";
 import connect from "@/utils/mongodb/db";
-import { getToken } from "next-auth/jwt";
-
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const { error, userId, message, statusCode } = await getUserIdFromToken(req);
+
+  if (error || !userId) {
+    return NextResponse.json({ message }, { status: statusCode });
+  }
+
   try {
-    const token = await getToken({ req });
-    if (!token) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    const id = token.id as string;
-    if (!id) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    console.log("User ID:", id);
-    const portfolio = await getTokensFromDB(id);
+    console.log("User ID:", userId);
+    const portfolio = await getTokensFromDB(userId);
     return NextResponse.json(portfolio, { status: 200, statusText: "OK" });
   } catch (error) {
     console.log(error);
@@ -38,26 +29,16 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const { error, userId, message, statusCode } = await getUserIdFromToken(req);
+  if (error || !userId) {
+    return NextResponse.json({ message }, { status: statusCode });
+  }
+
   try {
-    const token = await getToken({ req });
-    if (!token) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    const id = token.id as string;
-    if (!id) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    console.log("User ID:", id);
     const { tokenId, amount }: { tokenId: string; amount: number } =
       await req.json();
 
-    const data = await addTokenToDB({ userId: id, tokenId, amount });
+    const data = await addTokenToDB({ userId, tokenId, amount });
 
     return NextResponse.json(data, { status: 200, statusText: "OK" });
   } catch (err: any) {
@@ -70,25 +51,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  try {
-    const token = await getToken({ req });
-    if (!token) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    const id = token.id as string;
-    if (!id) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    console.log("User ID:", id);
-    const { tokenId } = await req.json();
+  const { error, userId, message, statusCode } = await getUserIdFromToken(req);
+  if (error || !userId) {
+    return NextResponse.json({ message }, { status: statusCode });
+  }
 
-    await deleteTokenFromDB({ userId: id, tokenId });
+  try {
+    const { tokenId } = await req.json();
+    await deleteTokenFromDB({ userId, tokenId });
 
     return NextResponse.json(
       {
@@ -100,35 +70,21 @@ export async function DELETE(req: NextRequest) {
   } catch (err) {
     console.log(err);
     return NextResponse.json(
-      { message: "Unable to Fetch", success: false },
+      { message: "Unable to delete token", success: false },
       { status: 400 }
     );
   }
 }
 
 export async function PUT(req: NextRequest) {
+  const { error, userId, message, statusCode } = await getUserIdFromToken(req);
+  if (error || !userId) {
+    return NextResponse.json({ message }, { status: statusCode });
+  }
+
   try {
-    // Parse request body
-    const body = await req.json();
+    const { tokenId, amount } = await req.json();
     await connect();
-    // Get token from request
-    const token = await getToken({ req });
-    if (!token) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    // Get user ID from token
-    const userId = token.id as string;
-    if (!userId) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401, statusText: "Unauthorized" }
-      );
-    }
-    // Get token ID and amount from request body
-    const { tokenId, amount } = body;
 
     const data = await updateTokenInDB({ userId, tokenId, amount });
     if (data) {

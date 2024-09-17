@@ -2,7 +2,6 @@ import axios from "axios";
 import { ApiResponse, TokenData } from "../../types/types";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { useRouter } from "next/router";
 
 export async function getTokens() {
   try {
@@ -122,8 +121,10 @@ export const convertCurrency = async (
 ): Promise<number> => {
   // if (toCurrency === "USD") return amount;
   try {
-    const rates = await fetchExchangeRates();
-    const rate: number = rates[toCurrency.toLowerCase()];
+    const { data: rates } = await axios.get<{
+      [key: string]: number;
+    }>(`/api/exchange`);
+    const rate = rates[toCurrency.toLowerCase()];
     return amount * rate;
   } catch (error) {
     console.log(error);
