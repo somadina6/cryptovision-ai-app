@@ -57,7 +57,6 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           passphrase: ""
           port: 22
-          fingerprint: ${{ secrets.DROPLET_FINGERPRINT }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
             docker stop cryptovision || true
