@@ -3,7 +3,7 @@ run-name: Deploy to DigitalOcean Droplet
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -15,6 +15,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
+          passphrase: ""
           port: 22
           script: |
             cd /home/nodejs
