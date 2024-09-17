@@ -1,13 +1,14 @@
 name: CryptoVision CI/CD
-run-name: Build & Push Docker Image - ${{ github.run_number }}
+run-name: Build, Push, and Deploy Docker Image ${{ github.run_number }}
+
 on:
   push:
     branches:
       - main
-jobs:
-  Install-And-Build:
-    runs-on: ubuntu-latest
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -33,11 +34,10 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
-            ${{ secrets.DOCKER_USERNAME }}/cryptovision:${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cryptovision:cache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cryptovision:cache,mode=max
           build-args: |
-            GOODLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
@@ -46,3 +46,21 @@ jobs:
             NEXT_PUBLIC_ECB_API_URL=${{ secrets.NEXT_PUBLIC_ECB_API_URL }}
             DB_NAME=${{ secrets.DB_NAME }}
             UPDATE_TOKENS_ENDPOINT=${{ secrets.UPDATE_TOKENS_ENDPOINT }}
+
+  deploy:
+    needs: build # This ensures deploy runs only after build is successful
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          port: 22
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
+            docker stop cryptovision || true
+            docker rm cryptovision || true
+            docker run -d --name cryptovision -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
