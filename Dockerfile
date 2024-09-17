@@ -25,6 +25,10 @@ COPY . .
 RUN npm run build
 
 # Define environment variables for runtime
+
+# Use a smaller Node.js image for the final stage
+FROM node:20.17-alpine
+
 ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 ENV GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
@@ -34,9 +38,6 @@ ENV MONGO_URI=${MONGO_URI}
 ENV NEXT_PUBLIC_ECB_API_URL=${NEXT_PUBLIC_ECB_API_URL}
 ENV DB_NAME=${DB_NAME}
 ENV UPDATE_TOKENS_ENDPOINT=${UPDATE_TOKENS_ENDPOINT}
-
-# Use a smaller Node.js image for the final stage
-FROM node:20.17-alpine
 
 WORKDIR /app
 
