@@ -104,13 +104,13 @@ export const fetchExchangeRates = async () => {
   if (!ecburl) throw new Error("Fetch URL Not Available");
 
   try {
-    const response = await fetch(ecburl);
+    const { data, status } = await axios.get(ecburl);
 
-    if (!response) throw new Error("No Response from CUrrency Exchange API");
+    if (status !== 200) throw new Error("Failed to fetch exchange rates");
 
-    const data = await response.json();
+    if (!data || !data.usd) throw new Error("Invalid response");
 
-    return data.usd;
+    if (status === 200) return data.usd;
   } catch (error) {
     console.log(error);
   }
