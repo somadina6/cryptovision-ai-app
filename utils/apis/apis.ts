@@ -105,6 +105,7 @@ export const fetchExchangeRates = async () => {
 
   try {
     const response = await fetch(ecburl);
+
     if (!response) throw new Error("No Response from CUrrency Exchange API");
 
     const data = await response.json();
