@@ -1,5 +1,5 @@
 name: CryptoVision CI/CD
-run-name: Build and push Docker image ${{ github.run_number }}
+run-name: Build and push Docker Image - ${{ github.run_number }}
 on:
   push:
     branches:
