@@ -64,8 +64,6 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  // adapter: SanityAdapter(sanityClient),
-  // adapter: MongoDBAdapter(clientPromise),
   adapter: MongoDBAdapter(clientPromise),
   session: {
     strategy: "jwt",

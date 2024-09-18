@@ -60,6 +60,6 @@ jobs:
           port: 22
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
-            docker stop cryptovision || true
-            docker rm cryptovision || true
-            docker run -d --name cryptovision -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
+            docker stop webapp || true
+            docker rm webapp || true
+            docker run -d --name webapp -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
