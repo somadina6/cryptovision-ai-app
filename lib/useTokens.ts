@@ -1,7 +1,5 @@
-import { setUserTokens } from "@/store/features/tokenSlice";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getTokens } from "@/utils/apis/apis";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 export const fetchUserTokens = async (userId: string) => {
   try {

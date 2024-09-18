@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiResponse, TokenData } from "../../types/types";
-import { mutate } from "swr";
+import { mutate, useSWRConfig } from "swr";
 import toast from "react-hot-toast";
 
 export async function getTokens() {
@@ -78,12 +78,16 @@ export async function updateToken(tokenId: string, amount: number) {
     throw new Error(error);
   }
 }
-export function formatPrice(price: number, currency: string): string {
+export function formatPrice(
+  price: number,
+  currency: string,
+  rate: number
+): string {
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: currency,
     minimumFractionDigits: 2,
-  }).format(price);
+  }).format(price * rate);
 
   return formattedPrice;
 }
@@ -131,3 +135,16 @@ export const convertCurrency = async (
     throw new Error("Failed To Convert");
   }
 };
+
+type CurrencyRates = {
+  [key: string]: number;
+};
+export async function getCurrencyRates() {
+  try {
+    const { data } = await axios.get<CurrencyRates>(`/api/exchange`);
+    return data;
+  } catch (error: any) {
+    console.error(error);
+    throw new Error("Failed to fetch currency rates");
+  }
+}

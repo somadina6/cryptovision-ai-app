@@ -1,10 +1,10 @@
 "use client";
-import { convertCurrency, formatPrice } from "../../utils/apis/apis"; // Adjust the import path as needed
-import { mutate } from "swr";
-import { FiRefreshCw } from "react-icons/fi";
+import { formatPrice } from "../../utils/apis/apis"; // Adjust the import path as needed
 import { useAppSelector } from "../../store/hooks";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import "./Balance.css"; // Import the CSS file
+import useCurrencyRates from "@/lib/useCurrencyRates";
+import { Skeleton } from "../ui/skeleton";
 
 interface Currency {
   code: string;
@@ -20,43 +20,28 @@ const currencies: Currency[] = [
 ];
 
 const Balance: React.FC = () => {
-  const [balance, setBalance] = useState<string>("");
-  const [balanceChange, setBalanceChange] = useState<string>("");
   const [currency, setCurrency] = useState<string>(currencies[0].code);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   const { sum, sum_change_24hr, change_24hr } = useAppSelector(
     (state) => state.token
   );
 
-  useEffect(() => {
-    const fetchConvertedBalance = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const convertedBalance = await convertCurrency(sum, currency);
-        const convertedBalanceChange = await convertCurrency(
-          sum_change_24hr,
-          currency
-        );
-        setBalance(formatPrice(convertedBalance, currency));
-        setBalanceChange(formatPrice(convertedBalanceChange, currency));
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch conversion rate");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchConvertedBalance();
-  }, [sum, currency, sum_change_24hr]);
+  // Fetch the currency rates ex: USD, EUR, GBP
+  const { currencyRates, error, isLoading } = useCurrencyRates();
 
-  const handleCurrencyChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setCurrency(event.target.value);
-  };
+  const { convertedBalance, convertedBalanceChange } = useMemo(() => {
+    if (currencyRates) {
+      const rate = currencyRates[currency.toLowerCase()];
+      const convertedBalance = formatPrice(sum, currency, rate);
+      const convertedBalanceChange = formatPrice(
+        sum_change_24hr,
+        currency,
+        rate
+      );
+      return { convertedBalance, convertedBalanceChange };
+    }
+    return { convertedBalance: "", convertedBalanceChange: "" };
+  }, [currency, sum, sum_change_24hr, currencyRates]);
 
   const getFontSizeClass = (balance: string) => {
     const length = balance.length;
@@ -69,39 +54,28 @@ const Balance: React.FC = () => {
 
   return (
     <div className="balance-container bg-card text-card-foreground p-4 rounded-lg shadow">
-      <div className="flex justify-between w-full mb-4">
-        <select
-          className="currency-dropdown bg-input text-foreground rounded-lg p-2"
-          value={currency}
-          onChange={handleCurrencyChange}
-        >
-          {currencies.map((currency) => (
-            <option key={currency.code} value={currency.code}>
-              {currency.label}
-            </option>
-          ))}
-        </select>
+      <select
+        className="currency-dropdown bg-input text-foreground rounded-lg p-2"
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value)}
+      >
+        {currencies.map((currency) => (
+          <option key={currency.code} value={currency.code}>
+            {currency.label}
+          </option>
+        ))}
+      </select>
 
-        <button
-          className="refresh-button text-primary hover:text-primary-foreground p-2"
-          onClick={() => {
-            mutate("updatePricesAndSaveToDB");
-          }}
-        >
-          <FiRefreshCw className="refresh-icon" />
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="spinner text-muted-foreground"></div>
+      {isLoading ? (
+        <Skeleton className="w-full h-4 rounded-sm" />
       ) : error ? (
         <div className="text-destructive">{error}</div>
       ) : (
-        <div className={`balance-value ${getFontSizeClass(balance)}`}>
-          <span>{balance}</span>
+        <div className={`balance-value ${getFontSizeClass(convertedBalance)}`}>
+          <span>{convertedBalance}</span>
           <p className="block text-xs font-thin text-muted-foreground">
             {sign}
-            {balanceChange}
+            {convertedBalanceChange}
             {"  "}({sign}
             {change_24hr.toFixed(2)}%)
           </p>

@@ -11,12 +11,15 @@ const Logo = () => {
   return (
     <div
       id="logo"
-      className="flex font-bold sm:text-sm md:text-lg items-center "
+      className="flex flex-col md:flex-row font-bold text-sm md:text-lg items-center "
     >
-      <p className={` cursor-pointer`} onClick={() => router.push("/")}>
-        CryptoVision
-      </p>
-      <p className="ml-1 text-primary">AI</p>
+      <div className="hidden md:flex gap-1 cursor-pointer">
+        <p className="" onClick={() => router.push("/")}>
+          CryptoVision
+        </p>
+
+        <p className="text-primary ">AI</p>
+      </div>
 
       <div className="ml-2 cursor-pointer">
         {darkTheme ? (
@@ -26,7 +29,7 @@ const Logo = () => {
               localStorage.removeItem("crypto-theme");
             }}
           >
-            <FaMoon />
+            <FaMoon className="mt-2 md:mt-0 text-2xl" />
           </div>
         ) : (
           <div
@@ -35,7 +38,7 @@ const Logo = () => {
               localStorage.setItem("crypto-theme", "true");
             }}
           >
-            <MdSunny />
+            <MdSunny className="mt-2 md:mt-0 text-2xl" />
           </div>
         )}
       </div>

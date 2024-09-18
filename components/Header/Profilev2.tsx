@@ -40,7 +40,7 @@ export const ProfileDropdown = () => {
               <Image
                 src={image}
                 alt="User profile"
-                className="w-8 h-8 rounded-full mr-2"
+                className="w-8 h-8 rounded-full mr-2 "
                 width={32}
                 height={32}
               />
@@ -48,7 +48,7 @@ export const ProfileDropdown = () => {
               <CgProfile className="w-6 h-6 mr-2" />
             )}
 
-            <span>{firstName ?? "Guest"}</span>
+            <span className="hidden md:block">{firstName ?? "Guest"}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-24" align="end">

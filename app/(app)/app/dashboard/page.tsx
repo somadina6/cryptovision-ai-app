@@ -35,7 +35,7 @@ const Dashboard = () => {
       <div className="mb-8">
         <h3 className="text-2xl font-bold">Welcome, {firstName}!</h3>
         <h4 className="text-xl">
-          Your portfolio is valued at {formatPrice(sum, "USD")}. It is{" "}
+          Your portfolio is valued at {formatPrice(sum, "USD", 1)}. It is{" "}
           {change_24hr > 0 ? "up" : "down"} by {sign}
           {change_24hr.toFixed(2)}% in the last 24 hours.
         </h4>

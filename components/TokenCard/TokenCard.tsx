@@ -29,8 +29,8 @@ const TokenCard: FC<TokenData> = ({ token, amount, _id }) => {
           {name} ({symbol.toUpperCase()})
         </h5>
         <p>Amount: {amount}</p>
-        <p>Current Price: {formatPrice(current_price, "USD")}</p>
-        <p>Total Value: {formatPrice(totalValue, "USD")}</p>
+        <p>Current Price: {formatPrice(current_price, "USD", 1)}</p>
+        <p>Total Value: {formatPrice(totalValue, "USD", 1)}</p>
         <p className={priceChangeClass}>
           24h Change: {price_change_percentage_24h.toFixed(2)}%
         </p>

@@ -1,7 +1,7 @@
 /* Container styles */
 .balance-container {
   text-align: center;
-  width: 100%; /* equivalent to w-full */
+  width: 200px; /* equivalent to w-full */
   border-radius: 0.5rem; /* equivalent to rounded-lg */
   display: flex;
   flex-direction: column;

@@ -4,14 +4,14 @@ import { ProfileDropdown } from "./Profilev2";
 const Header = () => {
   return (
     <section id="header">
-      <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto">
-        <div className="flex-1 flex justify-center">
-          <div className="md:w-[600px] w-full">
-            <SearchBar />
-          </div>
+      <div className="flex items-center justify-center w-full max-w-screen-xl mx-auto relative ">
+        <div className="mt-1">
+          <SearchBar />
         </div>
 
-        <ProfileDropdown />
+        <div className="absolute right-0 top-1">
+          <ProfileDropdown />
+        </div>
       </div>
     </section>
   );

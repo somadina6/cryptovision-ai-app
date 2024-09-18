@@ -14,15 +14,14 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="w-full">
-      <Input
-        type="search"
-        placeholder="Search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-      />
-    </div>
+    <Input
+      type="search"
+      placeholder="Search"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+      className="w-[250px] lg:w-[400px] xl:w-[500px]"
+    />
   );
 };
 
