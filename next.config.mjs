@@ -12,6 +12,7 @@ const nextConfig = {
       "coin-images.coingecko.com",
     ],
   },
+  output: "standalone",
 };
 
 export default nextConfig;
