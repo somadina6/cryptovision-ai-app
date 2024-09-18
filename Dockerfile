@@ -24,7 +24,7 @@ ARG UPDATE_TOKENS_ENDPOINT
 RUN npm run build
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM node:20.17-alpine
 
 ARG GOOGLE_CLIENT_ID
 ARG GOOGLE_CLIENT_SECRET
