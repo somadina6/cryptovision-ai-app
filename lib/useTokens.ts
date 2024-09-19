@@ -15,6 +15,8 @@ function useTokens() {
     fetchUserTokens,
     {
       revalidateOnFocus: false,
+      refreshInterval: 1800000, // 30 minutes
+      dedupingInterval: 5000, // 5 seconds
     }
   );
   return {
