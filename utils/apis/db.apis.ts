@@ -76,8 +76,6 @@ export async function addTokenToDB(params: {
   } catch (error) {
     console.error("Error updating token in DB:", error);
     throw error;
-  } finally {
-    await disconnect();
   }
 }
 
@@ -105,8 +103,6 @@ export async function getTokensFromDB(userId: string) {
   } catch (error) {
     console.error("Error fetching tokens from DB:", error);
     throw error;
-  } finally {
-    await disconnect();
   }
 }
 
@@ -144,8 +140,6 @@ export async function deleteTokenFromDB(params: {
   } catch (error) {
     console.error("Error deleting token from DB:", error);
     throw error;
-  } finally {
-    await disconnect();
   }
 }
 
@@ -183,7 +177,5 @@ export async function updateTokenInDB({
   } catch (error) {
     console.error("Error updating token in DB:", error);
     throw error;
-  } finally {
-    await disconnect();
   }
 }

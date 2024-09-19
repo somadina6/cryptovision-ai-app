@@ -46,7 +46,7 @@ const UserComp = memo(() => {
 
   // Update user tokens in store when fetched from API call
   useEffect(() => {
-    if (coinDetails && !isLoading && !error) {
+    if (coinDetails.length > 0 && !isLoading) {
       dispatch(setUserTokens(coinDetails));
     }
   }, [coinDetails, isLoading, error, dispatch]);

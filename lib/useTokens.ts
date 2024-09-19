@@ -15,8 +15,13 @@ function useTokens() {
     fetchUserTokens,
     {
       revalidateOnFocus: false,
-      refreshInterval: 1800000, // 30 minutes
-      dedupingInterval: 5000, // 5 seconds
+      isVisible: () => true,
+      onSuccess: (data) => {
+        console.debug("Tokens fetched successfully");
+      },
+      onError: (error) => {
+        console.error("Error fetching tokens", error);
+      },
     }
   );
   return {

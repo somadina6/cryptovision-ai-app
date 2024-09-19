@@ -7,6 +7,8 @@ export default function useCurrencyRates() {
     getCurrencyRates,
     {
       revalidateOnFocus: false,
+      refreshInterval: 1800000, // 30 minutes
+      dedupingInterval: 1800000,
     }
   );
 

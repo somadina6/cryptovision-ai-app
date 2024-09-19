@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("User ID:", userId);
     const portfolio = await getTokensFromDB(userId);
     return NextResponse.json(portfolio, { status: 200, statusText: "OK" });
   } catch (error) {

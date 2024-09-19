@@ -21,7 +21,7 @@ const Logo = () => {
         <p className="text-primary ">AI</p>
       </div>
 
-      <div className="ml-2 cursor-pointer">
+      <div className="md:ml-2 cursor-pointer mt-2 md:mt-0 text-2xl">
         {darkTheme ? (
           <div
             onClick={() => {
@@ -29,7 +29,7 @@ const Logo = () => {
               localStorage.removeItem("crypto-theme");
             }}
           >
-            <FaMoon className="mt-2 md:mt-0 text-2xl" />
+            <FaMoon className="" />
           </div>
         ) : (
           <div
@@ -38,7 +38,7 @@ const Logo = () => {
               localStorage.setItem("crypto-theme", "true");
             }}
           >
-            <MdSunny className="mt-2 md:mt-0 text-2xl" />
+            <MdSunny className="" />
           </div>
         )}
       </div>
