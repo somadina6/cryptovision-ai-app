@@ -10,14 +10,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Token } from "@/types/types";
+
 import { deleteToken } from "@/utils/apis/apis";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { ColorRing } from "react-loader-spinner";
+import { SyntheticEvent } from "react";
+import { useSWRConfig } from "swr";
 
 export function DeleteDialog({ tokenId }: { tokenId: string }) {
-  const handleDelete = async () => {
-    await deleteToken(tokenId);
+  const { mutate } = useSWRConfig();
+
+  const handleDeleteToken = async () => {
+    try {
+      await deleteToken(tokenId);
+      await mutate(`fetchUserTokens`);
+    } catch (error) {
+      console.error("Error deleting token:", error);
+      throw new Error("Error deleting token");
+    }
   };
 
   return (
@@ -39,7 +47,7 @@ export function DeleteDialog({ tokenId }: { tokenId: string }) {
             onSelect={(event: SyntheticEvent) => {
               event.preventDefault();
             }}
-            onClick={handleDelete}
+            onClick={handleDeleteToken}
             className="bg-destructive hover:bg-red-600"
           >
             Delete

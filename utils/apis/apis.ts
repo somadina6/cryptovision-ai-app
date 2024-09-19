@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiResponse, TokenData } from "../../types/types";
-import { mutate, useSWRConfig } from "swr";
+import { mutate } from "swr";
 import toast from "react-hot-toast";
 
 export async function getTokens() {
@@ -35,7 +35,7 @@ export async function addToken(tokenId: string, amount: number) {
       amount,
     });
     if (status === 200 || status === 201) {
-      await mutate(`fetchUserTokens`);
+      // await mutate(`fetchUserTokens`);
       return data;
     }
   } catch (error: any) {
@@ -70,7 +70,6 @@ export async function updateToken(tokenId: string, amount: number) {
       amount,
     });
     if (status === 200 || status === 201) {
-      await mutate(`fetchUserTokens`);
       return data;
     }
   } catch (error: any) {

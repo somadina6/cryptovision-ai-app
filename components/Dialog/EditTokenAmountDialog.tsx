@@ -17,6 +17,7 @@ import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
 import toast from "react-hot-toast";
 import { ColorRing } from "react-loader-spinner";
+import { mutate, useSWRConfig } from "swr";
 
 export default function EditTokenAmountDialog({
   currentAmount,
@@ -29,6 +30,8 @@ export default function EditTokenAmountDialog({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { mutate } = useSWRConfig();
+
   const handleEditToken = async () => {
     if (!tokenQuantity) return;
     if (loading) return;
@@ -36,6 +39,7 @@ export default function EditTokenAmountDialog({
     try {
       setLoading(true);
       await updateToken(token._id.toString(), tokenQuantity);
+      await mutate(`fetchUserTokens`);
       toast.success("Token updated successfully");
     } catch (error) {
       console.error("Error updating token:", error);

@@ -16,17 +16,21 @@ import { Label } from "../ui/label";
 import { Token } from "../../types/types";
 import toast from "react-hot-toast";
 import { ColorRing } from "react-loader-spinner";
+import { useSWRConfig } from "swr";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
   const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { mutate } = useSWRConfig();
+
   const handleAddToken = async () => {
     if (!tokenQuantity) return;
     try {
       setLoading(true);
       await addToken(token._id.toString(), tokenQuantity);
+      await mutate(`fetchUserTokens`);
       toast.success("Token added successfully");
     } catch (error) {
       console.error("Error adding token:", error);
