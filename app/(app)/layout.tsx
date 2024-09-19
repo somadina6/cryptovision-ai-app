@@ -29,14 +29,12 @@ export default function RootLayout({
 
             <section
               id="main"
-              className="md:w-[calc(100%_-_220px_-_13rem)] 
-                            w-[calc(100%_-_20rem)]
-                            md:mr-[220px] mr-0 md:p-2 flex-grow px-2 md:px-4 py-2 md:py-3 w-full overflow-y-auto overflow-x-hidden "
+              className="md:w-[calc(100%_-13rem)] w-[calc(100%_-_3.65rem)]
+                          mr-0 md:p-2 flex-grow px-2 md:px-4 
+                           py-2 md:py-3 overflow-y-auto overflow-x-hidden"
             >
               {children}
             </section>
-
-            <RightSection />
 
             {/* <Footer /> */}
           </main>

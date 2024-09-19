@@ -16,7 +16,7 @@ const TokenCard: FC<TokenData> = ({ token, amount, _id }) => {
     price_change_percentage_24h > 0 ? "text-green-500" : "text-red-500";
 
   return (
-    <div className="border p-4 rounded-lg shadow-md flex items-center">
+    <div className="border border-border p-4 rounded-lg shadow-md flex items-center">
       <Image
         src={image}
         alt={name}

@@ -53,7 +53,7 @@ const Balance: React.FC = () => {
   const sign = change_24hr > 0 ? "+" : "";
 
   return (
-    <div className="balance-container bg-card text-card-foreground p-4 rounded-lg shadow">
+    <div className="w-[200px] h-[110px] bg-card  p-4 rounded-lg shadow overflow-hidden">
       <select
         className="currency-dropdown bg-input text-foreground rounded-lg p-2"
         value={currency}
@@ -67,13 +67,21 @@ const Balance: React.FC = () => {
       </select>
 
       {isLoading ? (
-        <Skeleton className="w-full h-4 rounded-sm" />
+        <Skeleton className="w-full h-[60px] rounded-sm" />
       ) : error ? (
         <div className="text-destructive">{error}</div>
       ) : (
-        <div className={`balance-value ${getFontSizeClass(convertedBalance)}`}>
+        <div
+          className={`font-bold flex flex-col items-center gap-1 ${getFontSizeClass(
+            convertedBalance
+          )}`}
+        >
           <span>{convertedBalance}</span>
-          <p className="block text-xs font-thin text-muted-foreground">
+          <p
+            className={`block text-xs font-semibold ${
+              change_24hr > 0 ? "text-green-500" : "text-destructive"
+            }`}
+          >
             {sign}
             {convertedBalanceChange}
             {"  "}({sign}

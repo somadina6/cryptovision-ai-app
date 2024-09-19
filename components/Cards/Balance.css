@@ -10,12 +10,6 @@
   padding: 0.5rem 1rem;
 }
 
-/* Balance text styles */
-.balance-value {
-  font-weight: bold; /* equivalent to font-bold */
-  width: 100%; /* equivalent to w-full */
-}
-
 .balance-value-large {
   font-size: 1.5rem; /* equivalent to text-4xl */
 }
@@ -26,25 +20,6 @@
 
 .balance-value-small {
   font-size: 1rem; /* even smaller */
-}
-
-/* Button styles */
-.refresh-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  outline: none; /* equivalent to focus:outline-none */
-}
-
-.refresh-icon:hover {
-  color: black;
-}
-
-.refresh-icon {
-  vertical-align: middle;
-  color: #fff;
 }
 
 /* Dropdown styles */

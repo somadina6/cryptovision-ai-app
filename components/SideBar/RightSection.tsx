@@ -1,4 +1,4 @@
-import Balance from "../Balance/Balance";
+import Balance from "../Cards/Balance";
 
 const RightSection = () => {
   return (
