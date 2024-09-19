@@ -1,10 +1,20 @@
 import { getTokens } from "@/utils/apis/apis";
 import useSWR from "swr";
 
+export const fetchUserTokens = async () => {
+  try {
+    const tokens = await getTokens();
+    return tokens;
+  } catch (error) {
+    console.error("Error fetching user tokens:", error);
+    throw new Error("Error fetching user tokens");
+  }
+};
+
 function useTokens() {
   const { data, error, isValidating, mutate } = useSWR(
     'fetchUserTokens',
-    getTokens,
+    fetchUserTokens,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
@@ -19,8 +29,7 @@ function useTokens() {
         console.error('Error fetching tokens', error);
       },
       shouldRetryOnError: (err) => {
-        // Adjust based on actual error structure of getTokens
-        return !(err instanceof Error && err.message.includes("Error fetching tokens"));
+        return !(err instanceof Error && err.message === "Error fetching user tokens");
       },
       compare: (a, b) => {
         if (!a || !b) return false;
