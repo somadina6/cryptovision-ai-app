@@ -11,7 +11,7 @@ export const fetchUserTokens = async (userId: string) => {
 };
 function useTokens() {
   const { data, isLoading, error } = useSWR(
-    fetchUserTokens,
+    "fetchUserTokens",
     fetchUserTokens,
     {
       revalidateOnFocus: false,
