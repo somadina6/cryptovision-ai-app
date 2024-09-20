@@ -97,7 +97,7 @@ export async function getTokensFromDB(userId: string) {
     });
 
     if (!userPortfolio) {
-      throw new Error("User Portfolio Not Found");
+      return [];
     }
     return userPortfolio.holdings;
   } catch (error) {
