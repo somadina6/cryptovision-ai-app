@@ -27,7 +27,8 @@ jobs:
       - name: Build and push to DockerHub
         uses: docker/build-push-action@v2
         with:
-          context: updateTokens.Dockerfile
+          context: .
+          file: ./Dockerfile.updateTokens
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/cryptovision-db-update:latest
@@ -39,6 +40,7 @@ jobs:
             UPDATE_TOKENS_ENDPOINT=${{ secrets.UPDATE_TOKENS_ENDPOINT }}
 
   deploy:
+    needs: docker_build
     runs-on: ubuntu-latest
 
     steps:
