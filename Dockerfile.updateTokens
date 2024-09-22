@@ -16,7 +16,7 @@ ARG UPDATE_TOKENS_ENDPOINT
 
 ENV MONGO_URI=${MONGO_URI}
 ENV DB_NAME=${DB_NAME}
-ENV UPDATE_TOKENS_ENDPOINT=${UPDATE_TOKENS_ENDPOINT}
+ENV UPDATE_TOKENS_ENDPOINT=https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd
 
 RUN mkdir /app/logs
 
