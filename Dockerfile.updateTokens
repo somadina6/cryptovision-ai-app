@@ -1,13 +1,7 @@
 # Use an official Node.js runtime as the base image
 FROM node:20.17-alpine 
 
-ARG MONGO_URI
-ARG DB_NAME
-ARG UPDATE_TOKENS_ENDPOINT
 
-ENV MONGO_URI="${MONGO_URI}"
-ENV DB_NAME="${DB_NAME}"
-ENV UPDATE_TOKENS_ENDPOINT="${UPDATE_TOKENS_ENDPOINT}"
 
 WORKDIR /app
 
@@ -17,6 +11,14 @@ RUN apt-get update && apt-get install -y cron
 RUN npm install mongoose@8.3.1 axios@1.6.8 dotenv@16.4.5
 
 COPY scripts/db/ ./
+
+ARG MONGO_URI
+ARG DB_NAME
+ARG UPDATE_TOKENS_ENDPOINT
+
+ENV MONGO_URI="${MONGO_URI}"
+ENV DB_NAME="${DB_NAME}"
+ENV UPDATE_TOKENS_ENDPOINT="${UPDATE_TOKENS_ENDPOINT}"
 
 RUN mkdir /app/logs
 
