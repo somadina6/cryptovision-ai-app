@@ -18,4 +18,4 @@ fi
 next_log_file=$(printf "log%03d" "$next_log_number")
 
 # Run the node script and log output to the next log file
-node /app/update-tokens > "$LOG_DIR/$next_log_file.log" 2>&1
+node /app/update_tokens > "$LOG_DIR/$next_log_file.log" 2>&1
