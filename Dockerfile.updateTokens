@@ -17,10 +17,10 @@ COPY scripts/db/ ./
 RUN chmod +x run_token_update
 
 # Set up a cron job
-RUN echo "*/30 * * * * /app/run_token_update" > /etc/cron.d/token_update
+RUN echo "*/30 * * * * /app/run_token_update >> /var/log/token_update.log 2>&1" > /etc/cron.d/token_update
 
 RUN chmod 0644 /etc/cron.d/token_update
 
 RUN crontab /etc/cron.d/token_update
 
-CMD cron 
+CMD cron && tail -f /var/log/token_update.log
