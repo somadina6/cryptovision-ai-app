@@ -14,7 +14,11 @@ RUN npm install mongoose@8.3.1 axios@1.6.8 dotenv@16.4.5
 
 COPY scripts/db/ ./
 
+RUN ls -la
+
 RUN chmod +x run_token_update
+
+RUN touch /var/log/token_update.log && chmod 0666 /var/log/token_update.log
 
 # Set up a cron job
 RUN echo "*/30 * * * * /app/run_token_update >> /var/log/token_update.log 2>&1" > /etc/cron.d/token_update
