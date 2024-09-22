@@ -30,7 +30,6 @@ const main = async () => {
 
     while (count < numberOfTokensToProcess) {
       try {
-        console.log("Fetching from endpoint:", ENDPOINT);
         const response = await axios.get(ENDPOINT, {
           params: { page, per_page: pageLimit },
         });
