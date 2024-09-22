@@ -1,34 +1,36 @@
-# Use an official Node.js runtime as the base image
-FROM node:20.17
+# Use an official Node.js runtime based on Alpine
+FROM node:20.17-alpine
 
+# Set the working directory
 WORKDIR /app
 
-# Install cron
-RUN apt-get update && apt-get install -y cron
+# Install cron and any necessary packages
+RUN apk add --no-cache bash curl
 
+# Install npm packages
 RUN npm install mongoose@8.3.1 axios@1.6.8 dotenv@16.4.5
 
+# Copy your update script into the image
 COPY scripts/db/ ./
 
+# Define build arguments for environment variables
 ARG MONGO_URI
 ARG DB_NAME
 ARG UPDATE_TOKENS_ENDPOINT
 
+# Set environment variables
 ENV MONGO_URI=${MONGO_URI}
 ENV DB_NAME=${DB_NAME}
-ENV UPDATE_TOKENS_ENDPOINT=https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd
+ENV UPDATE_TOKENS_ENDPOINT=${UPDATE_TOKENS_ENDPOINT}
 
-RUN mkdir /app/logs
+# Create logs directory
+RUN mkdir -p /app/logs
 
+# Set permissions for your script
 RUN chmod +x run_token_update
 
-RUN touch /var/log/token_update.log && chmod 0666 /var/log/token_update.log
-
 # Set up a cron job
-RUN echo "*/30 * * * * /app/run_token_update >> /var/log/token_update.log 2>&1" > /etc/cron.d/token_update
+RUN echo "*/30 * * * * /app/run_token_update" > /etc/crontabs/root
 
-RUN chmod 0644 /etc/cron.d/token_update
-
-RUN crontab /etc/cron.d/token_update
-
-CMD cron && tail -f /var/log/token_update.log
+# Start cron in the foreground
+CMD ["crond", "-f"]
