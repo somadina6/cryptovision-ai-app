@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Directory where logs will be stored
+LOG_DIR="/app/logs"
+
+# Get the highest numbered log file in the directory
+latest_log=$(ls "$LOG_DIR" | grep -E 'log[0-9]{3}' | sort | tail -n 1)
+
+# Determine the next log file number
+if [ -z "$latest_log" ]; then
+  next_log_number=1
+else
+  latest_number=$(echo "$latest_log" | grep -o '[0-9]\{3\}')
+  next_log_number=$((10#$latest_number + 1))
+fi
+
+# Format the next log file as logXXX (with leading zeros)
+next_log_file=$(printf "log%03d" "$next_log_number")
+
+# Run the node script and log output to the next log file
+node /app/update-tokens > "$LOG_DIR/$next_log_file.log" 2>&1

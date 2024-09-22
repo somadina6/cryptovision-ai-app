@@ -67,7 +67,7 @@ const Balance: React.FC = () => {
       </select>
 
       {isLoading ? (
-        <Skeleton className="w-full h-[60px] rounded-sm" />
+        <Skeleton className="w-full h-[40px] mt-1 rounded-lg" />
       ) : error ? (
         <div className="text-destructive">{error}</div>
       ) : (

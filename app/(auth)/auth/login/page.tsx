@@ -45,19 +45,14 @@ export default function SignIn() {
         callbackUrl: "/app/dashboard",
       });
 
-      setSignInLoading(false);
+      if (!result) throw new Error("Sign In failed");
 
-      if (result?.error) {
-        // toast.error(result.error, { position: "top-right" });
-        setErrorMessage("Invalid Email or Password");
-      }
-      if (result?.ok) {
-        toast.success("Sign In Successfully");
-        router.push("/app/dashboard");
-      }
+      const { error, ok, url } = result;
+
+      if (error) setErrorMessage("Wrong email or password");
+
+      if (ok && url) router.push(url);
     } catch (error: any) {
-      setSignInLoading(false);
-
       console.error("Error signing in:", error);
     } finally {
       setSignInLoading(false);
@@ -66,7 +61,7 @@ export default function SignIn() {
 
   return (
     <div className="h-screen">
-      <div className="w-4/5  md:w-96 mx-auto mt-10 px-3 md:px-12 py-16 bg-white dark:bg-black flex flex-col shadow-sm items-center dark:border dark:border-white rounded-xl">
+      <div className="w-4/5 md:w-96 mx-auto mt-10 px-3 md:px-12 py-16 bg-white dark:bg-black flex flex-col shadow-sm items-center dark:border dark:border-white rounded-xl">
         <form
           method="post"
           className="flex flex-col items-center w-full"

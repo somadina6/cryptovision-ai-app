@@ -1,0 +1,116 @@
+#!/usr/bin/env node
+const axios = require("axios");
+const { connect, disconnect } = require("mongoose");
+const tokens = require("./token.js").default;
+require("dotenv").config();
+const URI = process.env.MONGO_URI;
+const DB_NAME = process.env.DB_NAME;
+const ENDPOINT = process.env.UPDATE_TOKENS_ENDPOINT;
+const DELAY_MS = 1000; // Delay between requests in milliseconds (1 second)
+
+if (!URI || !DB_NAME || !ENDPOINT) {
+  console.error(
+    "Error: Environment variables URI, DB_NAME, and ENDPOINT must be set."
+  );
+  process.exit(1);
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const main = async () => {
+  try {
+    const pageLimit = 100; // Number of tokens to fetch per page to avoid overloading
+    let count = 0;
+    let page = 1;
+    let numberOfTokensToProcess = 1800;
+    let totalProcessed = 0;
+
+    await connect(URI, { dbName: DB_NAME });
+    console.log("Connected to the database");
+
+    while (count < numberOfTokensToProcess) {
+      try {
+        const response = await axios.get(ENDPOINT, {
+          params: { page, per_page: pageLimit },
+        });
+        const tokensToProcess = response.data;
+
+        if (tokensToProcess.length === 0) break;
+
+        const bulkOperations = tokensToProcess.map((token) => {
+          const filter = { id: token.id };
+          const update = {
+            $set: {
+              symbol: token.symbol,
+              name: token.name,
+              image: token.image,
+              current_price: token.current_price,
+              price_change_24h: token.price_change_24h,
+              price_change_percentage_24h: token.price_change_percentage_24h,
+              market_cap: token.market_cap,
+              market_cap_rank: token.market_cap_rank,
+              circulating_supply: token.circulating_supply,
+              total_supply: token.total_supply,
+              max_supply: token.max_supply,
+              ath: token.ath,
+              ath_date: token.ath_date,
+              ath_change_percentage: token.ath_change_percentage,
+              atl: token.atl,
+              atl_date: token.atl_date,
+              atl_change_percentage: token.atl_change_percentage,
+              last_updated: token.last_updated,
+            },
+          };
+
+          return {
+            updateOne: {
+              filter,
+              update,
+              upsert: true, // Insert if the token doesn't exist
+            },
+          };
+        });
+
+        // Perform bulk operations for better performance
+        await tokens.bulkWrite(bulkOperations);
+
+        count += tokensToProcess.length;
+        totalProcessed += tokensToProcess.length;
+        console.log(
+          `Page ${page} processed. ${totalProcessed} tokens processed so far.`
+        );
+
+        page += 1;
+        await sleep(DELAY_MS); // Adding a delay between requests to prevent API overload
+      } catch (error) {
+        if (error.response && error.response.status === 429) {
+          const retryAfter = error.response.headers["retry-after"];
+          const retryAfterMs = (retryAfter ? parseInt(retryAfter) : 60) * 1000;
+          console.log(
+            `Rate limit reached. Retrying after ${
+              retryAfterMs / 1000
+            } seconds...`
+          );
+          await sleep(retryAfterMs);
+        } else {
+          console.error("An error occurred during API request:", error);
+          break;
+        }
+      }
+    }
+
+    console.log(`Total of ${totalProcessed} tokens processed.`);
+  } catch (error) {
+    console.error("An error occurred during execution:", error);
+  } finally {
+    await disconnect();
+    console.log("Connection closed");
+    process.exit(0);
+  }
+};
+
+main()
+  .then(() => console.log("Done"))
+  .catch((e) =>
+    console.error("An error occurred during the main execution:", e)
+  );

@@ -7,8 +7,8 @@ type Props = {
 
 const options: SWRConfiguration = {
   provider: () => new Map(),
-  refreshInterval: 1800000, // 30 minutes
-  dedupingInterval: 10000, // 10 seconds
+  refreshInterval: 900000, // 15 minutes
+  dedupingInterval: 60000 * 5, // 5 minutes
   revalidateOnFocus: false,
 };
 

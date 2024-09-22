@@ -15,7 +15,7 @@ function useTokens() {
     fetchUserTokens,
     {
       revalidateOnFocus: false,
-      isVisible: () => true,
+      focusThrottleInterval: 60000 * 5, // 5 minutes
       onSuccess: (data) => {
         console.debug("Tokens fetched successfully");
       },

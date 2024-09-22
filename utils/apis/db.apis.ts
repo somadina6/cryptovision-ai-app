@@ -96,9 +96,11 @@ export async function getTokensFromDB(userId: string) {
       },
     });
 
+    // if user does not have a portfolio, return an empty array
     if (!userPortfolio) {
       return [];
     }
+    // return the holdings
     return userPortfolio.holdings;
   } catch (error) {
     console.error("Error fetching tokens from DB:", error);
