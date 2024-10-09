@@ -96,10 +96,18 @@ export async function getTokensFromDB(userId: string) {
       },
     });
 
+     // Sort the holdings by token name if userPortfolio exists and has holdings
+    if (userPortfolio && userPortfolio.holdings) {
+      userPortfolio.holdings.sort((a, b) => 
+        a.token.name.localeCompare(b.token.name)
+      );
+    }
+    
     // if user does not have a portfolio, return an empty array
     if (!userPortfolio) {
       return [];
     }
+    
     // return the holdings
     return userPortfolio.holdings;
   } catch (error) {
