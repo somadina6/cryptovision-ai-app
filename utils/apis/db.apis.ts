@@ -84,17 +84,71 @@ export async function getTokensFromDB(userId: string) {
     await connect();
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    const userPortfolio = await UserPortfolioModel.findOne({
-      userId: userObjectId,
-    }).populate({
-      path: "holdings",
-      populate: {
-        path: "token",
-        model: TokenModel,
-        select:
-          "_id id symbol name image current_price price_change_percentage_24h",
-      },
-    });
+    // const userPortfolio = await UserPortfolioModel.findOne({
+    //   userId: userObjectId,
+    // }).populate({
+    //   path: "holdings",
+    //   populate: {
+    //     path: "token",
+    //     model: TokenModel,
+    //     select:
+    //       "_id id symbol name image current_price price_change_percentage_24h",
+    //   },
+    // });
+
+     const userPortfolio = await UserPortfolioModel.aggregate([
+        // Match the user
+        { $match: { userId: userObjectId } },
+        
+        // Unwind the holdings array
+        { $unwind: "$holdings" },
+        
+        // Lookup to populate token information
+        {
+            $lookup: {
+                from: TokenModel.collection.name,
+                localField: "holdings.token",
+                foreignField: "_id",
+                as: "tokenInfo"
+            }
+        },
+        
+        // Unwind the tokenInfo array
+        { $unwind: "$tokenInfo" },
+        
+        // Project the fields we need
+        {
+            $project: {
+                _id: 1,
+                userId: 1,
+                holdings: {
+                    _id: "$holdings._id",
+                    token: {
+                        _id: "$tokenInfo._id",
+                        id: "$tokenInfo.id",
+                        symbol: "$tokenInfo.symbol",
+                        name: "$tokenInfo.name",
+                        image: "$tokenInfo.image",
+                        current_price: "$tokenInfo.current_price",
+                        price_change_percentage_24h: "$tokenInfo.price_change_percentage_24h"
+                    },
+                    amount: "$holdings.amount"
+                }
+            }
+        },
+        
+        // Sort by token name
+        { $sort: { "holdings.token.name": 1 } },
+        
+        // Group back to reconstruct the document
+        {
+            $group: {
+                _id: "$_id",
+                userId: { $first: "$userId" },
+                holdings: { $push: "$holdings" }
+            }
+        }
+    ]);
 
     // if user does not have a portfolio, return an empty array
     if (!userPortfolio) {
