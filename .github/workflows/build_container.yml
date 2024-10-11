@@ -59,6 +59,7 @@ jobs:
           passphrase: ""
           port: 22
           script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull ${{ secrets.DOCKER_USERNAME }}/cryptovision:latest
             docker stop webapp || true
             docker rm webapp || true
