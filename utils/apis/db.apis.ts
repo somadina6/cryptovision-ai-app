@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { UserPortfolioModel } from "../../models/userPortfolio";
 import connect from "../mongodb/db";
 import TokenModel from "@/models/token";
-import { disconnect } from "../mongodb/disconnect";
+import { TokenData } from "@/types/types";
 
 type Holding = {
   token: mongoose.Types.ObjectId;
@@ -96,20 +96,18 @@ export async function getTokensFromDB(userId: string) {
       },
     });
 
-     // Sort the holdings by token name if userPortfolio exists and has holdings
-    if (userPortfolio && userPortfolio.holdings) {
-      userPortfolio.holdings.sort((a, b) => 
-        a.token.name.localeCompare(b.token.name)
-      );
-    }
-    
     // if user does not have a portfolio, return an empty array
     if (!userPortfolio) {
       return [];
     }
-    
+
+    const holdings:TokenData[] = userPortfolio.holdings;
+
+    // sort holdings by token name
+    holdings.sort((a, b) => a.token.name.localeCompare(b.token.name));
+
     // return the holdings
-    return userPortfolio.holdings;
+    return holdings;
   } catch (error) {
     console.error("Error fetching tokens from DB:", error);
     throw error;

@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         }
         try {
           const exsitingUser = await userModel.findOne({
-            email: credentials.email,
+            email: credentials.email.toLowerCase(),
           });
 
           if (exsitingUser) {
