@@ -92,7 +92,7 @@ export async function getTokensFromDB(userId: string) {
         path: "token",
         model: TokenModel,
         select:
-          "_id id symbol name image current_price price_change_percentage_24h",
+          "_id id symbol name image current_price price_change_percentage_24h ath",
       },
     });
 
@@ -101,7 +101,7 @@ export async function getTokensFromDB(userId: string) {
       return [];
     }
 
-    const holdings:TokenData[] = userPortfolio.holdings;
+    const holdings: TokenData[] = userPortfolio.holdings;
 
     // sort holdings by token name
     holdings.sort((a, b) => a.token.name.localeCompare(b.token.name));
@@ -184,6 +184,22 @@ export async function updateTokenInDB({
     return updatedToken;
   } catch (error) {
     console.error("Error updating token in DB:", error);
+    throw error;
+  }
+}
+
+export async function getTokenDataFromDB({ tokenId }: { tokenId: string }) {
+  try {
+    await connect();
+
+    const token = await TokenModel.findOne({ id: tokenId });
+
+    if (!token) {
+      throw new Error("Token not found");
+    }
+
+    return token;
+  } catch (error) {
     throw error;
   }
 }

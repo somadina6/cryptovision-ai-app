@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiResponse, TokenData } from "../../types/types";
+import { ApiResponse, Token, TokenData } from "../../types/types";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 
@@ -145,5 +145,21 @@ export async function getCurrencyRates() {
   } catch (error: any) {
     console.error(error);
     throw new Error("Failed to fetch currency rates");
+  }
+}
+
+export async function getTokenData(tokenId: string) {
+  try {
+    const { data, status } = await axios.get<Token>(
+      `/api/token/${tokenId}`
+    );
+    if (status === 200) {
+      return data;
+    } else {
+      throw new Error("Failed to fetch token data");
+    }
+  } catch (error: any) {
+    console.error(error);
+    throw new Error("Failed to fetch token data");
   }
 }

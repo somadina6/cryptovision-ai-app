@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import {
   ColumnDef,
   SortingState,
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -18,8 +20,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Columns } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -31,34 +39,68 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    autoResetPageIndex: false,
     onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
+      columnVisibility,
+    },
+    initialState: {
+      pagination: {
+        pageSize: 8,
+      },
     },
   });
 
-  useEffect(() => {
-    table.setPageSize(8);
-  }, [table]);
-
   return (
-    <div className="rounded-md border border-border overflow-x-hidden">
-      {/* Fixed header */}
-      <div className="overflow-hidden">
-        <Table className="min-w-full table-auto ">
-          <TableHeader className="dark:bg-card">
+    <div className="w-full">
+      <div className="flex justify-end p-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="ml-auto">
+              <Columns className="mr-2 h-4 w-4" />
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) =>
+                    column.toggleVisibility(!!value)
+                  }
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead 
+                    key={header.id}
+                    className="hover:bg-accent/50 cursor-pointer"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -70,19 +112,12 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-        </Table>
-      </div>
-
-      {/* Scrollable body */}
-      <div className="overflow-y-scroll h-[400px]">
-        <Table className="min-w-full table-auto">
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="border-b-0 "
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -115,6 +150,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
+          <ChevronLeft className="mr-2 h-4 w-4" />
           Previous
         </Button>
         <Button
@@ -124,6 +160,7 @@ export function DataTable<TData, TValue>({
           disabled={!table.getCanNextPage()}
         >
           Next
+          <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>

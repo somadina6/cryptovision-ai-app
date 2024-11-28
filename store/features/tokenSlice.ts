@@ -6,6 +6,7 @@ type TokenState = {
   userTokens: TokenData[] | null;
   change_24hr: number;
   sum_change_24hr: number;
+  all_time_high: number;
 };
 
 const initialState: TokenState = {
@@ -13,6 +14,7 @@ const initialState: TokenState = {
   sum: 0,
   sum_change_24hr: 0,
   change_24hr: 0,
+  all_time_high: 0,
 };
 
 export const tokenSlice = createSlice({
@@ -27,6 +29,7 @@ export const tokenSlice = createSlice({
 
       let sum = 0;
       let sum_change_24hr = 0;
+      let sum_all_time_high = 0;
 
       tokens.forEach(({ token, amount }) => {
         const current = token.current_price * amount;
@@ -35,8 +38,11 @@ export const tokenSlice = createSlice({
 
         sum += current;
         sum_change_24hr += current - previous;
+        sum_all_time_high += token.ath??0 * amount;
+        
       });
 
+      // Store Balance Sum and Change in 24hr
       state.sum = sum;
       state.sum_change_24hr = sum_change_24hr;
 

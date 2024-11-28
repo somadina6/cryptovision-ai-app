@@ -24,14 +24,14 @@ export default function RootLayout({
         <ThemeProvider>
           <Toast />
           <Header />
-          <main className="flex w-screen min-h-screen overflow-x-hidden">
+          <main className="flex min-w-screen min-h-screen overflow-x-hidden">
             <SideBar />
 
             <section
               id="main"
               className="md:w-[calc(100%_-13rem)] w-[calc(100%_-_3.65rem)]
                           mr-0 md:p-2 flex-grow px-2 md:px-4 
-                           py-2 md:py-3 overflow-y-auto overflow-x-hidden"
+                           py-2 overflow-x-scroll"
             >
               {children}
             </section>

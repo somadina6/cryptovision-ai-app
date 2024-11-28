@@ -3,6 +3,7 @@
 import { TokenData } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,21 +38,27 @@ export const columns: ColumnDef<TokenData>[] = [
       </Button>
     ),
     accessorKey: "token.name",
+    enableHiding: false,
     cell: ({ row, column }) => {
       const token = row.original.token;
 
       return (
-        <div className="flex items-center space-x-2">
-          <Image
-            src={token.image}
-            alt={token.name}
-            className="w-8 h-8 rounded-full"
-            width={32}
-            height={32}
-          />
-          <div>
-            <div className="font-medium">{token.name}</div>
-          </div>
+        <div>
+          <Link
+            className="flex items-center space-x-2"
+            href={`/app/explore/${token.id}`}
+          >
+            <Image
+              src={token.image}
+              alt={token.name}
+              className="w-8 h-8 rounded-full"
+              width={32}
+              height={32}
+            />
+            <div>
+              <div className="font-medium">{token.name}</div>
+            </div>
+          </Link>
         </div>
       );
     },
@@ -59,6 +66,7 @@ export const columns: ColumnDef<TokenData>[] = [
   {
     header: () => <div className="text-left">Symbol</div>,
     accessorKey: "token.symbol",
+    enableHiding: false,
     cell: ({ row }) => {
       const token = row.original.token;
 
@@ -72,6 +80,7 @@ export const columns: ColumnDef<TokenData>[] = [
   {
     header: () => <div className="text-left">Amount</div>,
     accessorKey: "amount",
+    enableHiding: false,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("amount"));
 
@@ -81,6 +90,7 @@ export const columns: ColumnDef<TokenData>[] = [
   {
     header: "Price",
     accessorKey: "token.current_price",
+    id: "Price",
     cell: ({ row }) => {
       let price = row.original.token.current_price;
       const formattedPrice = new Intl.NumberFormat("en-US", {
@@ -91,6 +101,24 @@ export const columns: ColumnDef<TokenData>[] = [
       }).format(price);
 
       return <div className="text-left font-medium">{formattedPrice}</div>;
+    },
+  },
+  {
+    // Column for ath
+    header: "ATH",
+    accessorKey: "token.ath",
+    id: "All Time High",
+    enableHiding: true,
+    cell: ({ row }) => {
+      const ath = row.original.token.ath;
+      const formattedAth = new Intl.NumberFormat("en-US", {
+        currency: "USD",
+        style: "currency",
+        minimumFractionDigits: 2,
+        minimumSignificantDigits: 2,
+      }).format(ath);
+
+      return <div className="text-left font-medium">{formattedAth}</div>;
     },
   },
   {
@@ -105,6 +133,8 @@ export const columns: ColumnDef<TokenData>[] = [
       </Button>
     ),
     accessorKey: "token.price_change_percentage_24h",
+    enableHiding: true,
+    id: "24HR",
     cell: ({ row }) => {
       const priceChange = row.original.token.price_change_percentage_24h;
 
@@ -133,7 +163,40 @@ export const columns: ColumnDef<TokenData>[] = [
     },
   },
   {
+    header: ({ column }) => (
+      <p onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        Portfolio %
+      </p>
+    ),
+    id: "portfolio-percentage",
+    enableHiding: true,
+    enableSorting: true,
+    cell: ({ row, table }) => {
+      // Get the current row's total value
+      const price = row.original.token.current_price;
+      const amount = row.original.amount;
+      const rowTotalValue = price * amount;
+
+      // Calculate total portfolio value
+      const portfolioTotalValue = table
+        .getCoreRowModel()
+        .rows.reduce(
+          (total, r) =>
+            total + r.original.token.current_price * r.original.amount,
+          0
+        );
+
+      // Calculate percentage
+      const percentage = (rowTotalValue / portfolioTotalValue) * 100;
+
+      return (
+        <div className="text-left font-medium">{percentage.toFixed(2)}%</div>
+      );
+    },
+  },
+  {
     id: "actions",
+    enableHiding: false,
     cell: ({ row }) => {
       const token = row.original.token;
       const amount = row.original.amount;
@@ -155,7 +218,11 @@ export const columns: ColumnDef<TokenData>[] = [
               <DeleteDialog tokenId={token._id.toString()} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View {token.name} Page</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/app/explore/${token.id}`}>
+                View {token.name} Page
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem>View on CoinGecko</DropdownMenuItem>
             <DropdownMenuSeparator />
           </DropdownMenuContent>

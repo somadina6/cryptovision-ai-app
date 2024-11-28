@@ -1,7 +1,10 @@
-import React from "react";
+import TokenDetailPage from "./TokenDetailPage";
 
-const page = () => {
-  return <div></div>;
-};
-
-export default page;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ tokenId: string }>;
+}) {
+  const { tokenId } = await params;
+  return <TokenDetailPage tokenId={tokenId} />;
+}
