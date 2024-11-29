@@ -2,7 +2,7 @@
 FROM node:20.17-alpine
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app 
 
 # Install cron and any necessary packages
 RUN apk add --no-cache bash curl
