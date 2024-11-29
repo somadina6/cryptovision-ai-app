@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import AddTokenDialog from "@/components/Dialog/Dialog";
 
 export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   const [token, setToken] = useState<Token | null>(null);
@@ -113,9 +114,12 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
             </div>
           </div>
         </div>
-        <Button variant="outline" size="icon" className="ml-auto">
-          <Star className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center space-x-2 ml-auto">
+          <AddTokenDialog token={token} />
+          <Button variant="outline" size="icon">
+            <Star className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
 
       <Card>

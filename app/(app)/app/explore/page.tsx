@@ -55,6 +55,8 @@ export default function ExplorePage() {
                       src={token.image} 
                       alt={token.name} 
                       className="w-10 h-10 rounded-full"
+                      width={40}
+                      height={40}
                     />
                     <div className="flex-grow">
                       <div className="font-semibold">{token.name}</div>

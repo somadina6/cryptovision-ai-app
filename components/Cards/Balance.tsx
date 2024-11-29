@@ -36,8 +36,14 @@ const currencies: Currency[] = [
 const BalanceCard: React.FC = () => {
   const [currency, setCurrency] = useState<string>(currencies[0].code);
 
-  const { sum, sum_change_24hr, change_24hr } = useAppSelector(
+  const { sum_change_24hr, change_24hr, userTokens } = useAppSelector(
     (state) => state.token
+  );
+
+  const sum = useMemo(
+    () => 
+      userTokens ? userTokens.reduce((sum, token) => sum + token.token.current_price * token.amount, 0) : 0,
+    [userTokens]
   );
 
   // Fetch the currency rates ex: USD, EUR, GBP
