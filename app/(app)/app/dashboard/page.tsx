@@ -72,6 +72,7 @@ const Dashboard = () => {
                   token={token}
                   amount={amount}
                   _id={_id}
+              
                 />
               ))
             ) : (

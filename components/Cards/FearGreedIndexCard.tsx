@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
@@ -33,7 +33,9 @@ const FearGreedIndexCard = () => {
         setLevel(data.level);
         setColor(color);
         setIndex(Number(data.index));
-        setTimestamp(new Date(data.timestamp * 1000).toISOString().split("T",)[0]);
+        setTimestamp(
+          new Date(data.timestamp * 1000).toISOString().split("T")[0]
+        );
       } catch (err) {
         setError("Failed to fetch data");
         console.error(err);
@@ -48,9 +50,8 @@ const FearGreedIndexCard = () => {
   // return skeleton if loading
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
-
   return (
-    <Card className="max-w-sm ">
+    <Card className="w-[250px] ">
       <CardHeader className="mb-0 p-2 text-center">
         <CardTitle className="text-base font-bold">
           Fear & Greed Index
@@ -64,18 +65,18 @@ const FearGreedIndexCard = () => {
         <CardContent className="px-4">
           <div className="flex flex-col items-center justify-center space-y-1">
             <span className={`text-3xl font-extrabold text-${color} `}>
-              {index??'N/A'}
+              {index ?? "N/A"}
             </span>
-            <span className="text-lg ">{level??"N/A"}</span>
+            <span className="text-lg ">{level ?? "N/A"}</span>
             <div className="w-full h-2 rounded-full bg-gray-200">
               <div
-                className={`h-full rounded-full bg-${color??'gray-400'}`}
-                style={{ width: `${index??0}%` }}
+                className={`h-full rounded-full ${color ? `bg-${color}` : "bg-gray-400"}`}
+                style={{ width: `${index ?? 0}%` }}
               />
             </div>
           </div>
           <div className="text-xs text-center mt-2">
-            Last updated: {timestamp??'N/A'}
+            Last updated: {timestamp ?? "N/A"}
           </div>
         </CardContent>
       )}

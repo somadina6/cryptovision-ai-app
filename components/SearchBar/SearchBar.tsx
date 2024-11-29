@@ -58,7 +58,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="relative w-full max-w-[500px]">
+    <div className="relative w-[200px] md:w-[300px] lg:w-[600px]">
       <div className="relative">
         <Search 
           className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" 
@@ -97,6 +97,8 @@ const SearchBar = () => {
                 src={token.image} 
                 alt={token.name} 
                 className="w-6 h-6 rounded-full mr-3" 
+                width={24}
+                height={24}
               />
               <div>
                 <div className="font-semibold">{token.name}</div>

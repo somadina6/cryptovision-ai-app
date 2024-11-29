@@ -102,7 +102,9 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
           <Image
             src={token.image}
             alt={token.name}
-            className="w-12 h-12 rounded-full"
+            className="w-6 h-6 md:w-12 md:h-12 rounded-full"
+            width={48}
+            height={48}
           />
           <div>
             <h1 className="text-3xl font-bold">{token.name}</h1>

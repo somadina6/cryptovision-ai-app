@@ -14,6 +14,7 @@ import {
 import { TrendingUp, TrendingDown } from "lucide-react";
 import Image from "next/image";
 import { TokenData } from "@/types/types";
+import Link from "next/link";
 
 interface PerformanceCardProps {
   tokens: TokenData[];
@@ -54,7 +55,9 @@ export const PerformanceCard: React.FC<PerformanceCardProps> = ({
               key={tokenData.token._id.toString()} 
               className="flex items-center justify-between"
             >
-              <div className="flex items-center space-x-2">
+              <Link
+                href={`/app/explore/${tokenData.token.id}`}
+               className="flex items-center space-x-2">
                 <Image 
                   src={tokenData.token.image} 
                   alt={tokenData.token.symbol} 
@@ -65,7 +68,7 @@ export const PerformanceCard: React.FC<PerformanceCardProps> = ({
                 <span className="text-sm font-medium">
                   {tokenData.token.symbol.toUpperCase()}
                 </span>
-              </div>
+              </Link>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
