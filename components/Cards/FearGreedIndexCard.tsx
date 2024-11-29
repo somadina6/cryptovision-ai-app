@@ -1,7 +1,6 @@
 "use client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { Skeleton } from "../ui/skeleton";
 import { Loader2 } from "lucide-react";
 
 const getIndexLevel = (index: number) => {
@@ -70,7 +69,7 @@ const FearGreedIndexCard = () => {
             <span className="text-lg ">{level ?? "N/A"}</span>
             <div className="w-full h-2 rounded-full bg-gray-200">
               <div
-                className={`h-full rounded-full ${color ? `bg-${color}` : "bg-gray-400"}`}
+                className={`h-full rounded-full ${color ? `bg-${color}` : "bg-gray-400"} `}
                 style={{ width: `${index ?? 0}%` }}
               />
             </div>

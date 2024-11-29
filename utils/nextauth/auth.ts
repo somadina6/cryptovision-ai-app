@@ -67,7 +67,8 @@ export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   session: {
     strategy: "jwt",
-    maxAge: 30 * 60,
+    maxAge: 30 * 60, // 30 minutes
+    updateAge: 5 * 60, // 5 minutes
   },
   pages: {
     error: "/auth/error",
