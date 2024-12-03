@@ -64,7 +64,7 @@
   @apply h-16 w-full flex px-4 md:px-12 py-4 items-center sticky top-0 z-10 bg-background;
 }
 
-#sidebar {
+/* #sidebar {
   width: var(--customwidth);
   @apply border-r border-border fixed top-0 z-20 left-0 min-h-screen bg-background flex flex-col gap-2 px-2 md:px-5 md:py-6 transition-all;
 }
@@ -80,5 +80,24 @@
 
   #main {
     margin-left: 13rem;
+  }
+} */
+
+#sidebar {
+  width: 100%;  /* Full width on mobile */
+  @apply border-r border-border fixed top-0 z-20 left-0 min-h-screen bg-background flex flex-col gap-2 px-2 transition-all;
+}
+
+#main {
+  margin-left: 0;  /* No left margin on mobile */
+}
+
+@media (min-width: 768px) {
+  #sidebar {
+    width: 13rem;  /* Standard desktop width */
+  }
+
+  #main {
+    margin-left: 13rem;  /* Adjust main content margin for desktop */
   }
 }
