@@ -6,7 +6,6 @@ import Toast from "@/components/Toast/Toast";
 import ThemeProvider from "@/components/ThemeProvider/ThemeProvider";
 import SWRConfigProvider from "@/components/AuthProvider/SWRConfigProvider";
 import SideBar from "@/components/SideBar/SideBar";
-import RightSection from "@/components/SideBar/RightSection";
 
 export const metadata: Metadata = {
   title: "CryptoVison - Dashboard",
@@ -24,7 +23,7 @@ export default function RootLayout({
         <ThemeProvider>
           <Toast />
           <Header />
-          <main className="flex min-w-screen min-h-screen overflow-x-hidden">
+          <main className="flex max-w-[100vw] min-h-screen overflow-x-hidden">
             <SideBar />
 
             <section

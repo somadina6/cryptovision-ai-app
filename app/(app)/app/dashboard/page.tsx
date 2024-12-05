@@ -46,7 +46,7 @@ const Dashboard = () => {
       </div>
 
       {/* Tighter grid */}
-      <div className="grid grid-cols-1 md:flex gap-1 md:gap-4 flex-wrap justify-between">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <BalanceCard />
         <TokenPortfolioAthCard tokens={userTokens} />
         <PerformanceCard tokens={userTokens} type="gainers" />

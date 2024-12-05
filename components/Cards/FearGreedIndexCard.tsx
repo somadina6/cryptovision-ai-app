@@ -107,7 +107,7 @@ const FearGreedIndexCard = () => {
   const indexDetails = data ? getIndexDetails(data.index) : null;
 
   return (
-    <Card className="w-[250px]">
+    <Card className="card">
       <CardHeader className="p-2 text-center">
         <CardTitle className="text-base font-bold">
           Fear & Greed Index

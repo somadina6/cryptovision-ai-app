@@ -29,7 +29,7 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
     : 0;
 
   return (
-    <Card className="w-[250px]">
+    <Card className="card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
           Portfolio ATH Value
