@@ -95,8 +95,8 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
 
   return (
     <div className="container mx-auto space-y-6 px-4 py-6">
-      <div className="flex items-center space-x-4">
-        <Button variant="outline" onClick={() => router.back()}>
+      <div className="flex items-center justify-between">
+        <Button className="mr-3" variant="outline" onClick={() => router.back()}>
           <ChevronLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         <div className="flex items-center space-x-4">
@@ -108,8 +108,8 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
             height={48}
           />
           <div>
-            <h1 className="text-3xl font-bold">{token.name}</h1>
-            <div className="text-muted-foreground">
+            <h1 className="text-sm md:text-base font-bold">{token.name}</h1>
+            <div className="text-sm md:text-base text-muted-foreground">
               {token.symbol.toUpperCase()}
             </div>
           </div>
@@ -123,13 +123,13 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
       </div>
 
       <Card>
-        <CardContent className="p-6 flex justify-between items-center">
+        <CardContent className="p-3 md:p-4 flex justify-between items-center">
           <div className="flex-grow">
-            <div className="text-2xl font-semibold">
-              ${token.current_price.toLocaleString()}
+            <div className="text-sm md:text-base font-semibold">
+              ${token.current_price}
             </div>
             <div
-              className={`text-sm ${
+              className={`text-xs md:text-sm ${
                 token.price_change_percentage_24h > 0
                   ? "text-green-500"
                   : "text-red-500"
@@ -142,7 +142,7 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center space-x-2 bg-accent p-2 rounded-md">
+                <div className="text-sm md:text-base flex items-center space-x-2 bg-accent p-2 rounded-md">
                   <ArrowUpRight className="h-5 w-5 text-green-500" />
                   <span className="font-semibold text-green-500">
                     {returnsToATH.multiplier}X to ATH

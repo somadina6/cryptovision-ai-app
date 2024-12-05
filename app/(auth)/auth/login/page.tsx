@@ -1,11 +1,10 @@
 "use client";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ColorRing } from "react-loader-spinner";
-import toast from "react-hot-toast";
 
 type UserCredentials = {
   email: string;
