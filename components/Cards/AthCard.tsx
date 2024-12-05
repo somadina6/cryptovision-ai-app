@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Tooltip, 
@@ -8,8 +8,18 @@ import {
 } from "@/components/ui/tooltip";
 import { TrendingUp } from "lucide-react";
 import { TokenData } from "@/types/types";
+import { useAppSelector } from "@/store/hooks";
+import useCurrencyRates from "@/lib/useCurrencyRates";
+import { formatPrice } from "@/utils/apis/apis";
 
 const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
+  // Get the currenct currency code
+  const {preferred_currency: currency} = useAppSelector((state) => state.user);
+
+  // Fetch the currency rates ex: USD, EUR, GBP
+  const { currencyRates, error, isLoading } = useCurrencyRates();
+
+
   // Calculate current portfolio value
   const currentTotalValue = tokens.reduce(
     (sum, token) => sum + token.token.current_price * token.amount,
@@ -22,11 +32,28 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
     0
   );
 
-  // Calculate potential gain with safe division
-  const potentialGain = athTotalValue - currentTotalValue;
-  const gainPercentage = currentTotalValue > 0 
-    ? ((athTotalValue / currentTotalValue - 1) * 100) 
-    : 0;
+   // Calculate potential gain with safe division
+   const potentialGain = athTotalValue - currentTotalValue;
+   const gainPercentage = currentTotalValue > 0 
+     ? ((athTotalValue / currentTotalValue - 1) * 100) 
+     : 0;
+
+  const { convertedBalance, convertedBalanceChange } = useMemo(() => {
+    if (currencyRates) {
+      const rate = currencyRates[currency.code.toLowerCase()];
+      const convertedBalance = formatPrice(athTotalValue, currency.code, rate);
+      const convertedBalanceChange = formatPrice(
+        potentialGain,
+        currency.code,
+        rate
+      );
+      
+      return { convertedBalance,convertedBalanceChange };
+    }
+    return { convertedBalance: "", convertedBalanceChange: "" };
+  }, [currency, potentialGain, athTotalValue, currencyRates]);
+
+ 
 
   return (
     <Card className="card">
@@ -40,7 +67,7 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
         <div className="flex flex-col space-y-2">
           <div>
             <p className="text-2xl font-bold text-green-600">
-              ${athTotalValue.toLocaleString()}
+              {convertedBalance}
             </p>
             <p className="text-xs text-muted-foreground">
               All-Time High Potential
@@ -52,7 +79,7 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
                 <div className="flex items-center">
                   <TrendingUp className="mr-2 h-4 w-4 text-green-500" />
                   <span className="text-sm font-medium text-green-600">
-                    +${potentialGain.toLocaleString()} ({gainPercentage.toFixed(2)}%)
+                    +{convertedBalanceChange} ({gainPercentage.toFixed(2)}%)
                   </span>
                 </div>
               </TooltipTrigger>

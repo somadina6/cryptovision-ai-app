@@ -53,3 +53,8 @@ export type TokenData = {
   last_updated?: string;
   _id: ObjectId;
 };
+
+export interface Currency {
+  code: string;
+  label: string;
+}

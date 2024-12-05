@@ -1,3 +1,5 @@
+import { currencies } from "@/public/currencies/currencies";
+import { Currency } from "@/types/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type UserState = {
@@ -5,13 +7,13 @@ type UserState = {
   name?: string | null | undefined;
   image?: string | null | undefined;
   status: "authenticated" | "unauthenticated" | "loading";
-  preferred_currency: string;
+  preferred_currency: Currency;
 };
 
 const initialState: UserState = {
   userId: null,
   status: "unauthenticated",
-  preferred_currency: "USD",
+  preferred_currency: currencies[0],
 };
 
 export const userSlice = createSlice({
@@ -33,7 +35,7 @@ export const userSlice = createSlice({
     setUserName: (state, action: PayloadAction<string | null | undefined>) => {
       state.name = action.payload;
     },
-    setUserCurrency: (state, action: PayloadAction<string>) => {
+    setUserCurrency: (state, action: PayloadAction<Currency>) => {
       state.preferred_currency = action.payload;
     },
   },

@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -15,34 +15,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Wallet, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { formatPrice } from "@/utils/apis/apis";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import useCurrencyRates from "@/lib/useCurrencyRates";
-
-interface Currency {
-  code: string;
-  label: string;
-}
-
-const currencies: Currency[] = [
-  { code: "USD", label: "USD" },
-  { code: "CAD", label: "CAD" },
-  { code: "GBP", label: "GBP" },
-  { code: "NGN", label: "NGN" },
-  { code: "EUR", label: "EUR" },
-];
+import { currencies } from "@/public/currencies/currencies";
+import { setUserCurrency } from "@/store/features/userSlice";
 
 const BalanceCard: React.FC = () => {
-  const [currency, setCurrency] = useState<string>(currencies[0].code);
+  const dispatch = useAppDispatch();
+  const { preferred_currency:currency } = useAppSelector((state) => state.user);
+
+  const handleCurrencyChange = (value: string) => {
+    const currencyFound = currencies.find((curr) => curr.code === value);
+    if (!currencyFound) return;
+    dispatch(setUserCurrency(currencyFound));
+  };
 
   const { sum_change_24hr, change_24hr, userTokens } = useAppSelector(
     (state) => state.token
   );
 
   const sum = useMemo(
-    () => 
-      userTokens ? userTokens.reduce((sum, token) => sum + token.token.current_price * token.amount, 0) : 0,
+    () =>
+      userTokens
+        ? userTokens.reduce(
+            (sum, token) => sum + token.token.current_price * token.amount,
+            0
+          )
+        : 0,
     [userTokens]
   );
 
@@ -51,11 +52,11 @@ const BalanceCard: React.FC = () => {
 
   const { convertedBalance, convertedBalanceChange } = useMemo(() => {
     if (currencyRates) {
-      const rate = currencyRates[currency.toLowerCase()];
-      const convertedBalance = formatPrice(sum, currency, rate);
+      const rate = currencyRates[currency.code.toLowerCase()];
+      const convertedBalance = formatPrice(sum, currency.code, rate);
       const convertedBalanceChange = formatPrice(
         sum_change_24hr,
-        currency,
+        currency.code,
         rate
       );
       return { convertedBalance, convertedBalanceChange };
@@ -69,7 +70,7 @@ const BalanceCard: React.FC = () => {
     <Card className="card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-        <Select value={currency} onValueChange={setCurrency}>
+        <Select value={currency.label} onValueChange={handleCurrencyChange}>
           <SelectTrigger className="w-[70px] h-7 text-xs">
             <SelectValue placeholder="Currency" />
           </SelectTrigger>
