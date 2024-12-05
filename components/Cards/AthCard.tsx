@@ -1,4 +1,4 @@
-import React, { use, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Tooltip, 
@@ -13,12 +13,11 @@ import useCurrencyRates from "@/lib/useCurrencyRates";
 import { formatPrice } from "@/utils/apis/apis";
 
 const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
-  // Get the currenct currency code
-  const {preferred_currency: currency} = useAppSelector((state) => state.user);
+  // Get the current currency code
+  const { preferred_currency: currency } = useAppSelector((state) => state.user);
 
   // Fetch the currency rates ex: USD, EUR, GBP
-  const { currencyRates, error, isLoading } = useCurrencyRates();
-
+  const { currencyRates } = useCurrencyRates();
 
   // Calculate current portfolio value
   const currentTotalValue = tokens.reduce(
@@ -32,11 +31,11 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
     0
   );
 
-   // Calculate potential gain with safe division
-   const potentialGain = athTotalValue - currentTotalValue;
-   const gainPercentage = currentTotalValue > 0 
-     ? ((athTotalValue / currentTotalValue - 1) * 100) 
-     : 0;
+  // Calculate potential gain with safe division
+  const potentialGain = athTotalValue - currentTotalValue;
+  const gainPercentage = currentTotalValue > 0 
+    ? ((athTotalValue / currentTotalValue - 1) * 100) 
+    : 0;
 
   const { convertedBalance, convertedBalanceChange } = useMemo(() => {
     if (currencyRates) {
@@ -48,12 +47,15 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
         rate
       );
       
-      return { convertedBalance,convertedBalanceChange };
+      return { convertedBalance, convertedBalanceChange };
     }
     return { convertedBalance: "", convertedBalanceChange: "" };
   }, [currency, potentialGain, athTotalValue, currencyRates]);
 
- 
+  // Calculate progress percentage for the bar
+  const progressPercentage = athTotalValue > 0 
+    ? Math.min((currentTotalValue / athTotalValue) * 100, 100) 
+    : 0;
 
   return (
     <Card className="card">
@@ -88,6 +90,16 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          {/* Progress bar */}
+          <div className="w-full h-1 bg-gray-200 rounded-full">
+            <div
+              className="h-full bg-green-500 rounded-full"
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {progressPercentage.toFixed(2)}% of ATH Value
+          </p>
         </div>
       </CardContent>
     </Card>
