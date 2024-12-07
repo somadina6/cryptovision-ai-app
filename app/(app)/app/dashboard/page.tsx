@@ -32,7 +32,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8 container">
+    <div className="space-y-8 container px-2 md:px-4">
       {/* Welcome Section */}
       <div className="bg-card p-6 rounded-lg shadow-sm">
         <div className="flex items-center space-x-4">
@@ -67,7 +67,7 @@ const Dashboard = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {userTokens && userTokens.length > 0 ? (
               userTokens.map(({ token, _id, amount }) => (
                 <TokenCard

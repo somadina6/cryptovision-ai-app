@@ -17,27 +17,28 @@ const TokenCard: FC<TokenData> = ({ token, amount, _id }) => {
     price_change_percentage_24h > 0 ? "text-green-500" : "text-red-500";
 
   return (
-    <Link 
-    href={`/app/explore/${token.id}`}
-    className="border border-border p-4 rounded-lg shadow-md flex items-center">
+    <Link
+      href={`/app/explore/${token.id}`}
+      className="relative border border-border py-2 px-3 md:p-4 rounded-lg shadow-md flex items-center"
+    >
       <Image
         src={image}
         alt={name}
-        className="w-12 h-12 mr-4 rounded-full"
+        className="w-6 h-6 md:w-12 md:h-12 mr-4 rounded-full"
         width={48}
         height={48}
       />
       <div>
-        <h5 className="font-bold text-lg">
-          {name} ({symbol.toUpperCase()})
+        <h5 className="font-bold text-base md:text-lg">
+          {symbol.toUpperCase()}
         </h5>
-        <p>Amount: {amount}</p>
-        <p>Current Price: {formatPrice(current_price, "USD", 1)}</p>
-        <p>Total Value: {formatPrice(totalValue, "USD", 1)}</p>
-        <p className={priceChangeClass}>
-          24h Change: {price_change_percentage_24h.toFixed(2)}%
+        <p className="text-sm md:text-base">
+          Price: {formatPrice(current_price, "USD", 1)}
         </p>
       </div>
+      <p className="absolute right-3 text-sm md:text-base font-bold">
+        {formatPrice(totalValue, "USD", 1)}
+      </p>
     </Link>
   );
 };

@@ -23,13 +23,13 @@ export default function RootLayout({
         <ThemeProvider>
           <Toast />
           <Header />
-          <main className="flex max-w-[100vw] min-h-screen overflow-x-hidden">
+          <main className="flex min-h-screen overflow-x-hidden">
             <SideBar />
 
             <section
               id="main"
               className="md:w-[calc(100%_-13rem)] w-[calc(100%_-_3.65rem)]
-                          mr-0 md:p-2 flex-grow px-2 md:px-4 
+                          mr-0 md:p-2 flex-grow px-1 md:px-4 
                            py-2 overflow-x-scroll"
             >
               {children}
