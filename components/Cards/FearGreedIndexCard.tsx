@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 interface FearGreedData {
-  index: number;
+  index: string;
   level: string;
   timestamp: number;
 }
@@ -104,7 +104,7 @@ const FearGreedIndexCard = () => {
     );
   }
 
-  const indexDetails = data ? getIndexDetails(data.index) : null;
+  const indexDetails = data ? getIndexDetails(Number(data.index)) : null;
 
   return (
     <Card className="card">
@@ -118,9 +118,7 @@ const FearGreedIndexCard = () => {
           <span className={`text-3xl font-extrabold ${indexDetails?.color}`}>
             {data?.index ?? "N/A"}
           </span>
-          <span className="text-lg font-semibold">
-            {indexDetails?.level ?? "N/A"}
-          </span>
+          <span className="text-lg font-semibold">{data?.level ?? "N/A"}</span>
           <div className="w-full h-2 rounded-full bg-gray-200">
             <div
               className={`h-full rounded-full ${indexDetails?.barColor}`}

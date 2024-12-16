@@ -32,16 +32,11 @@ const TokenCard: FC<TokenData> = ({ token, amount, _id }) => {
         <h5 className="font-bold text-base md:text-lg">
           {symbol.toUpperCase()}
         </h5>
-        <p className="text-sm md:text-base ">
+        <p className={`text-sm md:text-base ${priceChangeClass}`}>
           ${current_price}{" "}
-          <span
-            className={`${
-              price_change_percentage_24h > 0
-                ? "text-green-500"
-                : "text-red-500"
-            }`}
-          >
-            ({price_change_percentage_24h.toFixed(2)}%)
+          <span>
+            ({price_change_percentage_24h > 0 ? "+" : ""}
+            {price_change_percentage_24h.toFixed(2)}%)
           </span>
         </p>
       </div>
