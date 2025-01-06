@@ -13,11 +13,10 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useAppSelector } from "../../store/hooks";
 import { Token } from "../../types/types";
 import toast from "react-hot-toast";
 import { ColorRing } from "react-loader-spinner";
-import { mutate, useSWRConfig } from "swr";
+import {  useSWRConfig } from "swr";
 
 export default function EditTokenAmountDialog({
   currentAmount,

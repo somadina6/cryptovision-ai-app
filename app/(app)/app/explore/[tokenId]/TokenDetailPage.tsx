@@ -25,6 +25,7 @@ import {
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import AddTokenDialog from "@/components/Dialog/Dialog";
+import { FinancialMetrics } from "@/components/TokenMetrics/FinancialMetrics";
 
 export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   const [token, setToken] = useState<Token | null>(null);
@@ -96,7 +97,11 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   return (
     <div className="container mx-auto space-y-6 px-4 py-6">
       <div className="flex items-center justify-between">
-        <Button className="mr-3" variant="outline" onClick={() => router.back()}>
+        <Button
+          className="mr-3"
+          variant="outline"
+          onClick={() => router.back()}
+        >
           <ChevronLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         <div className="flex items-center space-x-4">
@@ -162,8 +167,12 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="overview">
+      <Tabs defaultValue="financials">
         <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="financials">
+            <DollarSign className="mr-2 h-4 w-4" />
+            Financials
+          </TabsTrigger>
           <TabsTrigger value="overview">
             <BarChart className="mr-2 h-4 w-4" />
             Overview
@@ -171,10 +180,6 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
           <TabsTrigger value="markets">
             <TrendingUp className="mr-2 h-4 w-4" />
             Markets
-          </TabsTrigger>
-          <TabsTrigger value="financials">
-            <DollarSign className="mr-2 h-4 w-4" />
-            Financials
           </TabsTrigger>
         </TabsList>
 
@@ -218,6 +223,17 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
                   </span>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="financials">
+          <Card>
+            <CardHeader>
+              <CardTitle>Financial Analysis</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <FinancialMetrics token={token} />
             </CardContent>
           </Card>
         </TabsContent>

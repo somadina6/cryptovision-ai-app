@@ -2,6 +2,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
 
 interface FearGreedData {
   index: string;
@@ -65,13 +66,17 @@ const FearGreedIndexCard = () => {
   useEffect(() => {
     const fetchFearGreedIndex = async () => {
       try {
-        const response = await fetch("/api/fear-greed");
+        const { data, status } = await axios.get("/api/fear-greed", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-        if (!response.ok) {
+        if (status !== 200) {
           throw new Error("Failed to fetch Fear & Greed Index");
         }
 
-        const fetchedData: FearGreedData = await response.json();
+        const fetchedData: FearGreedData = data;
         setData(fetchedData);
       } catch (err) {
         setError("Failed to fetch data");
