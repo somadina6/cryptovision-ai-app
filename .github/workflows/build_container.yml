@@ -43,6 +43,10 @@ jobs:
             NEXT_PUBLIC_ECB_API_URL=${{ secrets.NEXT_PUBLIC_ECB_API_URL }}
             DB_NAME=${{ secrets.DB_NAME }}
             UPDATE_TOKENS_ENDPOINT=${{ secrets.UPDATE_TOKENS_ENDPOINT }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            UPSTASH_REDIS_REST_URL=${{ secrets.UPSTASH_REDIS_REST_URL }}
+            UPSTASH_REDIS_REST_TOKEN=${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
 
   deploy:
     needs: build # This ensures deploy runs only after build is successful

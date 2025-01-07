@@ -1,13 +1,25 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
+import { NextRequest, NextResponse } from "next/server";
+import { openai, redis, CACHE_DURATIONS } from "@/utils/clients";
+import { getUserIdFromToken } from "@/utils/auth/auth.utils";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Get userId from token
+    const { error, userId } = await getUserIdFromToken(request);
+    if (error || !userId) {
+      throw new Error("Unauthorized");
+    }
+
     const { tokens } = await request.json();
+
+    // Create cache key using userId 
+    const cacheKey = `portfolio_analysis:${userId}`;
+
+    // Try to get cached analysis
+    const cachedAnalysis = await redis.get(cacheKey);
+    if (cachedAnalysis) {
+      return NextResponse.json(cachedAnalysis);
+    }
 
     // Format portfolio data for analysis
     const portfolioSummary = tokens.map((token: any) => ({
@@ -90,11 +102,17 @@ Format recommendations as a JSON array of strings.`;
       throw new Error("No response from OpenAI");
     }
     const response = JSON.parse(completion.choices[0].message.content);
-
-    return NextResponse.json({
+    const analysisResult = {
       recommendations: response.recommendations || [],
       timestamp: new Date().toISOString(),
+    };
+
+    // Cache the analysis with user-specific key
+    await redis.set(cacheKey, analysisResult, {
+      ex: CACHE_DURATIONS.PORTFOLIO_ANALYSIS,
     });
+
+    return NextResponse.json(analysisResult);
   } catch (error) {
     console.error("Portfolio analysis error:", error);
     return NextResponse.json(
@@ -108,3 +126,4 @@ Format recommendations as a JSON array of strings.`;
     );
   }
 }
+
