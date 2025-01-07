@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet } from "lucide-react";
 import FearGreedIndexCard from "@/components/Cards/FearGreedIndexCard";
 import PortfolioPieChart from "@/components/Cards/PortfolioPieChart";
+import PortfolioAdvisor from "@/components/AI/PortfolioAdvisor";
 
 const Dashboard = () => {
   const { name } = useAppSelector((state) => state.user);
@@ -45,6 +46,8 @@ const Dashboard = () => {
         </div>
       </div>
 
+      <PortfolioAdvisor />
+      
       {/* Tighter grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <BalanceCard />
@@ -75,7 +78,6 @@ const Dashboard = () => {
                   token={token}
                   amount={amount}
                   _id={_id}
-              
                 />
               ))
             ) : (

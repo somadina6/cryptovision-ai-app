@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import AddTokenDialog from "@/components/Dialog/Dialog";
 import { FinancialMetrics } from "@/components/TokenMetrics/FinancialMetrics";
+import TokenSentiment from "@/components/TokenSentiment/TokenSentiment";
 
 export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   const [token, setToken] = useState<Token | null>(null);
@@ -167,6 +168,10 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
         </CardContent>
       </Card>
 
+      {/* Sentiment Analysis Card */}
+      <TokenSentiment tokenSymbol={token.symbol} />
+
+      {/* Tabs Section */}
       <Tabs defaultValue="financials">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="financials">
@@ -183,6 +188,9 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="financials">
+          <FinancialMetrics token={token} />
+        </TabsContent>
         <TabsContent value="overview">
           <Card>
             <CardHeader>
@@ -226,16 +234,8 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="financials">
-          <Card>
-            <CardHeader>
-              <CardTitle>Financial Analysis</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <FinancialMetrics token={token} />
-            </CardContent>
-          </Card>
+        <TabsContent value="markets">
+          {/* ... existing markets content ... */}
         </TabsContent>
       </Tabs>
     </div>
