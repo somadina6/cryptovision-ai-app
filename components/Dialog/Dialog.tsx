@@ -13,10 +13,11 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Token } from "../../types/types";
 import toast from "react-hot-toast";
 import { ColorRing } from "react-loader-spinner";
 import { useSWRConfig } from "swr";
+import { Token } from "@/types/database";
+import { addToPortfolio, getUserId } from "@/utils/supabase/queries";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
   const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
@@ -29,7 +30,8 @@ export default function AddTokenDialog({ token }: { token: Token }) {
     if (!tokenQuantity) return;
     try {
       setLoading(true);
-      await addToken(token._id.toString(), tokenQuantity);
+      const userId = await getUserId();
+      await addToPortfolio(userId, token.id, tokenQuantity);
       await mutate(`fetchUserTokens`);
       toast.success("Token added successfully");
     } catch (error) {

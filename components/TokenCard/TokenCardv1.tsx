@@ -100,9 +100,7 @@ const TokenList = ({ tokens }: { tokens: Token[] }) => {
               </TableCell>
             </TableRow>
           ) : (
-            tokens.map((token) => (
-              <TokenRow key={token._id.toString()} token={token} />
-            ))
+            tokens.map((token) => <TokenRow key={token.id} token={token} />)
           )}
         </TableBody>
       </Table>

@@ -18,23 +18,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { formatPrice } from "@/utils/apis/apis";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import useCurrencyRates from "@/lib/useCurrencyRates";
-import { currencies } from "@/public/currencies/currencies";
 import { setUserCurrency } from "@/store/features/userSlice";
+import { currencies } from "@/public/currencies/currencies";
+import useCurrencyRates from "@/lib/useCurrencyRates";
+
 
 const BalanceCard: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { preferred_currency:currency } = useAppSelector((state) => state.user);
+  const { preferred_currency: currency } = useAppSelector(
+    (state) => state.user
+  );
+  const { sum_change_24hr, change_24hr, userTokens } = useAppSelector(
+    (state) => state.token
+  );
 
   const handleCurrencyChange = (value: string) => {
     const currencyFound = currencies.find((curr) => curr.code === value);
     if (!currencyFound) return;
     dispatch(setUserCurrency(currencyFound));
   };
-
-  const { sum_change_24hr, change_24hr, userTokens } = useAppSelector(
-    (state) => state.token
-  );
 
   const sum = useMemo(
     () =>

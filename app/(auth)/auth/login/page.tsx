@@ -1,10 +1,19 @@
 "use client";
-import { signIn } from "next-auth/react";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ColorRing } from "react-loader-spinner";
+import { authService } from "@/utils/supabase/auth";
+import toast from "react-hot-toast";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  setUser,
+  setUserStatus,
+  setError as setUserError,
+} from "@/store/features/userSlice";
+import { supabase } from "@/utils/supabase/client";
+import { signInWithProvider } from "@/utils/supabase/queries";
 
 type UserCredentials = {
   email: string;
@@ -21,6 +30,7 @@ export default function SignIn() {
   };
 
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const queryParams = useSearchParams();
 
   const [userData, setuserData] = useState<UserCredentials>(initCredentials);
@@ -32,27 +42,52 @@ export default function SignIn() {
     if (emailFromSignUp) {
       setuserData({ ...userData, email: emailFromSignUp });
     }
-  }, [queryParams, userData]);
+  }, []);
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    setSignInLoading(true);
     event.preventDefault();
+    setSignInLoading(true);
+    setErrorMessage(null);
+    dispatch(setUserStatus("loading"));
+
     try {
-      const result = await signIn("credentials", {
-        ...userData,
-        redirect: false,
-        callbackUrl: "/app/dashboard",
-      });
+      const { user, session } = await authService.signIn(
+        userData.email,
+        userData.password
+      );
 
-      if (!result) throw new Error("Sign In failed");
+      if (user && session) {
+        // Get user profile data
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("name, image")
+          .eq("id", user.id)
+          .single();
 
-      const { error, ok, url } = result;
+        if (profileError) throw profileError;
 
-      if (error) setErrorMessage("Wrong email or password");
+        dispatch(
+          setUser({
+            id: user.id,
+            name: profile?.name,
+            image: profile?.image,
+          })
+        );
 
-      if (ok && url) router.push(url);
+        // Store session if needed (optional, as Supabase handles this internally)
+        // You can store additional session data in localStorage if required
+        localStorage.setItem("session", JSON.stringify(session));
+
+        router.push("/app/dashboard");
+      } else {
+        throw new Error("No session returned from sign in");
+      }
     } catch (error: any) {
       console.error("Error signing in:", error);
+      const errorMessage = error.message || "Failed to sign in";
+      setErrorMessage(errorMessage);
+      dispatch(setUserError(errorMessage));
+      toast.error(errorMessage);
     } finally {
       setSignInLoading(false);
     }
@@ -73,7 +108,7 @@ export default function SignIn() {
 
           {errorMessage && (
             <p className="text-xs mb-2 text-red-500 text-center">
-              {errorMessage}!
+              {errorMessage}
             </p>
           )}
 
@@ -136,7 +171,13 @@ export default function SignIn() {
         </div>
 
         <div
-          onClick={() => signIn("google", { callbackUrl: "/app/dashboard" })}
+          onClick={async () => {
+            try {
+              await signInWithProvider("google");
+            } catch (error: any) {
+              toast.error(error.message || "Failed to sign in with Google");
+            }
+          } }
           className="mt-3 font font-bold flex gap-2 border rounded-md py-3 w-full px-4 cursor-pointer hover:border-primary"
         >
           <Image

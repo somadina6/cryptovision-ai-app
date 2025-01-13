@@ -13,9 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
-import { getTokenData } from "@/utils/apis/apis";
 import { useEffect, useState } from "react";
-import { Token } from "@/types/types";
 import {
   Tooltip,
   TooltipContent,
@@ -27,6 +25,8 @@ import Image from "next/image";
 import AddTokenDialog from "@/components/Dialog/Dialog";
 import { FinancialMetrics } from "@/components/TokenMetrics/FinancialMetrics";
 import TokenSentiment from "@/components/TokenSentiment/TokenSentiment";
+import { getToken } from "@/utils/supabase/queries";
+import { Token } from "@/types/database";
 
 export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   const [token, setToken] = useState<Token | null>(null);
@@ -36,7 +36,7 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   useEffect(() => {
     const fetchTokenData = async () => {
       try {
-        const fetchedToken = await getTokenData(tokenId);
+        const fetchedToken = await getToken(tokenId);
         setToken(fetchedToken);
       } catch (err) {
         setError("Failed to fetch token data. Please try again.");

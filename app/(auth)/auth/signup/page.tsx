@@ -1,12 +1,12 @@
 "use client";
-import { signUp } from "next-auth-sanity/client";
-import { signIn } from "next-auth/react";
+
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import Image from "next/image";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { supabase } from "@/utils/supabase/client";
+import { signUp, signInWithProvider } from "@/utils/supabase/queries";
 
 type UserCredentials = {
   firstname: string;
@@ -37,24 +37,14 @@ const SignUp = () => {
     event.preventDefault();
 
     try {
-      // const user = await signUp({
-      //   email: userData.email,
-      //   password: userData.password,
-      //   name: `${userData.firstname} ${userData.lastname}`,
-      // });
+      // use supabase auth
+      const { user, session } = await signUp(
+        userData.email,
+        userData.password,
+        userData.firstname + " " + userData.lastname
+      );
 
-      const response = await axios.post("/api/user/register", {
-        email: userData.email,
-        password: userData.password,
-        name: `${userData.firstname} ${userData.lastname}`,
-      });
-
-      if (response.status == 200) {
-        toast.success(response.data.message);
-        router.push(`/auth/login?email=${userData.email}`);
-      }
-
-      setSignInLoading(false);
+      router.push(`/auth/login?email=${userData.email}`);
     } catch (error: any) {
       if (error.response) {
         toast.error(error.response.data.message);
@@ -167,7 +157,13 @@ const SignUp = () => {
         </div>
 
         <div
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={async () => {
+            try {
+              await signInWithProvider("google");
+            } catch (error: any) {
+              toast.error(error.message || "Failed to sign in with Google");
+            }
+          }}
           className="mt-3 font font-bold flex gap-2 border rounded-md py-3 w-full px-4 cursor-pointer hover:border-primary"
         >
           <Image

@@ -1,14 +1,16 @@
 import React, { FC } from "react";
 import { formatPrice } from "../../utils/apis/apis";
-import { TokenData } from "../../types/types";
+
 import Image from "next/image";
 import Link from "next/link";
+import { Token } from "@/types/database";
 
-type TokenCardProps = {
-  token: TokenData;
-};
+interface TokenCardProps {
+  token: Token;
+  amount: number;
+}
 
-const TokenCard: FC<TokenData> = ({ token, amount, _id }) => {
+const TokenCard = ({ token, amount }: TokenCardProps) => {
   const { name, symbol, current_price, image, price_change_percentage_24h } =
     token;
 

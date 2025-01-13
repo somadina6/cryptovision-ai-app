@@ -1,68 +1,116 @@
 "use client";
-import useTokens from "@/lib/useTokens";
-import { setUserTokens } from "@/store/features/tokenSlice";
+import { useEffect } from "react";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import { useAppDispatch } from "@/store/hooks";
+import { setUser, setUserStatus, clearUser } from "@/store/features/userSlice";
 import {
-  setUserId,
-  setUserImage,
-  setUserName,
-  setUserStatus,
-} from "../../store/features/userSlice";
-import { store } from "../../store/store";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useCallback, memo } from "react";
-import { Provider, useDispatch } from "react-redux";
+  setUserTokens,
+  setLoading,
+  setError as setTokenError,
+  clearTokens,
+} from "@/store/features/tokenSlice";
 
-type Props = {
+import { getUserPortfolio, getUser } from "@/utils/supabase/queries";
+import { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase/client";
+
+function UserComp({ children }: { children: React.ReactNode }) {
+  const dispatch = useAppDispatch();
+
+  // Initial profile fetch
+  useEffect(() => {
+    async function fetchInitialProfile() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          const profile = await getUser(session.user.id);
+
+          dispatch(
+            setUser({
+              id: session.user.id,
+              name: profile?.name || "",
+              image: profile?.image || "",
+            })
+          );
+          dispatch(setUserStatus("authenticated"));
+
+          // Fetch user tokens
+          dispatch(setLoading());
+          const userTokens = await getUserPortfolio(session.user.id);
+          dispatch(setUserTokens(userTokens || []));
+        }
+      } catch (error) {
+        console.error("Error fetching initial profile:", error);
+      }
+    }
+
+    fetchInitialProfile();
+  }, [dispatch]);
+
+  // Auth state change handler
+  useEffect(() => {
+    async function handleAuthChange(
+      event: AuthChangeEvent,
+      session: Session | null
+    ) {
+      if (event === "SIGNED_IN") {
+        if (session?.user) {
+          try {
+            // Get user profile data
+            const profile = await getUser(session.user.id);
+
+            dispatch(
+              setUser({
+                id: session.user.id,
+                name: profile?.name || "",
+                image: profile?.image || "",
+              })
+            );
+            dispatch(setUserStatus("authenticated"));
+
+            // Fetch user tokens
+            dispatch(setLoading());
+            const userTokens = await getUserPortfolio(session.user.id);
+            dispatch(setUserTokens(userTokens || []));
+          } catch (error) {
+            dispatch(
+              setTokenError(
+                error instanceof Error
+                  ? error.message
+                  : "Failed to fetch user data"
+              )
+            );
+          }
+        }
+      } else if (event === "SIGNED_OUT") {
+        dispatch(clearUser());
+        dispatch(clearTokens());
+      }
+    }
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(handleAuthChange);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch]);
+
+  return <>{children}</>;
+}
+
+export default function ReduxProvider({
+  children,
+}: {
   children: React.ReactNode;
-};
-
-const UserComp = memo(() => {
-  const dispatch = useDispatch();
-  const { data, status } = useSession();
-  const router = useRouter();
-  const { tokens, error, isLoading } = useTokens(); // Assuming these states exist in useTokens
-  const coinDetails = tokens || [];
-
-  // Update user state in store based on session status
-  const updateUserState = useCallback(() => {
-    dispatch(setUserStatus(status));
-
-    if (status === "authenticated" && data) {
-      dispatch(setUserId(data.user.id));
-      dispatch(setUserImage(data.user.image));
-      dispatch(setUserName(data.user.name));
-    } else if (status === "unauthenticated") {
-      dispatch(setUserId(null));
-      dispatch(setUserImage(null));
-      dispatch(setUserName(null));
-      router.push("/auth/login");
-    }
-  }, [status, data, dispatch, router]);
-
-  useEffect(() => {
-    updateUserState();
-  }, [status, updateUserState]);
-
-  // Update user tokens in store when fetched from API call
-  useEffect(() => {
-    if (coinDetails.length > 0 && !isLoading) {
-      dispatch(setUserTokens(coinDetails));
-    }
-  }, [coinDetails, isLoading, error, dispatch]);
-
-  return null;
-});
-
-UserComp.displayName = "UserComp";
-
-const ReduxProvider = ({ children }: Props) => {
+}) {
   return (
     <Provider store={store}>
-      <UserComp />
-      {children}
+      <UserComp>{children}</UserComp>
     </Provider>
   );
-};
-
-export default ReduxProvider;
+}

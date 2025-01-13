@@ -1,8 +1,8 @@
 "use client";
 
-import { TokenData } from "@/types/types";
+import { PortfolioWithToken } from "@/types/database";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,20 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-
 import { DeleteDialog } from "./delete-dialog";
 import EditTokenAmountDialog from "@/components/Dialog/EditTokenAmountDialog";
 import Image from "next/image";
 
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<TokenData>[] = [
+export const columns: ColumnDef<PortfolioWithToken>[] = [
   {
     header: ({ column }) => (
       <Button
@@ -39,7 +30,7 @@ export const columns: ColumnDef<TokenData>[] = [
     ),
     accessorKey: "token.name",
     enableHiding: false,
-    cell: ({ row, column }) => {
+    cell: ({ row }) => {
       const token = row.original.token;
 
       return (
@@ -104,7 +95,6 @@ export const columns: ColumnDef<TokenData>[] = [
     },
   },
   {
-    // Column for ath
     header: "ATH",
     accessorKey: "token.ath",
     id: "All Time High",
@@ -172,12 +162,10 @@ export const columns: ColumnDef<TokenData>[] = [
     enableHiding: true,
     enableSorting: true,
     cell: ({ row, table }) => {
-      // Get the current row's total value
       const price = row.original.token.current_price;
       const amount = row.original.amount;
       const rowTotalValue = price * amount;
 
-      // Calculate total portfolio value
       const portfolioTotalValue = table
         .getCoreRowModel()
         .rows.reduce(
@@ -186,7 +174,6 @@ export const columns: ColumnDef<TokenData>[] = [
           0
         );
 
-      // Calculate percentage
       const percentage = (rowTotalValue / portfolioTotalValue) * 100;
 
       return (
@@ -198,11 +185,11 @@ export const columns: ColumnDef<TokenData>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const token = row.original.token;
-      const amount = row.original.amount;
+      const portfolioItem = row.original;
+      const amount = portfolioItem.amount;
 
       return (
-        <DropdownMenu key={token._id.toString()}>
+        <DropdownMenu key={portfolioItem.token.id}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
@@ -212,15 +199,18 @@ export const columns: ColumnDef<TokenData>[] = [
           <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
-              <EditTokenAmountDialog token={token} currentAmount={amount} />
+              <EditTokenAmountDialog
+                token={portfolioItem}
+                currentAmount={amount}
+              />
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
-              <DeleteDialog tokenId={token._id.toString()} />
+              <DeleteDialog tokenId={portfolioItem.token.id} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/app/explore/${token.id}`}>
-                View {token.name} Page
+              <Link href={`/app/explore/${portfolioItem.token.id}`}>
+                View {portfolioItem.token.name} Page
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>View on CoinGecko</DropdownMenuItem>

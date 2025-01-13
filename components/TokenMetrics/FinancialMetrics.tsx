@@ -1,4 +1,3 @@
-import { Token, TokenData } from "@/types/types";
 import useTokens from "@/lib/useTokens";
 import {
   Table,
@@ -13,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EditTokenAmountDialog from "@/components/Dialog/EditTokenAmountDialog";
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
+import { Token } from "@/types/database";
 
 interface FinancialMetricsProps {
   token: Token;
@@ -23,7 +23,7 @@ export function FinancialMetrics({ token }: FinancialMetricsProps) {
 
   // Find user's holding of this token
   const userHolding = userTokens?.find(
-    (t) => t.token._id.toString() === token._id.toString()
+    (t) => t.token.id === token.id
   );
 
   if (isLoading) {

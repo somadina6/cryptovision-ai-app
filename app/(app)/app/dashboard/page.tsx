@@ -11,14 +11,15 @@ import { Wallet } from "lucide-react";
 import FearGreedIndexCard from "@/components/Cards/FearGreedIndexCard";
 import PortfolioPieChart from "@/components/Cards/PortfolioPieChart";
 import PortfolioAdvisor from "@/components/AI/PortfolioAdvisor";
+import { usePortfolio } from "@/lib/hooks/usePortfolio";
 
 const Dashboard = () => {
   const { name } = useAppSelector((state) => state.user);
   const firstName = name ? name.split(" ")[0] : "User";
 
-  const { tokens: userTokens, isLoading } = useTokens();
+  const { portfolio: userTokens, isLoading, error } = usePortfolio();
 
-  if (!userTokens || isLoading) {
+  if (isLoading) {
     return (
       <div className="p-8">
         <Skeleton className="h-20 w-full mb-8" />
@@ -30,6 +31,14 @@ const Dashboard = () => {
         <Skeleton className="h-96 w-full mt-8" />
       </div>
     );
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!userTokens) {
+    return <div>No tokens found</div>;
   }
 
   return (
@@ -47,7 +56,7 @@ const Dashboard = () => {
       </div>
 
       <PortfolioAdvisor />
-      
+
       {/* Tighter grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <BalanceCard />
@@ -72,13 +81,8 @@ const Dashboard = () => {
         <CardContent>
           <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {userTokens && userTokens.length > 0 ? (
-              userTokens.map(({ token, _id, amount }) => (
-                <TokenCard
-                  key={_id.toString()}
-                  token={token}
-                  amount={amount}
-                  _id={_id}
-                />
+              userTokens.map(({ token, amount }) => (
+                <TokenCard key={token.id} token={token} amount={amount} />
               ))
             ) : (
               <p className="col-span-full text-center text-lg text-muted-foreground">

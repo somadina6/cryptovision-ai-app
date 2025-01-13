@@ -3,10 +3,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const { error, userId, message, statusCode } = await getUserIdFromToken(req);
-  if (error || !userId) {
-    return NextResponse.json({ message }, { status: statusCode });
-  }
+  
 
   const ecburl = process.env.NEXT_PUBLIC_ECB_API_URL;
   if (!ecburl) throw new Error("Fetch URL Not Available");

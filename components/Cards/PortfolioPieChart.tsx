@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Token } from "@/types/types";
+import { PortfolioWithToken } from "@/types/database";
 
 // Enhanced color palette with better contrast
 const COLOR_PALETTE = [
@@ -22,7 +23,7 @@ interface PortfolioToken {
 }
 
 interface PortfolioPieChartProps {
-  tokens: PortfolioToken[];
+  tokens: PortfolioWithToken [];
 }
 
 const PortfolioPieChart: React.FC<PortfolioPieChartProps> = ({ tokens }) => {

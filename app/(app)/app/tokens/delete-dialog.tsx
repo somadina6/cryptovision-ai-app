@@ -11,20 +11,36 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { deleteToken } from "@/utils/apis/apis";
+import {
+  deleteFromPortfolio,
+  getUserId,
+  getUserPortfolio,
+} from "@/utils/supabase/queries";
 import { SyntheticEvent } from "react";
-import { useSWRConfig } from "swr";
+import { toast } from "react-hot-toast";
+import { useAppDispatch } from "@/store/hooks";
+import { setUserTokens } from "@/store/features/tokenSlice";
 
 export function DeleteDialog({ tokenId }: { tokenId: string }) {
-  const { mutate } = useSWRConfig();
+  const dispatch = useAppDispatch();
 
   const handleDeleteToken = async () => {
     try {
-      await deleteToken(tokenId);
-      await mutate(`fetchUserTokens`);
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
+
+      await deleteFromPortfolio(userId, tokenId);
+
+      // Fetch updated tokens and update Redux store
+      const updatedTokens = await getUserPortfolio(userId);
+      dispatch(setUserTokens(updatedTokens));
+
+      toast.success("Token deleted successfully");
     } catch (error) {
       console.error("Error deleting token:", error);
-      throw new Error("Error deleting token");
+      toast.error("Failed to delete token");
     }
   };
 

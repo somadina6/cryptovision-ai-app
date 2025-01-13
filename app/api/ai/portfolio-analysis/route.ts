@@ -1,19 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai, redis, CACHE_DURATIONS } from "@/utils/clients";
-import { getUserIdFromToken } from "@/utils/auth/auth.utils";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get userId from token
-    const { error, userId } = await getUserIdFromToken(request);
-    if (error || !userId) {
-      throw new Error("Unauthorized");
+    // Create server-side Supabase client
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
+    );
+
+    // Get authenticated user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { tokens } = await request.json();
 
-    // Create cache key using userId 
-    const cacheKey = `portfolio_analysis:${userId}`;
+    // Create cache key using userId
+    const cacheKey = `portfolio_analysis:${user.id}`;
 
     // Try to get cached analysis
     const cachedAnalysis = await redis.get(cacheKey);
@@ -126,4 +144,3 @@ Format recommendations as a JSON array of strings.`;
     );
   }
 }
-

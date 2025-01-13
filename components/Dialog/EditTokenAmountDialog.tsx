@@ -13,17 +13,19 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Token } from "../../types/types";
+
 import toast from "react-hot-toast";
 import { ColorRing } from "react-loader-spinner";
 import {  useSWRConfig } from "swr";
+import { PortfolioWithToken, Token } from "@/types/database";
+import { getUserId, updatePortfolioItem } from "@/utils/supabase/queries";
 
 export default function EditTokenAmountDialog({
   currentAmount,
   token,
 }: {
   currentAmount: number;
-  token: Token;
+  token: PortfolioWithToken;
 }) {
   const [tokenQuantity, setTokenQuantity] = useState<number>(currentAmount);
   const [open, setOpen] = useState(false);
@@ -37,7 +39,8 @@ export default function EditTokenAmountDialog({
 
     try {
       setLoading(true);
-      await updateToken(token._id.toString(), tokenQuantity);
+      const userId = await getUserId();
+      await updatePortfolioItem(userId, token.id, tokenQuantity);
       await mutate(`fetchUserTokens`);
       toast.success("Token updated successfully");
     } catch (error) {
@@ -73,7 +76,7 @@ export default function EditTokenAmountDialog({
               Name
             </Label>
             <p id="name" className="col-span-3">
-              {token.name}
+              {token.token.name}
             </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

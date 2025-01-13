@@ -1,41 +1,40 @@
 import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TrendingUp } from "lucide-react";
-import { TokenData } from "@/types/types";
 import { useAppSelector } from "@/store/hooks";
 import useCurrencyRates from "@/lib/useCurrencyRates";
 import { formatPrice } from "@/utils/apis/apis";
+import { PortfolioWithToken } from "@/types/database";
 
-const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
-  // Get the current currency code
-  const { preferred_currency: currency } = useAppSelector((state) => state.user);
+interface TokenPortfolioAthCardProps {
+  tokens: PortfolioWithToken[];
+}
 
-  // Fetch the currency rates ex: USD, EUR, GBP
+const TokenPortfolioAthCard = ({ tokens }: TokenPortfolioAthCardProps) => {
+  const { preferred_currency: currency } = useAppSelector(
+    (state) => state.user
+  );
   const { currencyRates } = useCurrencyRates();
 
-  // Calculate current portfolio value
   const currentTotalValue = tokens.reduce(
-    (sum, token) => sum + token.token.current_price * token.amount,
+    (sum, portfolio) => sum + portfolio.token.current_price * portfolio.amount,
     0
   );
 
-  // Calculate All-Time High (ATH) portfolio value
   const athTotalValue = tokens.reduce(
-    (sum, token) => sum + token.token.ath * token.amount,
+    (sum, portfolio) => sum + portfolio.token.ath * portfolio.amount,
     0
   );
 
-  // Calculate potential gain with safe division
   const potentialGain = athTotalValue - currentTotalValue;
-  const gainPercentage = currentTotalValue > 0 
-    ? ((athTotalValue / currentTotalValue - 1) * 100) 
-    : 0;
+  const gainPercentage =
+    currentTotalValue > 0 ? (athTotalValue / currentTotalValue - 1) * 100 : 0;
 
   const { convertedBalance, convertedBalanceChange } = useMemo(() => {
     if (currencyRates) {
@@ -46,16 +45,16 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
         currency.code,
         rate
       );
-      
+
       return { convertedBalance, convertedBalanceChange };
     }
     return { convertedBalance: "", convertedBalanceChange: "" };
   }, [currency, potentialGain, athTotalValue, currencyRates]);
 
-  // Calculate progress percentage for the bar
-  const progressPercentage = athTotalValue > 0 
-    ? Math.min((currentTotalValue / athTotalValue) * 100, 100) 
-    : 0;
+  const progressPercentage =
+    athTotalValue > 0
+      ? Math.min((currentTotalValue / athTotalValue) * 100, 100)
+      : 0;
 
   return (
     <Card className="card">
@@ -90,7 +89,6 @@ const TokenPortfolioAthCard = ({ tokens }: { tokens: TokenData[] }) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {/* Progress bar */}
           <div className="w-full h-1 bg-gray-200 rounded-full">
             <div
               className="h-full bg-green-500 rounded-full"

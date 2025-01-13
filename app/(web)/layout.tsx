@@ -1,39 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import ThemeProvider from "../../components/ThemeProvider/ThemeProvider";
-import Header from "../../components/Header/Header";
-import { NextAuthProvider } from "../../components/AuthProvider/AuthProvider";
-import Toast from "../../components/Toast/Toast";
-import { getServerSession } from "next-auth";
-import ReduxProvider from "../../components/ReduxProvider/ReduxProvider";
-
-const inter = Inter({ subsets: ["latin"] });
+import Header from "@/components/Header/Header";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "CryptoVision",
-  description: "See your potential balance ",
+  title: "CryptoVision AI - Home",
+  description: "Track your crypto portfolio with AI-powered insights",
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const session = await getServerSession();
+export default function WebLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <NextAuthProvider>
-          <ReduxProvider>
-            <ThemeProvider>
-              <Toast />
-              <Header />
-              {children}
-            </ThemeProvider>
-          </ReduxProvider>
-        </NextAuthProvider>
-      </body>
-    </html>
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex-1">{children}</main>
+      <Toaster />
+    </div>
   );
 }

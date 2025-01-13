@@ -90,7 +90,7 @@ const SearchBar = () => {
           {suggestions.map((token) => (
             <div
               key={token.id}
-              onClick={() => handleSuggestionClick(token.id)}
+              onClick={() => handleSuggestionClick(token.token_id)}
               className="flex items-center p-2 hover:bg-accent cursor-pointer"
             >
               <Image 

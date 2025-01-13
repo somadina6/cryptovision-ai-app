@@ -1,14 +1,14 @@
-import { Metadata } from "next/types";
+import { Toaster } from "react-hot-toast";
 
-export const metadata: Metadata = {
-  title: "CryptoVison - Dashboard",
-  description: "CryptoVison - Dashboard",
-};
-
-export default function RootLayout({
+export default function AuthLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  return <main>{children}</main>;
+}) {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
+      {children}
+      <Toaster />
+    </div>
+  );
 }

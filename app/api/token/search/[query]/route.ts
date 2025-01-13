@@ -1,4 +1,5 @@
-import connectToDatabase from "../../../../../utils/mongodb/connection";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -6,29 +7,36 @@ export async function GET(
   { params }: { params: { query: string } }
 ) {
   const query = params.query;
-  console.log("Query:", query);
 
   try {
-    const db = await connectToDatabase();
-    const tokensCollection = db.collection("tokens");
+    // Create server-side Supabase client
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
+    );
 
-    const queryToDB = {
-      $or: [
-        { symbol: { $regex: query, $options: "i" } },
-        { name: { $regex: query, $options: "i" } },
-      ],
-    };
+    const { data: results, error } = await supabase
+      .from("tokens")
+      .select()
+      .or(`name.ilike.%${query}%,symbol.ilike.%${query}%`)
+      .order("market_cap_rank", { ascending: true })
+      .limit(50);
 
-    const results = await tokensCollection
-      .find(queryToDB)
-      .sort({ market_cap_rank: 1 })
-      .toArray();
+    if (error) throw error;
 
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(results || [], { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Search error:", error);
     return NextResponse.json(
-      { message: "Failed to retrieve tokens" },
+      { message: "Failed to search tokens" },
       { status: 500 }
     );
   }
