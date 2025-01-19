@@ -25,6 +25,7 @@ export function DeleteDialog({ tokenId }: { tokenId: string }) {
   const dispatch = useAppDispatch();
 
   const handleDeleteToken = async () => {
+    console.log("Deleting token:", tokenId);
     try {
       const userId = await getUserId();
       if (!userId) {
@@ -37,7 +38,7 @@ export function DeleteDialog({ tokenId }: { tokenId: string }) {
       const updatedTokens = await getUserPortfolio(userId);
       dispatch(setUserTokens(updatedTokens));
 
-      toast.success("Token deleted successfully");
+
     } catch (error) {
       console.error("Error deleting token:", error);
       toast.error("Failed to delete token");
@@ -47,7 +48,7 @@ export function DeleteDialog({ tokenId }: { tokenId: string }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <p className="text-red-500 hover:text-red-600">Delete</p>
+        <p className="">Delete</p>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

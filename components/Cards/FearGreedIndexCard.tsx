@@ -1,8 +1,7 @@
 "use client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import axios from "axios";
+import { useFearGreedIndex } from "@/lib/hooks/useData";
 
 interface FearGreedData {
   index: string;
@@ -59,78 +58,52 @@ const getIndexDetails = (index: number) => {
 };
 
 const FearGreedIndexCard = () => {
-  const [data, setData] = useState<FearGreedData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error, isLoading } = useFearGreedIndex();
 
-  useEffect(() => {
-    const fetchFearGreedIndex = async () => {
-      try {
-        const { data, status } = await axios.get("/api/fear-greed", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (status !== 200) {
-          throw new Error("Failed to fetch Fear & Greed Index");
-        }
-
-        const fetchedData: FearGreedData = data;
-        setData(fetchedData);
-      } catch (err) {
-        setError("Failed to fetch data");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFearGreedIndex();
-  }, []);
+  // If we have data, always show it even while revalidating
+  if (data) {
+    const indexDetails = getIndexDetails(Number(data.index));
+    return (
+      <Card className="card h-full">
+        <CardHeader className="text-center p-0">
+          <CardTitle className="text-sm font-normal">
+            Fear & Greed Index
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-0">
+          <div className="flex flex-col items-center">
+            <span className={`text-base font-extrabold ${indexDetails?.color}`}>
+              {data.index}
+            </span>
+            <span className="text-sm">{data.level}</span>
+            <div className="w-full h-2 rounded-full bg-gray-200">
+              <div
+                className={`h-full rounded-full ${indexDetails?.barColor}`}
+                style={{ width: `${data.index}%` }}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (error) {
+    console.error("Fear & Greed Component Error:", error);
     return (
       <Card className="w-[250px]">
         <CardContent className="text-center text-red-500 p-4">
-          {error}
+          Unable to load market data
         </CardContent>
       </Card>
     );
   }
 
-  if (loading) {
-    return (
-      <Card className="w-[250px]">
-        <CardContent className="flex items-center justify-center p-4">
-          <Loader2 className="mr-2 h-8 w-8 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const indexDetails = data ? getIndexDetails(Number(data.index)) : null;
-
+  // Only show loading state if we don't have data
   return (
-    <Card className="card">
-      <CardHeader className="p-2 text-center">
-        <CardTitle className="text-base font-bold">
-          Fear & Greed Index
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-4 pb-4">
-        <div className="flex flex-col items-center justify-center space-y-2">
-          <span className={`text-3xl font-extrabold ${indexDetails?.color}`}>
-            {data?.index ?? "N/A"}
-          </span>
-          <span className="text-lg font-semibold">{data?.level ?? "N/A"}</span>
-          <div className="w-full h-2 rounded-full bg-gray-200">
-            <div
-              className={`h-full rounded-full ${indexDetails?.barColor}`}
-              style={{ width: `${data?.index ?? 0}%` }}
-            />
-          </div>
-        </div>
+    <Card className="w-[250px]">
+      <CardContent className="flex items-center justify-center p-4">
+        <Loader2 className="mr-2 h-8 w-8 animate-spin text-muted-foreground" />
       </CardContent>
     </Card>
   );

@@ -44,6 +44,7 @@ function UserComp({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("Error fetching initial profile:", error);
+        // dispatch(set)
       }
     }
 

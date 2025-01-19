@@ -1,4 +1,3 @@
-import useTokens from "@/lib/useTokens";
 import {
   Table,
   TableBody,
@@ -11,30 +10,44 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import EditTokenAmountDialog from "@/components/Dialog/EditTokenAmountDialog";
 import { Button } from "@/components/ui/button";
-import { Edit2 } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 import { Token } from "@/types/database";
+import { DeleteDialog } from "@/app/(app)/app/tokens/delete-dialog";
+import { useAppSelector } from "@/store/hooks";
+import AddTokenDialog from "@/components/Dialog/Dialog";
 
 interface FinancialMetricsProps {
   token: Token;
 }
 
 export function FinancialMetrics({ token }: FinancialMetricsProps) {
-  const { tokens: userTokens, isLoading } = useTokens();
+  const { userTokens, status } = useAppSelector((state) => state.token);
 
   // Find user's holding of this token
-  const userHolding = userTokens?.find(
-    (t) => t.token.id === token.id
-  );
+  const userHolding = userTokens?.find((t) => t.token.id === token.id);
 
-  if (isLoading) {
-    return <Skeleton className="w-full h-[200px]" />;
+  if (status === "loading" || status === "idle") {
+    return (
+      <div className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-4">
+          <Skeleton className="h-[120px]" />
+          <Skeleton className="h-[120px]" />
+        </div>
+        <Skeleton className="h-[300px]" />
+      </div>
+    );
   }
 
   if (!userHolding) {
     return (
-      <div className="text-center text-muted-foreground py-8">
-        Add this token to your portfolio to see financial metrics
-      </div>
+      <Card>
+        <CardContent className="text-center space-y-4 py-8">
+          <p className="text-muted-foreground">
+            Add this token to your portfolio to see financial metrics
+          </p>
+          <AddTokenDialog token={token} />
+        </CardContent>
+      </Card>
     );
   }
 
@@ -60,16 +73,24 @@ export function FinancialMetrics({ token }: FinancialMetricsProps) {
                   Your Position
                 </h3>
                 <div className="text-2xl font-bold">
-                  {quantity.toLocaleString()} {token.symbol.toUpperCase()}
+                  ${currentValue.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  ≈ ${currentValue.toLocaleString()}
+                  {quantity.toLocaleString()} {token.symbol.toUpperCase()}
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Edit2 className="h-4 w-4" />
-                <EditTokenAmountDialog token={token} currentAmount={quantity} />
-              </Button>
+              <div className="flex gap-2 h-full items-center self-center text-sm">
+                <Button variant="outline" size="lg" className="h-8 w-8">
+                  <EditTokenAmountDialog
+                    token={userHolding}
+                    currentAmount={quantity}
+                  />
+                </Button>
+
+                <Button variant="destructive" size="lg" className="h-8 w-8">
+                  <DeleteDialog tokenId={token.id} />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -99,9 +120,7 @@ export function FinancialMetrics({ token }: FinancialMetricsProps) {
         <TableBody>
           <TableRow>
             <TableCell>Current Price</TableCell>
-            <TableCell className="text-right">
-              ${token.current_price}
-            </TableCell>
+            <TableCell className="text-right">${token.current_price}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Holdings Value</TableCell>

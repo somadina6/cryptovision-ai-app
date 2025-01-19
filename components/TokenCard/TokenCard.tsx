@@ -20,7 +20,7 @@ const TokenCard = ({ token, amount }: TokenCardProps) => {
 
   return (
     <Link
-      href={`/app/explore/${token.id}`}
+      href={`/app/explore/${token.token_id}`}
       className="relative border border-border py-2 px-3 md:p-4 rounded-lg shadow-md flex items-center"
     >
       <Image

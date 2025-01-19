@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { openai, redis, CACHE_DURATIONS } from "@/utils/clients";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { PortfolioWithToken } from "@/types/database";
+
+interface PortfolioSummaryItem {
+  name: string;
+  symbol: string;
+  amount: number;
+  currentPrice: number;
+  value: number;
+  priceChange24h: number;
+  athPrice: number;
+}
+
+interface AnalysisResult {
+  recommendations: string[];
+  timestamp: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,19 +44,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { tokens } = await request.json();
+    const { tokens }: { tokens: PortfolioWithToken[] } = await request.json();
 
     // Create cache key using userId
     const cacheKey = `portfolio_analysis:${user.id}`;
 
     // Try to get cached analysis
-    const cachedAnalysis = await redis.get(cacheKey);
+    const cachedAnalysis = await redis.get<AnalysisResult>(cacheKey);
     if (cachedAnalysis) {
       return NextResponse.json(cachedAnalysis);
     }
 
     // Format portfolio data for analysis
-    const portfolioSummary = tokens.map((token: any) => ({
+    const portfolioSummary: PortfolioSummaryItem[] = tokens.map((token) => ({
       name: token.token.name,
       symbol: token.token.symbol,
       amount: token.amount,
@@ -52,11 +68,11 @@ export async function POST(request: NextRequest) {
 
     // Calculate portfolio metrics
     const totalValue = portfolioSummary.reduce(
-      (sum: number, token: any) => sum + token.value,
+      (sum, token) => sum + token.value,
       0
     );
     const topHoldings = portfolioSummary
-      .sort((a: any, b: any) => b.value - a.value)
+      .sort((a, b) => b.value - a.value)
       .slice(0, 3);
 
     // Create prompt for AI analysis
@@ -69,7 +85,7 @@ Number of Assets: ${portfolioSummary.length}
 Top Holdings:
 ${topHoldings
   .map(
-    (token: any) =>
+    (token) =>
       `${token.name} (${token.symbol}): $${token.value.toLocaleString()} (${(
         (token.value / totalValue) *
         100
@@ -80,7 +96,7 @@ ${topHoldings
 Full Portfolio:
 ${portfolioSummary
   .map(
-    (token: any) =>
+    (token) =>
       `${token.name}: ${token.amount} tokens, Current Price: $${
         token.currentPrice
       }, 24h Change: ${token.priceChange24h.toFixed(2)}%, ATH: $${
@@ -120,7 +136,7 @@ Format recommendations as a JSON array of strings.`;
       throw new Error("No response from OpenAI");
     }
     const response = JSON.parse(completion.choices[0].message.content);
-    const analysisResult = {
+    const analysisResult: AnalysisResult = {
       recommendations: response.recommendations || [],
       timestamp: new Date().toISOString(),
     };

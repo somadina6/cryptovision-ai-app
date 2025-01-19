@@ -3,7 +3,11 @@
 import { Suspense } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import useTokens from "@/lib/useTokens";
+import { useAppSelector } from "@/store/hooks";
+import {
+  selectAllTokens,
+  selectTokensStatus,
+} from "@/store/features/tokenSlice";
 import Balance from "@/components/Cards/Balance";
 import TokenPortfolioAthCard from "@/components/Cards/AthCard";
 import { Card } from "@/components/ui/card";
@@ -24,9 +28,10 @@ const TokenPageSkeleton = () => (
 
 // Tokens content component
 const TokenPageContent = () => {
-  const { tokens: data, isLoading } = useTokens();
+  const tokens = useAppSelector(selectAllTokens);
+  const status = useAppSelector(selectTokensStatus);
 
-  if (isLoading || !data) {
+  if (status === "loading" || !tokens) {
     return <TokenPageSkeleton />;
   }
 
@@ -34,14 +39,14 @@ const TokenPageContent = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:flex gap-1 md:gap-4 flex-wrap">
         <Balance />
-        <TokenPortfolioAthCard tokens={data} />
-        <PerformanceCard tokens={data} type="gainers" />
-        <PerformanceCard tokens={data} type="losers" />
+        <TokenPortfolioAthCard tokens={tokens} />
+        <PerformanceCard tokens={tokens} type="gainers" />
+        <PerformanceCard tokens={tokens} type="losers" />
       </div>
       <Card className="w-full">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={tokens} />
       </Card>
-        <PortfolioPieChart tokens={data} />
+      <PortfolioPieChart tokens={tokens} />
     </div>
   );
 };

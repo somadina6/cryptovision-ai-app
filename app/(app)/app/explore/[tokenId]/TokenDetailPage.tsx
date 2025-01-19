@@ -25,26 +25,88 @@ import Image from "next/image";
 import AddTokenDialog from "@/components/Dialog/Dialog";
 import { FinancialMetrics } from "@/components/TokenMetrics/FinancialMetrics";
 import TokenSentiment from "@/components/TokenSentiment/TokenSentiment";
-import { getToken } from "@/utils/supabase/queries";
+import {
+  getToken,
+  getUserId,
+  getUserPortfolio,
+} from "@/utils/supabase/queries";
 import { Token } from "@/types/database";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  setUserTokens,
+  setLoading,
+  setError as setTokenError,
+} from "@/store/features/tokenSlice";
 
 export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
   const [token, setToken] = useState<Token | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { status } = useAppSelector((state) => state.token);
 
   useEffect(() => {
-    const fetchTokenData = async () => {
+    let isSubscribed = true;
+
+    const fetchData = async () => {
       try {
+        // Prevent duplicate state updates if component is unmounted
+        if (!isSubscribed) return;
+
+        console.log("Fetching token data...");
+        setIsLoading(true);
+        dispatch(setLoading());
+
+        console.log("Calling getToken with tokenId:", tokenId);
         const fetchedToken = await getToken(tokenId);
+
+        console.log("Token data fetched");
+
+        // Check if component is still mounted before updating state
+        if (!isSubscribed) return;
+
+        if (!fetchedToken) {
+          throw new Error(`No token found for ID: ${tokenId}`);
+        }
+
         setToken(fetchedToken);
+
+        const userId = await getUserId();
+        if (!isSubscribed) return;
+
+        if (userId) {
+          const portfolioData = await getUserPortfolio(userId);
+          if (isSubscribed) {
+            dispatch(setUserTokens(portfolioData));
+          }
+        } else {
+          dispatch(setUserTokens([]));
+        }
       } catch (err) {
-        setError("Failed to fetch token data. Please try again.");
-        console.error(err);
+        if (!isSubscribed) return;
+
+        console.error("Error in fetchData:", err);
+        const errorMessage =
+          err instanceof Error
+            ? `Failed to fetch data: ${err.message}`
+            : "Failed to fetch data. Please try again.";
+        setError(errorMessage);
+        dispatch(setTokenError(errorMessage));
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       }
     };
-    fetchTokenData();
-  }, [tokenId]);
+
+    fetchData();
+
+    // Cleanup function
+    return () => {
+      isSubscribed = false;
+    };
+  }, [tokenId, dispatch]);
 
   const calculateReturnsToATH = (currentPrice: number, athPrice: number) => {
     const returnsToATH = athPrice / currentPrice;
@@ -54,16 +116,16 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
     };
   };
 
+  const BackButton = () => (
+    <Button variant="outline" onClick={() => router.back()} className="mb-4">
+      <ChevronLeft className="mr-2 h-4 w-4" /> Back
+    </Button>
+  );
+
   if (error) {
     return (
       <div className="container mx-auto px-4 py-6">
-        <Button
-          variant="outline"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Back
-        </Button>
+        <BackButton />
         <Card>
           <CardContent className="p-6 text-center">
             <p className="text-red-500">{error}</p>
@@ -73,16 +135,10 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
     );
   }
 
-  if (!token) {
+  if (isLoading || !token || status === "loading") {
     return (
       <div className="container mx-auto px-4 py-6">
-        <Button
-          variant="outline"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Back
-        </Button>
+        <BackButton />
         <Card>
           <CardContent className="p-6 flex justify-center items-center">
             <Loader2 className="mr-2 h-8 w-8 animate-spin text-muted-foreground" />

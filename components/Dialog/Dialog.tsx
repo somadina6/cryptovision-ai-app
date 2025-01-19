@@ -1,6 +1,5 @@
 " use client";
 import { ChangeEvent, useState } from "react";
-import { addToken } from "../../utils/apis/apis";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -15,16 +14,21 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import toast from "react-hot-toast";
 import { ColorRing } from "react-loader-spinner";
-import { useSWRConfig } from "swr";
 import { Token } from "@/types/database";
-import { addToPortfolio, getUserId } from "@/utils/supabase/queries";
+import {
+  addToPortfolio,
+  getUserId,
+  getUserPortfolio,
+} from "@/utils/supabase/queries";
+import { useAppDispatch } from "@/store/hooks";
+import { setUserTokens } from "@/store/features/tokenSlice";
 
 export default function AddTokenDialog({ token }: { token: Token }) {
   const [tokenQuantity, setTokenQuantity] = useState<number | undefined>();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { mutate } = useSWRConfig();
+  const dispatch = useAppDispatch();
 
   const handleAddToken = async () => {
     if (!tokenQuantity) return;
@@ -32,11 +36,15 @@ export default function AddTokenDialog({ token }: { token: Token }) {
       setLoading(true);
       const userId = await getUserId();
       await addToPortfolio(userId, token.id, tokenQuantity);
-      await mutate(`fetchUserTokens`);
+
+      // Fetch updated tokens and update Redux store
+      const updatedTokens = await getUserPortfolio(userId);
+      dispatch(setUserTokens(updatedTokens));
+
       toast.success("Token added successfully");
     } catch (error) {
       console.error("Error adding token:", error);
-      throw new Error("Error adding token");
+      toast.error("Failed to add token");
     } finally {
       setOpen(false);
       setLoading(false);

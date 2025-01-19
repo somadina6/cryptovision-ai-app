@@ -19,6 +19,7 @@ import { ColorRing } from "react-loader-spinner";
 import {  useSWRConfig } from "swr";
 import { PortfolioWithToken, Token } from "@/types/database";
 import { getUserId, updatePortfolioItem } from "@/utils/supabase/queries";
+import { Edit2 } from "lucide-react";
 
 export default function EditTokenAmountDialog({
   currentAmount,
