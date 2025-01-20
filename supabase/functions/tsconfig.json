@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target": "esnext",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "types": ["@supabase/supabase-js"],
+      "lib": ["esnext", "dom"],
+      "strict": true,
+      "allowJs": true,
+      "noEmit": true
+    },
+    "include": ["**/*.ts"]
+  }
