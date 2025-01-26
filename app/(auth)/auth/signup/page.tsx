@@ -62,7 +62,7 @@ const SignUp = () => {
 
   return (
     <div className="h-screen">
-      <div className="w-4/5 md:w-1/3 mx-auto mt-10 px-16 py-16 bg-white dark:bg-black flex flex-col shadow-sm items-center dark:border dark:border-white rounded-xl">
+      <div className="w-4/5 md:w-96 mx-auto mt-10 px-16 py-16 bg-white dark:bg-black flex flex-col shadow-sm items-center dark:border dark:border-white rounded-xl">
         <form
           method="post"
           className="flex flex-col items-center w-full"

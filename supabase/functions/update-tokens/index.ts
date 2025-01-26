@@ -1,14 +1,8 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js";
 
 console.log("Hello from Functions!");
 
-// Initialize Supabase client with service role key for admin access
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -18,7 +12,6 @@ const COINGECKO_API = "https://api.coingecko.com/api/v3/coins/markets";
 const DELAY_MS = 1000;
 const PAGE_LIMIT = 100;
 
-// Helper function to delay between requests
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 Deno.serve(async () => {
@@ -44,30 +37,55 @@ Deno.serve(async () => {
         const tokens = await response.json();
         if (!tokens.length) break;
 
-        const { error } = await supabase.from("tokens").upsert(
-          tokens.map((token: any) => ({
-            token_id: token.id,
-            symbol: token.symbol,
-            name: token.name,
-            image: token.image,
-            current_price: token.current_price,
-            price_change_24h: token.price_change_24h,
-            price_change_percentage_24h: token.price_change_percentage_24h,
-            market_cap: token.market_cap,
-            market_cap_rank: token.market_cap_rank,
-            circulating_supply: token.circulating_supply,
-            total_supply: token.total_supply,
-            max_supply: token.max_supply,
-            ath: token.ath,
-            ath_date: token.ath_date,
-            atl: token.atl,
-            atl_date: token.atl_date,
-            last_updated: token.last_updated,
-          })),
-          { onConflict: "token_id" }
-        );
+        const validTokens = tokens
+          .map((token: any) => {
+            try {
+              return {
+                // Required string fields
+                token_id: requireString(token.id, 'token_id'),
+                symbol: requireString(token.symbol, 'symbol'),
+                name: requireString(token.name, 'name'),
+                image: requireString(token.image, 'image'),
+                
+                // Required numeric fields
+                current_price: requireNumber(token.current_price, 'current_price'),
+                market_cap: requireNumber(token.market_cap, 'market_cap'),
+                
+                // Optional numeric fields
+                price_change_24h: optionalNumber(token.price_change_24h),
+                price_change_percentage_24h: optionalNumber(token.price_change_percentage_24h),
+                market_cap_rank: optionalNumber(token.market_cap_rank),
+                circulating_supply: optionalNumber(token.circulating_supply),
+                total_supply: optionalNumber(token.total_supply),
+                max_supply: optionalNumber(token.max_supply),
+                ath: optionalNumber(token.ath),
+                atl: optionalNumber(token.atl),
+                
+                // Date fields
+                ath_date: token.ath_date,
+                atl_date: token.atl_date,
+                last_updated: requireString(token.last_updated, 'last_updated'),
+              };
+            } catch (error) {
+              console.error(`Skipping invalid token:`, error.message);
+              return null;
+            }
+          })
+          .filter(Boolean); // Remove any null entries
 
-        if (error) throw error;
+        if (validTokens.length === 0) {
+          console.log(`No valid tokens found on page ${page}, skipping`);
+          continue;
+        }
+
+        const { error } = await supabase
+          .from("tokens")
+          .upsert(validTokens, { onConflict: "token_id" });
+
+        if (error) {
+          console.error("Database error:", error);
+          throw error;
+        }
 
         totalProcessed += tokens.length;
         page++;
