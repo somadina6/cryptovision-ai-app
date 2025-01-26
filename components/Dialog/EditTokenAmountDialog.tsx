@@ -41,7 +41,7 @@ export default function EditTokenAmountDialog({
     try {
       setLoading(true);
       const userId = await getUserId();
-      await updatePortfolioItem(userId, token.id, tokenQuantity);
+      await updatePortfolioItem(userId, token.token_id, tokenQuantity);
       await mutate(`fetchUserTokens`);
       toast.success("Token updated successfully");
     } catch (error) {
@@ -53,13 +53,19 @@ export default function EditTokenAmountDialog({
     }
   };
 
+  const handleOpen = (open: boolean) => {
+    setTokenQuantity(currentAmount);
+    setOpen(open);
+    setLoading(false);
+  };
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setTokenQuantity(newValue ? parseFloat(newValue) : 0);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <p>Edit</p>
       </DialogTrigger>

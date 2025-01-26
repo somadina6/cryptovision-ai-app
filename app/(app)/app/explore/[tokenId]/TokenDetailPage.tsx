@@ -135,7 +135,7 @@ export default function TokenDetailPage({ tokenId }: { tokenId: string }) {
     );
   }
 
-  if (isLoading || !token || status === "loading") {
+  if (isLoading || !token ) {
     return (
       <div className="container mx-auto px-4 py-6">
         <BackButton />
