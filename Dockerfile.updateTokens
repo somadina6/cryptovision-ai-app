@@ -7,12 +7,15 @@ WORKDIR /app
 # Install cron and any necessary packages
 RUN apk add --no-cache bash curl
 
-# Install npm packages
-COPY package*.json ./
-RUN npm install @supabase/supabase-js@2.39.7 node-fetch@3.3.2
+# Copy package files first (for better caching)
+COPY scripts/db/package*.json ./
+
+# Install dependencies
+RUN npm install
 
 # Copy your update script into the image
-COPY scripts/db/ ./
+COPY scripts/db/update_tokens.js ./
+COPY scripts/db/run_token_update ./
 
 # Define build arguments for environment variables
 ARG SUPABASE_URL
@@ -28,8 +31,8 @@ RUN mkdir -p /app/logs
 # Set permissions for your script
 RUN chmod +x run_token_update
 
-# Set up a cron job to run the Node.js script
-RUN echo "*/30 * * * * cd /app && node update_tokens.js >> /app/logs/cron.log 2>&1" > /etc/crontabs/root
+# Set up a cron job to run the script
+RUN echo "*/30 * * * * cd /app && ./run_token_update >> /app/logs/cron.log 2>&1" > /etc/crontabs/root
 
 # Start cron in the foreground
 CMD ["crond", "-f"]

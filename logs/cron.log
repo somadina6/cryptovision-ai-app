@@ -1,0 +1,53 @@
+[Sun, Jan 26, 2025  2:51:52 PM] Starting token update...
+[Sun, Jan 26, 2025  2:51:52 PM] D:somadcoding-projectscryptovision-ai-appnode_modules@supabasesupabase-jsdistmainSupabaseClient.js:43
+[Sun, Jan 26, 2025  2:51:52 PM] throw new Error('supabaseUrl is required.');
+[Sun, Jan 26, 2025  2:51:52 PM] ^
+[Sun, Jan 26, 2025  2:51:52 PM] 
+[Sun, Jan 26, 2025  2:51:52 PM] Error: supabaseUrl is required.
+[Sun, Jan 26, 2025  2:51:52 PM] at new SupabaseClient (D:somadcoding-projectscryptovision-ai-appnode_modules@supabasesupabase-jsdistmainSupabaseClient.js:43:19)
+[Sun, Jan 26, 2025  2:51:52 PM] at createClient (D:somadcoding-projectscryptovision-ai-appnode_modules@supabasesupabase-jsdistmainindex.js:36:12)
+[Sun, Jan 26, 2025  2:51:52 PM] at file:///D:/somad/coding-projects/cryptovision-ai-app/scripts/db/update_tokens.js:36:18
+[Sun, Jan 26, 2025  2:51:52 PM] at ModuleJob.run (node:internal/modules/esm/module_job:222:25)
+[Sun, Jan 26, 2025  2:51:52 PM] at async ModuleLoader.import (node:internal/modules/esm/loader:316:24)
+[Sun, Jan 26, 2025  2:51:53 PM] at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:123:5)
+[Sun, Jan 26, 2025  2:51:53 PM] 
+[Sun, Jan 26, 2025  2:51:53 PM] Node.js v20.15.0
+[Sun, Jan 26, 2025  2:51:53 PM] Token update failed
+[Sun, Jan 26, 2025  2:53:19 PM] Starting token update...
+[Sun, Jan 26, 2025  2:53:20 PM] Database error: {
+[Sun, Jan 26, 2025  2:53:20 PM] message: 'Invalid API key',
+[Sun, Jan 26, 2025  2:53:20 PM] hint: 'Double check your Supabase `anon` or `service_role` API key.'
+[Sun, Jan 26, 2025  2:53:20 PM] }
+[Sun, Jan 26, 2025  2:53:20 PM] Error processing page 1: {
+[Sun, Jan 26, 2025  2:53:20 PM] message: 'Invalid API key',
+[Sun, Jan 26, 2025  2:53:20 PM] hint: 'Double check your Supabase `anon` or `service_role` API key.'
+[Sun, Jan 26, 2025  2:53:20 PM] }
+[Sun, Jan 26, 2025  2:53:20 PM] Update failed: {
+[Sun, Jan 26, 2025  2:53:20 PM] message: 'Invalid API key',
+[Sun, Jan 26, 2025  2:53:20 PM] hint: 'Double check your Supabase `anon` or `service_role` API key.'
+[Sun, Jan 26, 2025  2:53:20 PM] }
+[Sun, Jan 26, 2025  2:53:21 PM] Token update failed
+[Sun, Jan 26, 2025  2:54:38 PM] Starting token update...
+[Sun, Jan 26, 2025  2:54:39 PM] Processed 100 tokens
+[Sun, Jan 26, 2025  2:54:40 PM] Processed 200 tokens
+[Sun, Jan 26, 2025  2:54:42 PM] Processed 300 tokens
+[Sun, Jan 26, 2025  2:54:43 PM] Processed 400 tokens
+[Sun, Jan 26, 2025  2:54:45 PM] Processed 500 tokens
+[Sun, Jan 26, 2025  2:54:46 PM] Rate limited. Waiting 60 seconds...
+[Sun, Jan 26, 2025  2:55:47 PM] Processed 600 tokens
+[Sun, Jan 26, 2025  2:55:48 PM] Processed 700 tokens
+[Sun, Jan 26, 2025  2:55:50 PM] Processed 800 tokens
+[Sun, Jan 26, 2025  2:55:51 PM] Processed 900 tokens
+[Sun, Jan 26, 2025  2:55:53 PM] Processed 1000 tokens
+[Sun, Jan 26, 2025  2:55:54 PM] Rate limited. Waiting 60 seconds...
+[Sun, Jan 26, 2025  2:56:55 PM] Processed 1100 tokens
+[Sun, Jan 26, 2025  2:56:56 PM] Processed 1200 tokens
+[Sun, Jan 26, 2025  2:56:58 PM] Processed 1300 tokens
+[Sun, Jan 26, 2025  2:57:00 PM] Processed 1400 tokens
+[Sun, Jan 26, 2025  2:57:01 PM] Processed 1500 tokens
+[Sun, Jan 26, 2025  2:57:03 PM] Processed 1600 tokens
+[Sun, Jan 26, 2025  2:57:04 PM] Rate limited. Waiting 60 seconds...
+[Sun, Jan 26, 2025  2:58:05 PM] Processed 1700 tokens
+[Sun, Jan 26, 2025  2:58:06 PM] Processed 1800 tokens
+[Sun, Jan 26, 2025  2:58:07 PM] Successfully processed 1800 tokens
+[Sun, Jan 26, 2025  2:58:07 PM] Token update completed successfully

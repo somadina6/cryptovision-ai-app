@@ -1,5 +1,32 @@
+#!/usr/bin/env node
+
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
+import { config } from "dotenv";
+
+// Load environment variables from .env file
+config();
+
+// Validation helper functions
+const requireString = (value, fieldName) => {
+  if (typeof value !== "string" || !value) {
+    throw new Error(`${fieldName} must be a non-empty string`);
+  }
+  return value;
+};
+
+const requireNumber = (value, fieldName) => {
+  if (typeof value !== "number" || isNaN(value)) {
+    throw new Error(`${fieldName} must be a valid number`);
+  }
+  return value;
+};
+
+const optionalNumber = (value) => {
+  if (value === null || value === undefined) return null;
+  const num = Number(value);
+  return isNaN(num) ? null : num;
+};
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3/coins/markets";
 const PAGE_LIMIT = 100;
@@ -37,32 +64,62 @@ async function updateTokens() {
         const tokens = await response.json();
         if (!tokens.length) break;
 
-        const { error } = await supabase.from("tokens").upsert(
-          tokens.map((token) => ({
-            token_id: token.id,
-            symbol: token.symbol,
-            name: token.name,
-            image: token.image,
-            current_price: token.current_price,
-            price_change_24h: token.price_change_24h,
-            price_change_percentage_24h: token.price_change_percentage_24h,
-            market_cap: token.market_cap,
-            market_cap_rank: token.market_cap_rank,
-            circulating_supply: token.circulating_supply,
-            total_supply: token.total_supply,
-            max_supply: token.max_supply,
-            ath: token.ath,
-            ath_date: token.ath_date,
-            atl: token.atl,
-            atl_date: token.atl_date,
-            last_updated: token.last_updated,
-          })),
-          { onConflict: "token_id" }
-        );
+        const validTokens = tokens
+          .map((token) => {
+            try {
+              return {
+                // Required string fields
+                token_id: requireString(token.id, "token_id"),
+                symbol: requireString(token.symbol, "symbol"),
+                name: requireString(token.name, "name"),
+                image: requireString(token.image, "image"),
 
-        if (error) throw error;
+                // Required numeric fields
+                current_price: requireNumber(
+                  token.current_price,
+                  "current_price"
+                ),
+                market_cap: requireNumber(token.market_cap, "market_cap"),
 
-        totalProcessed += tokens.length;
+                // Optional numeric fields
+                price_change_24h: optionalNumber(token.price_change_24h),
+                price_change_percentage_24h: optionalNumber(
+                  token.price_change_percentage_24h
+                ),
+                market_cap_rank: optionalNumber(token.market_cap_rank),
+                circulating_supply: optionalNumber(token.circulating_supply),
+                total_supply: optionalNumber(token.total_supply),
+                max_supply: optionalNumber(token.max_supply),
+                ath: optionalNumber(token.ath),
+                atl: optionalNumber(token.atl),
+
+                // Date fields
+                ath_date: token.ath_date,
+                atl_date: token.atl_date,
+                last_updated: requireString(token.last_updated, "last_updated"),
+              };
+            } catch (error) {
+              console.error(`Skipping invalid token: ${error.message}`);
+              return null;
+            }
+          })
+          .filter(Boolean); // Remove any null entries
+
+        if (validTokens.length === 0) {
+          console.log(`No valid tokens found on page ${page}, skipping`);
+          continue;
+        }
+
+        const { error } = await supabase
+          .from("tokens")
+          .upsert(validTokens, { onConflict: "token_id" });
+
+        if (error) {
+          console.error("Database error:", error);
+          throw error;
+        }
+
+        totalProcessed += validTokens.length;
         console.log(`Processed ${totalProcessed} tokens`);
         page++;
 

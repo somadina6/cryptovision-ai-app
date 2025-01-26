@@ -1,16 +1,21 @@
 #!/bin/bash
 
-# Log start time
-echo "[$(date)] Starting token update..." >> /app/logs/cron.log
+# Create logs directory if it doesn't exist
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="${SCRIPT_DIR}/../../logs"
+mkdir -p "$LOG_DIR"
 
-# Run the Node.js script
-node /app/update_tokens.js 2>&1 | while read line; do
-  echo "[$(date)] $line" >> /app/logs/cron.log
+# Log start time
+echo "[$(date)] Starting token update..." >> "$LOG_DIR/cron.log"
+
+# Run the Node.js script with experimental modules flag
+node "$SCRIPT_DIR/update_tokens.js" 2>&1 | while read line; do
+  echo "[$(date)] $line" >> "$LOG_DIR/cron.log"
 done
 
 # Check if the script was successful
 if [ ${PIPESTATUS[0]} -eq 0 ]; then
-  echo "[$(date)] Token update completed successfully" >> /app/logs/cron.log
+  echo "[$(date)] Token update completed successfully" >> "$LOG_DIR/cron.log"
 else
-  echo "[$(date)] Token update failed" >> /app/logs/cron.log
+  echo "[$(date)] Token update failed" >> "$LOG_DIR/cron.log"
 fi
