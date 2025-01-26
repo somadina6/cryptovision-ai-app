@@ -1,21 +1,16 @@
 #!/bin/bash
 
-# Directory where logs will be stored
-LOG_DIR="/app/logs"
+# Log start time
+echo "[$(date)] Starting token update..." >> /app/logs/cron.log
 
-# Get the highest numbered log file in the directory
-latest_log=$(ls "$LOG_DIR" | grep -E 'log[0-9]{3}' | sort | tail -n 1)
+# Run the Node.js script
+node /app/update_tokens.js 2>&1 | while read line; do
+  echo "[$(date)] $line" >> /app/logs/cron.log
+done
 
-# Determine the next log file number
-if [ -z "$latest_log" ]; then
-  next_log_number=1
+# Check if the script was successful
+if [ ${PIPESTATUS[0]} -eq 0 ]; then
+  echo "[$(date)] Token update completed successfully" >> /app/logs/cron.log
 else
-  latest_number=$(echo "$latest_log" | grep -o '[0-9]\{3\}')
-  next_log_number=$((10#$latest_number + 1))
+  echo "[$(date)] Token update failed" >> /app/logs/cron.log
 fi
-
-# Format the next log file as logXXX (with leading zeros)
-next_log_file=$(printf "log%03d" "$next_log_number")
-
-# Run the node script and log output to the next log file
-node /app/update_tokens > "$LOG_DIR/$next_log_file.log" 2>&1

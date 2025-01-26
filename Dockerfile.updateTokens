@@ -8,20 +8,19 @@ WORKDIR /app
 RUN apk add --no-cache bash curl
 
 # Install npm packages
-RUN npm install mongoose@8.3.1 axios@1.6.8 dotenv@16.4.5
+COPY package*.json ./
+RUN npm install @supabase/supabase-js@2.39.7 node-fetch@3.3.2
 
 # Copy your update script into the image
 COPY scripts/db/ ./
 
 # Define build arguments for environment variables
-ARG MONGO_URI
-ARG DB_NAME
-ARG UPDATE_TOKENS_ENDPOINT
+ARG SUPABASE_URL
+ARG SUPABASE_SERVICE_ROLE_KEY
 
 # Set environment variables
-ENV MONGO_URI=${MONGO_URI}
-ENV DB_NAME=${DB_NAME}
-ENV UPDATE_TOKENS_ENDPOINT=https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd
+ENV SUPABASE_URL=${SUPABASE_URL}
+ENV SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
 
 # Create logs directory
 RUN mkdir -p /app/logs
@@ -29,8 +28,8 @@ RUN mkdir -p /app/logs
 # Set permissions for your script
 RUN chmod +x run_token_update
 
-# Set up a cron job
-RUN echo "*/30 * * * * /app/run_token_update" > /etc/crontabs/root
+# Set up a cron job to run the Node.js script
+RUN echo "*/30 * * * * cd /app && node update_tokens.js >> /app/logs/cron.log 2>&1" > /etc/crontabs/root
 
 # Start cron in the foreground
 CMD ["crond", "-f"]

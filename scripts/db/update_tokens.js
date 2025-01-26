@@ -1,27 +1,20 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js";
-
-console.log("Hello from Functions!");
-
-// Initialize Supabase client with service role key for admin access
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-);
+import { createClient } from "@supabase/supabase-js";
+import fetch from "node-fetch";
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3/coins/markets";
-const DELAY_MS = 1000;
 const PAGE_LIMIT = 100;
+const DELAY_MS = 1000;
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 // Helper function to delay between requests
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-Deno.serve(async () => {
+async function updateTokens() {
   try {
     let page = 1;
     let totalProcessed = 0;
@@ -45,7 +38,7 @@ Deno.serve(async () => {
         if (!tokens.length) break;
 
         const { error } = await supabase.from("tokens").upsert(
-          tokens.map((token: any) => ({
+          tokens.map((token) => ({
             token_id: token.id,
             symbol: token.symbol,
             name: token.name,
@@ -70,6 +63,7 @@ Deno.serve(async () => {
         if (error) throw error;
 
         totalProcessed += tokens.length;
+        console.log(`Processed ${totalProcessed} tokens`);
         page++;
 
         // Add delay to avoid rate limiting
@@ -80,29 +74,11 @@ Deno.serve(async () => {
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        message: `Successfully processed ${totalProcessed} tokens`,
-      }),
-      { headers: { "Content-Type": "application/json" } }
-    );
+    console.log(`Successfully processed ${totalProcessed} tokens`);
   } catch (error) {
-    console.error("Function error:", error);
-    return new Response(JSON.stringify({ error: "Failed to update tokens" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Update failed:", error);
+    process.exit(1);
   }
-});
+}
 
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/update-tokens' \
-    --header 'Authorization: Bearer ' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+updateTokens();

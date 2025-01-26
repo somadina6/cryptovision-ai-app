@@ -3,7 +3,7 @@ name: Build DB Update Container
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   docker_build:
@@ -35,14 +35,12 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cryptovision-db-update:cache
           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cryptovision-db-update:cache,mode=max
           build-args: |
-            MONGO_URI=${{ secrets.MONGO_URI }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            UPDATE_TOKENS_ENDPOINT=${{ secrets.UPDATE_TOKENS_ENDPOINT }}
+            SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
   deploy:
     needs: docker_build
     runs-on: ubuntu-latest
-
     steps:
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@master
@@ -53,7 +51,15 @@ jobs:
           passphrase: ""
           port: 22
           script: |
+            # Pull the latest image
             docker pull ${{ secrets.DOCKER_USERNAME }}/cryptovision-db-update:latest
+
+            # Stop and remove existing container
             docker stop db-update || true
             docker rm db-update || true
-            docker run -d --name db-update ${{ secrets.DOCKER_USERNAME }}/cryptovision-db-update:latest
+
+            # Run new container with environment variables
+            docker run -d --name db-update \
+              -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+              -e SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }} \
+              ${{ secrets.DOCKER_USERNAME }}/cryptovision-db-update:latest
