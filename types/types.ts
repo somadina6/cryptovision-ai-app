@@ -31,3 +31,11 @@ export interface Currency {
   code: string;
   label: string;
 }
+
+export type TokenData = {
+  token_id: string;
+  amount: number;
+  user_id: string;
+  created_at?: string;
+  updated_at?: string;
+};

@@ -27,12 +27,27 @@ export async function getUserIdFromToken(request: NextRequest) {
 
     // If no session, return error
     if (!session) {
-      return { error: "No session found", userId: null };
+      return {
+        error: "No session found",
+        userId: null,
+        message: "Unauthorized",
+        statusCode: 401,
+      };
     }
 
-    return { error: null, userId: session.user.id };
+    return {
+      error: null,
+      userId: session.user.id,
+      message: "OK",
+      statusCode: 200,
+    };
   } catch (error) {
     console.error("Error getting user ID from token:", error);
-    return { error: "Failed to authenticate request", userId: null };
+    return {
+      error: "Failed to authenticate request",
+      userId: null,
+      message: "Internal Server Error",
+      statusCode: 500,
+    };
   }
 }

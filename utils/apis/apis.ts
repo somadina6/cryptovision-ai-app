@@ -150,9 +150,7 @@ export async function getCurrencyRates() {
 
 export async function getTokenData(tokenId: string) {
   try {
-    const { data, status } = await axios.get<Token>(
-      `/api/token/${tokenId}`
-    );
+    const { data, status } = await axios.get<Token>(`/api/token/${tokenId}`);
     if (status === 200) {
       return data;
     } else {

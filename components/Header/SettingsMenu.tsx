@@ -1,18 +1,21 @@
 "use client";
-import { signOut } from "next-auth/react";
+import { supabase } from "@/utils/supabase/client";
 import { Dispatch, FC, useCallback, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type Props = {
   setShowSettings: Dispatch<React.SetStateAction<boolean>>;
   showSettings?: boolean;
   userRef: React.RefObject<HTMLDivElement>;
 };
+
 const SettingsMenu: FC<Props> = ({
   showSettings,
   setShowSettings,
   userRef,
 }) => {
+  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(
@@ -39,6 +42,11 @@ const SettingsMenu: FC<Props> = ({
     };
   }, [handleClickOutside]);
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
   return (
     <div
       ref={ref}
@@ -47,8 +55,8 @@ const SettingsMenu: FC<Props> = ({
       <ul>
         <li className="p-1 hover:text-primary">Profile</li>
         <li
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="hover:text-red-500  p-1 rounded-md"
+          onClick={handleSignOut}
+          className="hover:text-red-500 p-1 rounded-md"
         >
           Logout
         </li>

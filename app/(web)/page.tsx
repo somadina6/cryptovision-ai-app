@@ -1,12 +1,25 @@
 "use client";
-import { FormEvent, useContext, useState } from "react";
-import { ThemeContext } from "../../context/themeContext";
-import HomePage from "../../components/HomePage/HomePage";
-import { signIn, signOut, useSession } from "next-auth/react";
-import toast from "react-hot-toast";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/utils/supabase/client";
 
 export default function AuthPage() {
-  const { data: session, status } = useSession();
-  console.log("session:\n", session);
-  return <div></div>;
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/app/dashboard");
+      } else {
+        router.push("/auth/login");
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
+  return <div>Redirecting...</div>;
 }
